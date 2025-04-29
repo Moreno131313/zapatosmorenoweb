@@ -1,0 +1,1387 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>Mi Perfil - Zapatos Moreno</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #FF5000;
+            --secondary-color: #ff6347;
+            --primary-dark: #d94400;
+            --primary-light: #ff7e3e;
+            --secondary-light: #ffa69e;
+            --success-color: #28a745;
+            --danger-color: #dc3545;
+            --warning-color: #ffc107;
+            --info-color: #17a2b8;
+            --dark-color: #343a40;
+            --light-color: #f8f9fa;
+            --gray-color: #6c757d;
+            --gray-light: #e9ecef;
+            --gray-lighter: #f8f9fa;
+            --box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --transition-speed: 0.3s;
+            --border-radius: 8px;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            color: #333;
+            line-height: 1.6;
+            background-color: #f5f5f5;
+        }
+
+        /* Nuevo estilo para la página de perfil */
+        .profile-container {
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        .page-title {
+            text-align: center;
+            color: #333;
+            margin-bottom: 5px;
+            font-size: 2.2rem;
+            font-weight: 600;
+        }
+
+        .page-subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+            font-weight: normal;
+        }
+
+        .profile-layout {
+            display: flex;
+            gap: 30px;
+            margin-top: 30px;
+            min-height: 500px;
+        }
+
+        .profile-sidebar {
+            flex: 0 0 300px;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            overflow: hidden;
+        }
+
+        .user-info {
+            padding: 30px 20px;
+            text-align: center;
+            background-color: #fff;
+            border-bottom: 1px solid #eee;
+        }
+
+        .user-avatar {
+            width: 100px;
+            height: 100px;
+            margin: 0 auto 15px;
+            border-radius: 50%;
+            background-color: var(--primary-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+        }
+
+        .user-avatar i {
+            font-size: 60px;
+        }
+
+        .user-info h2 {
+            margin: 10px 0 5px;
+            font-size: 1.5rem;
+            color: #333;
+        }
+
+        .user-info p {
+            color: #666;
+            margin: 0;
+            font-size: 0.9rem;
+        }
+
+        .profile-nav {
+            display: flex;
+            flex-direction: column;
+            padding: 15px 0;
+        }
+
+        .profile-nav-link {
+            padding: 12px 20px;
+            color: #555;
+            text-decoration: none;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            border-left: 3px solid transparent;
+        }
+
+        .profile-nav-link i {
+            margin-right: 10px;
+            width: 20px;
+            text-align: center;
+        }
+
+        .profile-nav-link:hover {
+            background-color: rgba(255, 80, 0, 0.05);
+            color: var(--primary-color);
+        }
+
+        .profile-nav-link.active {
+            background-color: rgba(255, 80, 0, 0.1);
+            color: var(--primary-color);
+            border-left-color: var(--primary-color);
+            font-weight: 500;
+        }
+
+        .profile-nav-link.logout {
+            margin-top: auto;
+            border-top: 1px solid #eee;
+            color: #d9534f;
+            background: none;
+            border-left: none;
+            width: 100%;
+            text-align: left;
+            cursor: pointer;
+        }
+
+        .profile-nav-link.logout:hover {
+            background-color: rgba(217, 83, 79, 0.1);
+        }
+
+        .profile-content {
+            flex: 1;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            padding: 30px;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .content-title {
+            margin-top: 0;
+            margin-bottom: 25px;
+            font-size: 1.5rem;
+            color: #333;
+            border-bottom: 2px solid #f1f1f1;
+            padding-bottom: 10px;
+        }
+
+        /* Estilos de formulario */
+        .form-row {
+            display: flex;
+            flex-wrap: wrap;
+            margin-right: -10px;
+            margin-left: -10px;
+            margin-bottom: 15px;
+        }
+
+        .form-group {
+            flex: 1 1 300px;
+            margin: 0 10px 15px;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 500;
+            margin-bottom: 8px;
+            color: #555;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 10px 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+
+        .form-control:focus {
+            border-color: var(--primary-color);
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(255, 80, 0, 0.2);
+        }
+
+        .view-mode span {
+            display: block;
+            padding: 10px 0;
+            color: #333;
+        }
+
+        .view-mode input, 
+        .view-mode select {
+            display: none;
+        }
+
+        .view-mode.edit-mode span {
+            display: none;
+        }
+
+        .view-mode.edit-mode input, 
+        .view-mode.edit-mode select {
+            display: block;
+        }
+
+        .edit-action {
+            display: none;
+        }
+
+        .view-mode.edit-mode .edit-action {
+            display: inline-block;
+        }
+
+        .view-mode.edit-mode #editarPerfil {
+            display: none;
+        }
+
+        .form-actions {
+            margin-top: 25px;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        /* Botones */
+        .btn {
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s;
+            border: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn i {
+            font-size: 0.9em;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary-dark);
+            transform: translateY(-2px);
+        }
+
+        .btn-success {
+            background-color: var(--success-color);
+            color: white;
+        }
+
+        .btn-success:hover {
+            background-color: #218838;
+            transform: translateY(-2px);
+        }
+
+        .btn-outline-primary {
+            color: var(--primary-color);
+            background-color: transparent;
+            border: 1px solid var(--primary-color);
+        }
+
+        .btn-outline-primary:hover {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .btn-outline-secondary {
+            color: var(--gray-color);
+            background-color: transparent;
+            border: 1px solid var(--gray-color);
+        }
+
+        .btn-outline-secondary:hover {
+            background-color: var(--gray-color);
+            color: white;
+        }
+
+        /* Alertas y mensajes */
+        .alert {
+            padding: 12px 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+
+        .alert-danger {
+            background-color: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+        }
+
+        .alert-success {
+            background-color: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+        }
+
+        .alert-info {
+            background-color: #d1ecf1;
+            border: 1px solid #bee5eb;
+            color: #0c5460;
+        }
+
+        /* Direcciones */
+        .addresses-list h3 {
+            margin-bottom: 1.5rem;
+            font-weight: 600;
+            font-size: 1.5rem;
+            border-bottom: 2px solid var(--primary-color);
+            padding-bottom: 0.5rem;
+            display: inline-block;
+        }
+
+        .address-card {
+            border-radius: var(--border-radius);
+            border: 1px solid var(--gray-light);
+            box-shadow: var(--box-shadow);
+            transition: transform var(--transition-speed), box-shadow var(--transition-speed);
+            overflow: hidden;
+            height: 100%;
+            position: relative;
+        }
+
+        .address-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .address-primary {
+            border: 2px solid var(--primary-color);
+        }
+
+        .address-card .card-body {
+            padding: 1.25rem;
+        }
+
+        .address-card .card-title {
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+            font-size: 1.15rem;
+            color: var(--dark-color);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .address-card .card-title i {
+            color: var(--primary-color);
+        }
+
+        .address-card .card-text {
+            color: var(--gray-color);
+            margin-bottom: 1rem;
+            line-height: 1.6;
+        }
+
+        .address-card .card-text i {
+            color: var(--primary-color);
+            width: 20px;
+            margin-right: 5px;
+        }
+
+        .address-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-top: 0.75rem;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 0.4em 0.7em;
+            font-size: 0.75rem;
+            font-weight: 500;
+            border-radius: 4px;
+            text-align: center;
+            white-space: nowrap;
+            vertical-align: baseline;
+        }
+
+        .badge.bg-primary {
+            background-color: var(--primary-color) !important;
+            color: white;
+            position: absolute;
+            top: 10px;
+            right: 10px;
+        }
+
+        .badge.bg-secondary {
+            background-color: var(--gray-color);
+            color: white;
+        }
+
+        .badge.bg-light {
+            background-color: var(--gray-light);
+            color: var(--dark-color);
+        }
+
+        /* Contenedor de direcciones */
+        .add-address-btn {
+            margin-top: 20px;
+        }
+
+        /* Estilos formulario dirección */
+        #addressForm {
+            background-color: var(--gray-lighter);
+            border-radius: var(--border-radius);
+            padding: 20px;
+            margin-top: 20px;
+            box-shadow: var(--box-shadow);
+            transition: all var(--transition-speed);
+            border: 1px solid var(--gray-light);
+        }
+
+        #addressFormTitle {
+            margin-top: 0;
+            margin-bottom: 20px;
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #333;
+            border-bottom: 2px solid var(--primary-color);
+            padding-bottom: 8px;
+            display: inline-block;
+        }
+
+        .checkbox-group {
+            margin-top: 15px;
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            background-color: var(--gray-lighter);
+            border-radius: 8px;
+            border: 1px dashed var(--gray-color);
+            margin: 20px 0;
+        }
+
+        .empty-state i {
+            font-size: 3rem;
+            color: var(--primary-color);
+            margin-bottom: 15px;
+            opacity: 0.7;
+        }
+
+        .empty-state h3 {
+            font-size: 1.3rem;
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        .empty-state p {
+            color: #666;
+            margin-bottom: 20px;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .profile-layout {
+                flex-direction: column;
+            }
+
+            .profile-sidebar {
+                flex: 0 0 auto;
+            }
+
+            .form-row {
+                flex-direction: column;
+            }
+
+            .form-group {
+                flex: 1 1 100%;
+            }
+
+            .address-actions .btn {
+                width: 100%;
+            }
+        }
+
+        .row {
+            display: flex;
+            flex-wrap: wrap;
+            margin-right: -15px;
+            margin-left: -15px;
+        }
+
+        .col-md-6, .col-lg-4 {
+            position: relative;
+            width: 100%;
+            padding-right: 15px;
+            padding-left: 15px;
+        }
+
+        @media (min-width: 768px) {
+            .col-md-6 {
+                flex: 0 0 50%;
+                max-width: 50%;
+            }
+        }
+
+        @media (min-width: 992px) {
+            .col-lg-4 {
+                flex: 0 0 33.333333%;
+                max-width: 33.333333%;
+            }
+        }
+
+        .mb-4 {
+            margin-bottom: 1.5rem;
+        }
+    </style>
+</head>
+<body>
+    <header class="main-header">
+        <div class="header-container">
+            <div class="brand">
+                <img src="imagenes/productos/logo.png" alt="Logo Zapatos Moreno" class="logo">
+                <h1>Zapatos Moreno</h1>
+            </div>
+            <div class="header-icons">
+                <a href="carrito.html" title="Carrito de compras">
+                    <i class="fas fa-shopping-cart"></i>
+                    <span class="cart-count">0</span>
+                </a>
+                <a href="contacto.html" title="Ayuda">
+                    <i class="fas fa-question-circle"></i>
+                </a>
+                <a href="perfil.html" title="Mi Perfil" class="active">
+                    <i class="fas fa-user"></i>
+                </a>
+            </div>
+        </div>
+        <nav class="main-nav">
+            <button class="menu-toggle" aria-label="Menú">
+                <i class="fas fa-bars"></i>
+            </button>
+            <ul class="nav-links">
+                <li><a href="index.html">Inicio</a></li>
+                <li><a href="hombres.html">Hombres</a></li>
+                <li><a href="mujeres.html">Mujeres</a></li>
+                <li><a href="ninos.html">Niños</a></li>
+                <li><a href="contacto.html">Contacto</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section class="profile-container">
+            <h1 class="page-title">Mi Perfil</h1>
+            <p class="page-subtitle">Bienvenido a tu área personal</p>
+            
+            <!-- Mensajes de error y éxito -->
+            <div id="error-container" class="alert alert-danger" style="display: none; margin-top: 20px; margin-bottom: 20px; padding: 15px; border-radius: 5px;">
+                <strong><i class="fas fa-exclamation-circle"></i> Error:</strong> <span id="error-message"></span>
+            </div>
+
+            <div id="success-container" class="alert alert-success" style="display: none; margin-top: 20px; margin-bottom: 20px; padding: 15px; border-radius: 5px;">
+                <strong><i class="fas fa-check-circle"></i> Éxito:</strong> <span id="success-message"></span>
+            </div>
+
+            <div class="profile-layout">
+                <!-- Panel lateral izquierdo -->
+                <div class="profile-sidebar">
+                    <div class="user-info">
+                        <div class="user-avatar">
+                            <i class="fas fa-user-circle"></i>
+                        </div>
+                        <h2 id="user-name">Cargando...</h2>
+                        <p id="user-email">Cargando...</p>
+                    </div>
+                    
+                    <nav class="profile-nav">
+                        <a href="#" class="profile-nav-link active" data-tab="info-personal">
+                            <i class="fas fa-user"></i> Datos Personales
+                        </a>
+                        <a href="#" class="profile-nav-link" data-tab="direcciones">
+                            <i class="fas fa-map-marker-alt"></i> Direcciones
+                        </a>
+                        <a href="#" class="profile-nav-link" data-tab="cambiar-contrasena">
+                            <i class="fas fa-lock"></i> Cambiar Contraseña
+                        </a>
+                        <button id="cerrarSesion" class="profile-nav-link logout">
+                            <i class="fas fa-sign-out-alt"></i> Cerrar Sesión
+                        </button>
+                    </nav>
+                </div>
+                
+                <!-- Contenido principal -->
+                <div class="profile-content">
+                    <!-- Contenido de las pestañas -->
+                    <div id="info-personal-content" class="tab-content active">
+                        <h2 class="content-title">Datos Personales</h2>
+                        
+                        <!-- Formulario de información personal -->
+                        <form id="perfilForm" class="view-mode">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Nombre:</label>
+                                    <span id="nombre">Cargando...</span>
+                                    <input type="text" id="nombre-input" name="nombre" class="form-control">
+                                </div>
+                                <div class="form-group">
+                                    <label>Email:</label>
+                                    <span id="email">Cargando...</span>
+                                    <input type="email" id="email-input" name="email" readonly class="form-control">
+                                </div>
+                            </div>
+                            
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Teléfono:</label>
+                                    <span id="telefono">Cargando...</span>
+                                    <input type="tel" id="telefono-input" name="telefono" class="form-control">
+                                </div>
+                                <div class="form-group">
+                                    <label>Fecha de Nacimiento:</label>
+                                    <span id="fechaNacimiento">Cargando...</span>
+                                    <input type="date" id="fechaNacimiento-input" name="fecha_nacimiento" class="form-control">
+                                </div>
+                            </div>
+                            
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Género:</label>
+                                    <span id="genero">Cargando...</span>
+                                    <select id="genero-input" name="genero" class="form-control">
+                                        <option value="">No especificado</option>
+                                        <option value="Masculino">Masculino</option>
+                                        <option value="Femenino">Femenino</option>
+                                        <option value="Otro">Otro</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <div class="form-actions">
+                                <button type="button" id="editarPerfil" class="btn btn-primary">Editar Perfil</button>
+                                <button type="submit" class="btn btn-success edit-action">Guardar Cambios</button>
+                                <button type="button" id="cancelarEdicion" class="btn btn-outline-secondary edit-action">Cancelar</button>
+                                <button type="button" id="volverInicio" class="btn btn-outline-primary">Volver al inicio</button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <div id="direcciones-content" class="tab-content">
+                        <h2 class="content-title">Mis Direcciones</h2>
+                        
+                        <!-- Contenedor de mensajes de estado -->
+                        <div id="address-message-container" class="mb-4" style="display: none;">
+                            <div id="address-message" class="alert"></div>
+                        </div>
+                        
+                        <!-- Lista de direcciones -->
+                        <div id="addressesContent">
+                            <!-- Las direcciones se cargarán aquí -->
+                            <div class="empty-state" id="noAddressesMessage">
+                                <i class="fas fa-map-marker-alt"></i>
+                                <h3>No tienes direcciones guardadas</h3>
+                                <p>Agrega una dirección para agilizar tus compras</p>
+                                <button class="btn btn-primary" onclick="mostrarFormularioDireccion()">
+                                    <i class="fas fa-plus"></i> Agregar mi primera dirección
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <!-- Botón para agregar dirección -->
+                        <button id="addAddressBtn" class="btn btn-primary add-address-btn">
+                            <i class="fas fa-plus"></i> Agregar Nueva Dirección
+                        </button>
+                        
+                        <!-- Formulario de dirección -->
+                        <div id="addressForm" style="display: none;">
+                            <h3 id="addressFormTitle">Nueva Dirección</h3>
+                            <form id="newAddressForm">
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="alias">Alias</label>
+                                        <input type="text" id="alias" name="alias" placeholder="Casa, Trabajo, etc." required class="form-control">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="telefonoContacto">Teléfono de Contacto</label>
+                                        <input type="tel" id="telefonoContacto" name="telefonoContacto" placeholder="Número para recibir el pedido" class="form-control">
+                                    </div>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="calle">Calle y Número</label>
+                                    <input type="text" id="calle" name="calle" placeholder="Ej. Av. Principal #123" required class="form-control">
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="colonia">Colonia</label>
+                                    <input type="text" id="colonia" name="colonia" placeholder="Ej. Barrio San José" class="form-control">
+                                </div>
+                                
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="ciudad">Ciudad</label>
+                                        <input type="text" id="ciudad" name="ciudad" placeholder="Ej. Villavicencio" required class="form-control">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="codigoPostal">Código Postal</label>
+                                        <input type="text" id="codigoPostal" name="codigoPostal" placeholder="Ej. 500001" class="form-control">
+                                    </div>
+                                </div>
+                                
+                                <div class="form-group checkbox-group">
+                                    <label class="checkbox-container">
+                                        <input type="checkbox" id="direccionPredeterminada" name="direccionPredeterminada">
+                                        <span class="checkmark"></span>
+                                        Establecer como dirección predeterminada
+                                    </label>
+                                </div>
+                                
+                                <div class="form-actions">
+                                    <button type="button" class="btn btn-primary" id="guardarDireccionBtn">
+                                        <i class="fas fa-save"></i> Guardar Dirección
+                                    </button>
+                                    <button type="button" class="btn btn-outline-secondary" onclick="ocultarFormularioDireccion()">
+                                        <i class="fas fa-times"></i> Cancelar
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                    
+                    <div id="cambiar-contrasena-content" class="tab-content">
+                        <h2 class="content-title">Cambiar Contraseña</h2>
+                        <form id="passwordForm">
+                            <div class="form-group">
+                                <label for="current-password">Contraseña Actual</label>
+                                <input type="password" id="current-password" name="current_password" required class="form-control">
+                            </div>
+                            <div class="form-group">
+                                <label for="new-password">Nueva Contraseña</label>
+                                <input type="password" id="new-password" name="new_password" required class="form-control">
+                            </div>
+                            <div class="form-group">
+                                <label for="confirm-password">Confirmar Contraseña</label>
+                                <input type="password" id="confirm-password" name="confirm_password" required class="form-control">
+                            </div>
+                            <div class="form-actions">
+                                <button type="submit" class="btn btn-primary">Cambiar Contraseña</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="main-footer">
+        <div class="footer-container">
+            <div class="footer-section">
+                <h3>Contáctanos</h3>
+                <p><i class="fas fa-map-marker-alt"></i> Calle 123, Villavicencio, Meta</p>
+                <p><i class="fas fa-phone"></i> +57 323 456 7890</p>
+                <p><i class="fas fa-envelope"></i> info@zapatosmoreno.com</p>
+            </div>
+            <div class="footer-section">
+                <h3>Síguenos</h3>
+                <div class="social-links">
+                    <a href="#"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                </div>
+            </div>
+            <div class="footer-section">
+                <h3>Newsletter</h3>
+                <form class="newsletter-form">
+                    <input type="email" placeholder="Tu correo electrónico" required>
+                    <button type="submit">Suscribirse</button>
+                </form>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2024 Zapatos Moreno. Todos los derechos reservados.</p>
+        </div>
+    </footer>
+
+    <script src="js/carrito.js"></script>
+    <script src="js/main.js"></script>
+    <script src="js/session-manager.js"></script>
+    <script>
+        // Variables globales
+        let datosUsuario = {};
+        
+        // Función para mostrar mensajes de error
+        function mostrarError(mensaje) {
+            const errorContainer = document.getElementById('error-container');
+            const errorMessage = document.getElementById('error-message');
+            if (errorContainer && errorMessage) {
+                errorMessage.textContent = mensaje;
+                errorContainer.style.display = 'block';
+                
+                // Scroll hacia el mensaje
+                errorContainer.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                
+                // Ocultar después de 5 segundos
+                setTimeout(() => {
+                    errorContainer.style.display = 'none';
+                }, 5000);
+            } else {
+                // Fallback si no se encuentran los elementos
+                alert('Error: ' + mensaje);
+            }
+        }
+        
+        // Función para mostrar mensajes de éxito
+        function mostrarExito(mensaje) {
+            const successContainer = document.getElementById('success-container');
+            const successMessage = document.getElementById('success-message');
+            if (successContainer && successMessage) {
+                successMessage.textContent = mensaje;
+                successContainer.style.display = 'block';
+                
+                // Scroll hacia el mensaje
+                successContainer.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                
+                // Ocultar después de 5 segundos
+                setTimeout(() => {
+                    successContainer.style.display = 'none';
+                }, 5000);
+            } else {
+                // Fallback si no se encuentran los elementos
+                alert('Éxito: ' + mensaje);
+            }
+        }
+        
+        // Función para actualizar los datos en la interfaz
+        function actualizarInterfaz(datos) {
+            // Guardar los datos para usarlos más tarde
+            datosUsuario = datos;
+            
+            // Actualizar nombre e email en el sidebar
+            document.getElementById('user-name').textContent = datos.nombre || 'Usuario';
+            document.getElementById('user-email').textContent = datos.email || 'No especificado';
+            
+            // Actualizar los campos de visualización
+            document.getElementById('nombre').textContent = datos.nombre || 'No especificado';
+            document.getElementById('email').textContent = datos.email || 'No especificado';
+            document.getElementById('telefono').textContent = datos.telefono || 'No especificado';
+            document.getElementById('fechaNacimiento').textContent = datos.fecha_nacimiento || 'No especificado';
+            document.getElementById('genero').textContent = datos.genero || 'No especificado';
+            
+            // Actualizar los campos de edición
+            document.getElementById('nombre-input').value = datos.nombre || '';
+            document.getElementById('email-input').value = datos.email || '';
+            document.getElementById('telefono-input').value = datos.telefono || '';
+            document.getElementById('fechaNacimiento-input').value = datos.fecha_nacimiento || '';
+            document.getElementById('genero-input').value = datos.genero || '';
+            
+            // Cargar direcciones
+            cargarDirecciones();
+        }
+        
+        // Función para cargar el perfil del usuario
+        async function cargarPerfil() {
+            try {
+                // Obtener el token del localStorage
+                const token = localStorage.getItem('token');
+                if (!token) {
+                    console.error('No hay token disponible');
+                    mostrarError('No hay sesión activa. Por favor, inicia sesión.');
+                    return;
+                }
+                
+                // Obtener datos del usuario desde el servidor
+                const respuesta = await fetch('/api/usuario/perfil', {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                
+                if (!respuesta.ok) {
+                    const errorData = await respuesta.json().catch(() => ({}));
+                    throw new Error(`Error al obtener perfil: ${respuesta.status} - ${errorData.mensaje || respuesta.statusText}`);
+                }
+                
+                const usuario = await respuesta.json();
+                console.log('Perfil de usuario cargado:', usuario);
+                
+                // Actualizar los datos en la interfaz
+                actualizarInterfaz(usuario);
+                
+            } catch (error) {
+                console.error('Error al cargar perfil:', error);
+                mostrarError(`Error al cargar perfil: ${error.message}`);
+            }
+        }
+        
+        // Función para entrar en modo edición
+        function entrarModoEdicion() {
+            const formulario = document.getElementById('perfilForm');
+            formulario.classList.add('edit-mode');
+        }
+        
+        // Función para salir del modo edición
+        function salirModoEdicion() {
+            const formulario = document.getElementById('perfilForm');
+            formulario.classList.remove('edit-mode');
+            
+            // Restaurar valores originales en los campos de edición
+            document.getElementById('nombre-input').value = datosUsuario.nombre || '';
+            document.getElementById('telefono-input').value = datosUsuario.telefono || '';
+            document.getElementById('fechaNacimiento-input').value = datosUsuario.fecha_nacimiento || '';
+            document.getElementById('genero-input').value = datosUsuario.genero || '';
+        }
+        
+        // Función para guardar los cambios del perfil
+        async function guardarCambios(event) {
+            event.preventDefault();
+            
+            try {
+                const token = localStorage.getItem('token');
+                if (!token) {
+                    mostrarError('No hay sesión activa. Por favor, inicia sesión.');
+                    return;
+                }
+                
+                const formData = new FormData(document.getElementById('perfilForm'));
+                const datosActualizados = {
+                    nombre: formData.get('nombre'),
+                    telefono: formData.get('telefono'),
+                    fecha_nacimiento: formData.get('fecha_nacimiento'),
+                    genero: formData.get('genero')
+                };
+                
+                console.log('Enviando datos actualizados:', datosActualizados);
+                
+                // Enviar datos al servidor
+                const respuesta = await fetch('/api/usuario/perfil', {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify(datosActualizados)
+                });
+                
+                if (!respuesta.ok) {
+                    const errorData = await respuesta.json().catch(() => ({}));
+                    throw new Error(`Error al actualizar perfil: ${respuesta.status} - ${errorData.mensaje || respuesta.statusText}`);
+                }
+                
+                const resultado = await respuesta.json();
+                console.log('Respuesta del servidor:', resultado);
+                
+                // Actualizar los datos locales con la respuesta del servidor
+                if (resultado.usuario) {
+                    datosUsuario = resultado.usuario;
+                } else {
+                    // Si no hay usuario en la respuesta, actualizar con los datos del formulario
+                    datosUsuario = {
+                        ...datosUsuario,
+                        ...datosActualizados
+                    };
+                }
+                
+                // Actualizar la interfaz
+                actualizarInterfaz(datosUsuario);
+                
+                mostrarExito('Perfil actualizado correctamente');
+                
+                // Salir del modo edición
+                salirModoEdicion();
+            } catch (error) {
+                console.error('Error al guardar cambios:', error);
+                mostrarError(`Error al guardar cambios: ${error.message}`);
+            }
+        }
+        
+        // Función para cambiar entre pestañas
+        function cambiarPestana(tabId) {
+            console.log('Cambiando a pestaña:', tabId);
+            
+            // Desactivar todas las pestañas
+            document.querySelectorAll('.profile-nav-link').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Activar la pestaña seleccionada
+            document.querySelector(`.profile-nav-link[data-tab="${tabId}"]`).classList.add('active');
+            
+            // Ocultar todos los contenidos
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            
+            // Mostrar el contenido seleccionado
+            document.getElementById(`${tabId}-content`).classList.add('active');
+            
+            // Si cambiamos a la pestaña de direcciones, cargar las direcciones
+            if (tabId === 'direcciones') {
+                setTimeout(() => {
+                    cargarDirecciones();
+                }, 100);
+            }
+        }
+        
+        // Función para cargar direcciones
+        async function cargarDirecciones() {
+            try {
+                const addressesContent = document.getElementById('addressesContent');
+                if (!addressesContent) {
+                    console.error('Elemento addressesContent no encontrado');
+                    return;
+                }
+                
+                // Mostrar mensaje de carga
+                addressesContent.innerHTML = `
+                    <div class="text-center p-4">
+                        <i class="fas fa-spinner fa-spin fa-2x" style="color: var(--primary-color);"></i>
+                        <p class="mt-2">Cargando tus direcciones...</p>
+                    </div>
+                `;
+                
+                const token = localStorage.getItem('token');
+                if (!token) {
+                    addressesContent.innerHTML = `
+                        <div class="empty-state">
+                            <i class="fas fa-user-lock"></i>
+                            <h3>Acceso no autorizado</h3>
+                            <p>Por favor, inicia sesión para ver tus direcciones.</p>
+                            <a href="/login.html" class="btn btn-primary">Iniciar Sesión</a>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                // Obtener direcciones del servidor
+                const respuesta = await fetch('/api/direcciones', {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                
+                // Capturar el texto de la respuesta para debug
+                const respuestaTexto = await respuesta.clone().text();
+                console.log('Respuesta del servidor (cargarDirecciones):', respuestaTexto);
+                
+                // Intentar parsear como JSON
+                let data;
+                try {
+                    data = JSON.parse(respuestaTexto);
+                } catch (error) {
+                    console.error('Error al parsear respuesta:', error);
+                    throw new Error('Formato de respuesta inválido');
+                }
+                
+                if (!respuesta.ok) {
+                    throw new Error(data?.mensaje || `Error ${respuesta.status}: ${respuesta.statusText}`);
+                }
+                
+                console.log('Datos de direcciones:', data);
+                
+                // Asegurarnos de que direcciones sea siempre un array
+                let direcciones = [];
+                if (data && data.direcciones) {
+                    direcciones = Array.isArray(data.direcciones) ? data.direcciones : [data.direcciones];
+                }
+                
+                console.log('Número de direcciones encontradas:', direcciones.length);
+                
+                // Si no hay direcciones, mostrar mensaje
+                if (direcciones.length === 0) {
+                    addressesContent.innerHTML = `
+                        <div class="empty-state">
+                            <i class="fas fa-map-marker-alt"></i>
+                            <h3>No tienes direcciones guardadas</h3>
+                            <p>Agrega una dirección para agilizar tus compras</p>
+                            <button class="btn btn-primary" onclick="mostrarFormularioDireccion()">
+                                <i class="fas fa-plus"></i> Agregar mi primera dirección
+                            </button>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                // Construir el HTML para las direcciones encontradas
+                let htmlDirecciones = `
+                    <div class="addresses-list">
+                        <h3>Mis direcciones <span class="badge bg-secondary">${direcciones.length}</span></h3>
+                        <div class="row">
+                `;
+                
+                direcciones.forEach(direccion => {
+                    const esPrincipal = direccion.es_principal == 1 ? 'address-primary' : '';
+                    
+                    htmlDirecciones += `
+                        <div class="col-md-6 col-lg-4 mb-4">
+                            <div class="card address-card ${esPrincipal}">
+                                <div class="card-body">
+                                    ${direccion.es_principal == 1 ? '<span class="badge bg-primary">Principal</span>' : ''}
+                                    <h5 class="card-title">
+                                        <i class="fas fa-bookmark"></i> ${direccion.nombre || 'Dirección'}
+                                    </h5>
+                                    <p class="card-text">
+                                        <i class="fas fa-map-marker-alt"></i> ${direccion.direccion || ''}<br>
+                                        <i class="fas fa-city"></i> ${direccion.ciudad || ''} ${direccion.codigo_postal ? `<span class="badge bg-light">${direccion.codigo_postal}</span>` : ''}<br>
+                                        ${direccion.telefono ? `<i class="fas fa-phone"></i> ${direccion.telefono}<br>` : ''}
+                                    </p>
+                                    <div class="address-actions">
+                                        ${direccion.es_principal != 1 ? 
+                                        `<button class="btn btn-sm btn-outline-primary" onclick="establecerDireccionPredeterminada(${direccion.id})">
+                                            <i class="fas fa-star"></i> Hacer principal
+                                        </button>` : ''}
+                                        <button class="btn btn-sm btn-outline-secondary" onclick="editarDireccion(${direccion.id})">
+                                            <i class="fas fa-edit"></i> Editar
+                                        </button>
+                                        <button class="btn btn-sm btn-outline-danger" onclick="eliminarDireccion(${direccion.id})">
+                                            <i class="fas fa-trash"></i> Eliminar
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+                
+                htmlDirecciones += `
+                        </div>
+                    </div>
+                `;
+                
+                addressesContent.innerHTML = htmlDirecciones;
+                
+            } catch (error) {
+                console.error('Error al cargar direcciones:', error);
+                const addressesContent = document.getElementById('addressesContent');
+                if (addressesContent) {
+                    addressesContent.innerHTML = `
+                        <div class="alert alert-danger">
+                            <h4><i class="fas fa-exclamation-triangle"></i> Ocurrió un error</h4>
+                            <p>${error.message}</p>
+                            <button class="btn btn-primary mt-2" onclick="cargarDirecciones()">
+                                <i class="fas fa-redo"></i> Reintentar
+                            </button>
+                        </div>
+                    `;
+                }
+            }
+        }
+        
+        // Funciones para gestionar direcciones
+        function mostrarFormularioDireccion() {
+            document.getElementById('addressForm').style.display = 'block';
+            document.getElementById('addAddressBtn').style.display = 'none';
+        }
+        
+        function ocultarFormularioDireccion() {
+            document.getElementById('addressForm').style.display = 'none';
+            document.getElementById('addAddressBtn').style.display = 'block';
+            document.getElementById('newAddressForm').reset();
+            // Eliminar el atributo data-edit-id si existe
+            document.getElementById('newAddressForm').removeAttribute('data-edit-id');
+        }
+        
+        // Función para guardar dirección
+        async function guardarDireccion() {
+            console.log('[guardarDireccion] Iniciando guardado de dirección');
+            
+            // Ocultar el formulario y resetear
+            document.getElementById('addressForm').style.display = 'none';
+            
+            // Validar campos requeridos
+            const alias = document.getElementById('alias').value.trim();
+            const calle = document.getElementById('calle').value.trim();
+            const ciudad = document.getElementById('ciudad').value.trim();
+            
+            if (!alias || !calle || !ciudad) {
+                mostrarNotificacion('Por favor, complete todos los campos obligatorios: Alias, Calle y Ciudad', 'error');
+                console.error('Campos obligatorios incompletos');
+                return;
+            }
+            
+            // Crear objeto con los campos que existen en la base de datos
+            const direccion = {
+                nombre: alias,
+                direccion: calle, // La columna en la base de datos se llama 'direccion'
+                ciudad: ciudad,
+                codigo_postal: document.getElementById('codigoPostal').value.trim() || null,
+                telefono: document.getElementById('telefono').value.trim() || null,
+                es_principal: document.getElementById('direccionPredeterminada').checked
+            };
+            
+            console.log('Datos de dirección a enviar:', direccion);
+            
+            try {
+                // Obtener token de autenticación
+                const token = localStorage.getItem('token');
+                if (!token) {
+                    mostrarNotificacion('Debe iniciar sesión para guardar direcciones', 'error');
+                    console.error('No hay token de autenticación');
+                    return;
+                }
+                
+                // Determinar si es edición o creación
+                const direccionId = document.getElementById('direccionId').value;
+                const url = direccionId ? 
+                    `/api/direcciones/${direccionId}` : 
+                    '/api/direcciones';
+                const method = direccionId ? 'PUT' : 'POST';
+                
+                console.log(`Enviando solicitud ${method} a ${url}`);
+                
+                // Enviar solicitud al servidor
+                const response = await fetch(url, {
+                    method: method,
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'x-token': token
+                    },
+                    body: JSON.stringify(direccion)
+                });
+                
+                const data = await response.json();
+                console.log('Respuesta del servidor:', data);
+                
+                if (!response.ok) {
+                    mostrarNotificacion(data.mensaje || 'Error al guardar la dirección', 'error');
+                    console.error('Error en la respuesta del servidor:', data);
+                    return;
+                }
+                
+                // Mostrar mensaje de éxito y recargar direcciones
+                mostrarNotificacion(data.mensaje || 'Dirección guardada exitosamente', 'success');
+                
+                // Resetear el formulario
+                document.getElementById('addressForm').reset();
+                
+                // Recargar la lista de direcciones
+                cargarDirecciones();
+                
+            } catch (error) {
+                console.error('Error al guardar dirección:', error);
+                mostrarNotificacion('Error al comunicarse con el servidor', 'error');
+            }
+        }
+        
+        // Funciones para mostrar mensajes de estado para direcciones
+        function mostrarMensajeDireccion(tipo, mensaje) {
+            const container = document.getElementById('address-message-container');
+            const messageEl = document.getElementById('address-message');
+            
+            if (!container || !messageEl) return;
+            
+            // Establecer clase según el tipo
+            messageEl.className = 'alert';
+            if (tipo === 'error') {
+                messageEl.classList.add('alert-danger');
+                mensaje = `<i class="fas fa-exclamation-circle"></i> ${mensaje}`;
+            } else if (tipo === 'exito') {
+                messageEl.classList.add('alert-success');
+                mensaje = `<i class="fas fa-check-circle"></i> ${mensaje}`;
+            } else if (tipo === 'info') {
+                messageEl.classList.add('alert-info');
+                mensaje = `<i class="fas fa-info-circle"></i> ${mensaje}`;
+            }
+            
+            // Mostrar mensaje
+            messageEl.innerHTML = mensaje;
+            container.style.display = 'block';
+            
+            // Hacer scroll al mensaje
+            container.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            
+            // Ocultar después de 5 segundos
+            setTimeout(() => {
+                container.style.display = 'none';
+            }, 5000);
+        }
+        
+        // Configurar eventos al cargar la página
+        document.addEventListener('DOMContentLoaded', function() {
+            // Cargar datos del perfil
+            cargarPerfil();
+            
+            // Configurar navegación por pestañas
+            document.querySelectorAll('.profile-nav-link').forEach(tab => {
+                if (!tab.classList.contains('logout')) {
+                    tab.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        const tabId = this.getAttribute('data-tab');
+                        cambiarPestana(tabId);
+                    });
+                }
+            });
+            
+            // Evento para editar perfil
+            const editarPerfilBtn = document.getElementById('editarPerfil');
+            if (editarPerfilBtn) {
+                editarPerfilBtn.addEventListener('click', entrarModoEdicion);
+            }
+            
+            // Evento para cancelar edición
+            const cancelarEdicionBtn = document.getElementById('cancelarEdicion');
+            if (cancelarEdicionBtn) {
+                cancelarEdicionBtn.addEventListener('click', salirModoEdicion);
+            }
+            
+            // Evento para guardar cambios
+            const perfilForm = document.getElementById('perfilForm');
+            if (perfilForm) {
+                perfilForm.addEventListener('submit', guardarCambios);
+            }
+            
+            // Evento para cerrar sesión
+            const cerrarSesionBtn = document.getElementById('cerrarSesion');
+            if (cerrarSesionBtn) {
+                cerrarSesionBtn.addEventListener('click', function() {
+                    localStorage.removeItem('token');
+                    localStorage.removeItem('user');
+                    window.location.href = '/login.html';
+                });
+            }
+            
+            // Evento para volver al inicio
+            const volverInicioBtn = document.getElementById('volverInicio');
+            if (volverInicioBtn) {
+                volverInicioBtn.addEventListener('click', function() {
+                    window.location.href = '/index.html';
+                });
+            }
+            
+            // Eventos para gestionar direcciones
+            const addAddressBtn = document.getElementById('addAddressBtn');
+            if (addAddressBtn) {
+                addAddressBtn.addEventListener('click', mostrarFormularioDireccion);
+            }
+            
+            // Evento para guardar dirección
+            const guardarDireccionBtn = document.getElementById('guardarDireccionBtn');
+            if (guardarDireccionBtn) {
+                guardarDireccionBtn.addEventListener('click', guardarDireccion);
+            }
+        });
+    </script>
+</body>
+</html>

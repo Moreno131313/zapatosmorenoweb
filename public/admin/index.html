@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel de Administración - Zapatos Moreno</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="/css/admin.css">
+</head>
+<body>
+    <div class="admin-container">
+        <nav class="admin-sidebar">
+            <div class="sidebar-header">
+                <img src="/imagenes/logo.png" alt="Logo" class="admin-logo">
+                <h2>Panel Admin</h2>
+            </div>
+            <ul class="admin-menu">
+                <li class="active">
+                    <a href="/admin"><i class="fas fa-home"></i> Dashboard</a>
+                </li>
+                <li>
+                    <a href="/admin/productos.html"><i class="fas fa-shoe-prints"></i> Productos</a>
+                </li>
+                <li>
+                    <a href="/admin/categorias.html"><i class="fas fa-tags"></i> Categorías</a>
+                </li>
+                <li>
+                    <a href="/admin/pedidos.html"><i class="fas fa-shopping-cart"></i> Pedidos</a>
+                </li>
+                <li>
+                    <a href="/admin/usuarios.html"><i class="fas fa-users"></i> Usuarios</a>
+                </li>
+                <li>
+                    <a href="/admin/cupones.html"><i class="fas fa-ticket-alt"></i> Cupones</a>
+                </li>
+            </ul>
+        </nav>
+
+        <main class="admin-main">
+            <header class="admin-header">
+                <div class="header-search">
+                    <input type="text" placeholder="Buscar...">
+                    <button><i class="fas fa-search"></i></button>
+                </div>
+                <div class="header-user">
+                    <span class="user-name">Admin</span>
+                    <button class="btn-logout">Cerrar Sesión</button>
+                </div>
+            </header>
+
+            <div class="dashboard-grid">
+                <div class="dashboard-card">
+                    <div class="card-icon"><i class="fas fa-shopping-bag"></i></div>
+                    <div class="card-info">
+                        <h3>Total Productos</h3>
+                        <p class="total-productos">0</p>
+                    </div>
+                </div>
+                <div class="dashboard-card">
+                    <div class="card-icon"><i class="fas fa-shopping-cart"></i></div>
+                    <div class="card-info">
+                        <h3>Pedidos Pendientes</h3>
+                        <p class="pedidos-pendientes">0</p>
+                    </div>
+                </div>
+                <div class="dashboard-card">
+                    <div class="card-icon"><i class="fas fa-users"></i></div>
+                    <div class="card-info">
+                        <h3>Total Usuarios</h3>
+                        <p class="total-usuarios">0</p>
+                    </div>
+                </div>
+                <div class="dashboard-card">
+                    <div class="card-icon"><i class="fas fa-dollar-sign"></i></div>
+                    <div class="card-info">
+                        <h3>Ventas del Mes</h3>
+                        <p class="ventas-mes">$0</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="dashboard-charts">
+                <div class="chart-container">
+                    <h3>Ventas por Categoría</h3>
+                    <canvas id="categoryChart"></canvas>
+                </div>
+                <div class="chart-container">
+                    <h3>Últimos Pedidos</h3>
+                    <div class="recent-orders">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Cliente</th>
+                                    <th>Total</th>
+                                    <th>Estado</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody id="recent-orders-table">
+                                <!-- Se llenará dinámicamente -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="/js/admin/dashboard.js"></script>
+</body>
+</html> 

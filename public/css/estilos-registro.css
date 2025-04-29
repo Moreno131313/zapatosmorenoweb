@@ -1,0 +1,763 @@
+/* Estilos para la página de registro */
+:root {
+    --primary-color: #FF5000; /* Actualizado al naranja del header */
+    --secondary-color: #ff7b44;
+    --success-color: #2ecc71;
+    --warning-color: #f39c12;
+    --danger-color: #e74c3c;
+    --text-color: #333333;
+    --light-color: #f8f9fa;
+    --border-color: #dee2e6;
+    --gray-color: #6c757d;
+    --box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    --input-bg: #f9f9f9;
+    --input-focus-bg: #fff;
+}
+
+/* Estilos generales para la página */
+body {
+    background-color: #f8f9fa;
+    background-image: 
+        linear-gradient(rgba(255, 255, 255, 0.8) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.8) 1px, transparent 1px);
+    background-size: 20px 20px;
+    font-family: 'Poppins', sans-serif;
+}
+
+.main-container {
+    background-color: transparent;
+    min-height: 100vh;
+    padding: 60px 20px;
+    position: relative;
+}
+
+.main-container::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, rgba(255, 99, 71, 0.05) 0%, rgba(255, 140, 120, 0.05) 100%);
+    z-index: -1;
+}
+
+.registro-container {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 40px;
+    background-color: #fff;
+    border-radius: 16px;
+    box-shadow: var(--box-shadow);
+    position: relative;
+    overflow: hidden;
+    transform: translateY(0);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.registro-container:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+}
+
+.registro-container::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 8px;
+    background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+}
+
+.registro-header {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.registro-header h1 {
+    color: var(--text-color);
+    font-size: 32px;
+    font-weight: 700;
+    margin-bottom: 15px;
+    position: relative;
+    display: inline-block;
+}
+
+.registro-header h1::after {
+    content: '';
+    position: absolute;
+    bottom: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60px;
+    height: 4px;
+    background-color: var(--primary-color);
+    border-radius: 2px;
+}
+
+.registro-header p {
+    color: var(--gray-color);
+    font-size: 16px;
+    line-height: 1.6;
+    max-width: 90%;
+    margin: 20px auto 0;
+}
+
+/* Estilos para el formulario */
+.form-registro {
+    display: block;
+}
+
+.form-group {
+    margin-bottom: 28px;
+    position: relative;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 10px;
+    font-weight: 600;
+    color: var(--text-color);
+    font-size: 15px;
+    transition: all 0.3s;
+}
+
+.form-group input[type="text"],
+.form-group input[type="email"],
+.form-group input[type="tel"],
+.form-group input[type="password"] {
+    width: 100%;
+    padding: 15px 18px;
+    border: 2px solid var(--border-color);
+    border-radius: 10px;
+    font-size: 16px;
+    transition: all 0.3s ease;
+    background-color: var(--input-bg);
+}
+
+.form-group input:focus {
+    border-color: var(--primary-color);
+    outline: none;
+    box-shadow: 0 0 0 4px rgba(255, 99, 71, 0.15);
+    background-color: var(--input-focus-bg);
+}
+
+.form-group input.error {
+    border-color: var(--danger-color);
+    background-color: rgba(231, 76, 60, 0.05);
+}
+
+/* Efecto flotante para los inputs */
+.form-group input::placeholder {
+    color: #adb5bd;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.form-group input:focus::placeholder {
+    opacity: 0.5;
+    transform: translateX(10px);
+}
+
+/* Estilos para el contenedor de contraseña */
+.password-input-container {
+    position: relative;
+}
+
+.toggle-password {
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    color: var(--gray-color);
+    font-size: 18px;
+    transition: color 0.3s, transform 0.2s;
+    z-index: 10;
+}
+
+.toggle-password:hover {
+    color: var(--primary-color);
+    transform: translateY(-50%) scale(1.1);
+}
+
+.toggle-password:active {
+    transform: translateY(-50%) scale(0.95);
+}
+
+/* Estilos para el medidor de fortaleza */
+.password-strength {
+    margin-top: 12px;
+}
+
+.strength-meter {
+    height: 6px;
+    width: 100%;
+    background-color: #e0e0e0;
+    border-radius: 3px;
+    overflow: hidden;
+    margin-bottom: 8px;
+    position: relative;
+}
+
+.strength-meter::before {
+    content: '';
+    display: block;
+    height: 100%;
+    width: 0;
+    transition: width 0.4s ease, background-color 0.4s ease;
+    border-radius: 3px;
+}
+
+.strength-meter.weak::before {
+    width: 33%;
+    background-color: var(--danger-color);
+}
+
+.strength-meter.medium::before {
+    width: 66%;
+    background-color: var(--warning-color);
+}
+
+.strength-meter.strong::before {
+    width: 100%;
+    background-color: var(--success-color);
+}
+
+.strength-text {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--gray-color);
+}
+
+.strength-text.weak {
+    color: var(--danger-color);
+}
+
+.strength-text.medium {
+    color: var(--warning-color);
+}
+
+.strength-text.strong {
+    color: var(--success-color);
+}
+
+/* Estilos para mensajes de error */
+.error-message {
+    color: var(--danger-color);
+    font-size: 14px;
+    margin-top: 8px;
+    display: none;
+    opacity: 0;
+    transition: opacity 0.3s, transform 0.3s;
+    transform: translateY(-5px);
+    display: flex;
+    align-items: center;
+}
+
+.error-message.visible {
+    display: flex;
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.error-message::before {
+    content: '\f06a';
+    font-family: 'Font Awesome 6 Free';
+    font-weight: 900;
+    margin-right: 6px;
+    font-size: 14px;
+}
+
+/* Estilos para el checkbox */
+.checkbox-group {
+    display: flex;
+    align-items: flex-start;
+    margin-bottom: 30px;
+}
+
+.checkbox-container {
+    display: flex;
+    align-items: flex-start;
+}
+
+.checkbox-group input[type="checkbox"] {
+    appearance: none;
+    -webkit-appearance: none;
+    width: 20px;
+    height: 20px;
+    background-color: var(--input-bg);
+    border: 2px solid var(--border-color);
+    border-radius: 4px;
+    margin-right: 12px;
+    margin-top: 2px;
+    position: relative;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.checkbox-group input[type="checkbox"]:checked {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+}
+
+.checkbox-group input[type="checkbox"]:checked::after {
+    content: '\f00c';
+    font-family: 'Font Awesome 6 Free';
+    font-weight: 900;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: white;
+    font-size: 12px;
+}
+
+.checkbox-group input[type="checkbox"]:hover {
+    border-color: var(--primary-color);
+}
+
+.checkbox-group label {
+    font-size: 14px;
+    margin-bottom: 0;
+    font-weight: normal;
+    line-height: 1.5;
+    color: var(--text-color);
+}
+
+.terminos-link, .privacidad-link {
+    color: var(--primary-color);
+    text-decoration: none;
+    font-weight: 600;
+    position: relative;
+    transition: color 0.3s;
+}
+
+.terminos-link:hover, .privacidad-link:hover {
+    color: var(--secondary-color);
+}
+
+.terminos-link::after, .privacidad-link::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    width: 100%;
+    height: 1px;
+    background-color: var(--primary-color);
+    transform: scaleX(0);
+    transform-origin: right;
+    transition: transform 0.3s ease;
+}
+
+.terminos-link:hover::after, .privacidad-link:hover::after {
+    transform: scaleX(1);
+    transform-origin: left;
+}
+
+/* Botón de registro */
+.btn-registro {
+    width: 100%;
+    padding: 16px;
+    background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 4px 15px rgba(255, 99, 71, 0.3);
+}
+
+.btn-registro:hover {
+    background: linear-gradient(90deg, #ff5338, #ff7b66);
+    box-shadow: 0 6px 20px rgba(255, 99, 71, 0.4);
+    transform: translateY(-2px);
+}
+
+.btn-registro:active {
+    transform: translateY(1px);
+    box-shadow: 0 2px 10px rgba(255, 99, 71, 0.2);
+}
+
+.btn-registro:focus {
+    outline: none;
+}
+
+.btn-registro.loading {
+    position: relative;
+    color: transparent;
+}
+
+.btn-registro.loading::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 24px;
+    height: 24px;
+    margin: -12px 0 0 -12px;
+    border: 3px solid rgba(255, 255, 255, 0.3);
+    border-top-color: #fff;
+    border-radius: 50%;
+    animation: spin 1s infinite linear;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* Enlace de inicio de sesión */
+.form-footer {
+    text-align: center;
+    margin-top: 30px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border-color);
+}
+
+.form-footer p {
+    font-size: 15px;
+    color: var(--gray-color);
+}
+
+.form-footer a {
+    color: var(--primary-color);
+    text-decoration: none;
+    font-weight: 600;
+    transition: color 0.3s;
+    position: relative;
+}
+
+.form-footer a:hover {
+    color: var(--secondary-color);
+}
+
+.form-footer a::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    width: 100%;
+    height: 1px;
+    background-color: var(--primary-color);
+    transform: scaleX(0);
+    transform-origin: right;
+    transition: transform 0.3s ease;
+}
+
+.form-footer a:hover::after {
+    transform: scaleX(1);
+    transform-origin: left;
+}
+
+/* Mensaje de éxito */
+.mensaje-exito {
+    text-align: center;
+    padding: 40px 20px;
+    display: none;
+    opacity: 0;
+    transition: opacity 0.5s;
+}
+
+.mensaje-exito.visible {
+    display: block;
+    opacity: 1;
+    animation: fadeZoomIn 0.5s ease-out;
+}
+
+@keyframes fadeZoomIn {
+    from {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.mensaje-exito i {
+    font-size: 70px;
+    color: var(--success-color);
+    margin-bottom: 25px;
+    display: inline-block;
+    animation: successPulse 1.5s infinite;
+}
+
+@keyframes successPulse {
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.1);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+.mensaje-exito h2 {
+    font-size: 28px;
+    color: var(--text-color);
+    margin-bottom: 15px;
+    font-weight: 700;
+}
+
+.mensaje-exito p {
+    color: var(--gray-color);
+    font-size: 16px;
+    margin-bottom: 8px;
+    line-height: 1.6;
+}
+
+/* Efectos de flotación para el formulario */
+.form-group input:focus + label {
+    color: var(--primary-color);
+}
+
+/* Efectos de onda para el botón */
+.btn-registro::after {
+    content: '';
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    pointer-events: none;
+    background-image: radial-gradient(circle, #fff 10%, transparent 10.01%);
+    background-repeat: no-repeat;
+    background-position: 50%;
+    transform: scale(10, 10);
+    opacity: 0;
+    transition: transform 0.5s, opacity 1s;
+}
+
+.btn-registro:active::after {
+    transform: scale(0, 0);
+    opacity: 0.3;
+    transition: 0s;
+}
+
+/* Efecto de brillo para los iconos de beneficios */
+.icon-circle {
+    position: relative;
+    overflow: hidden;
+}
+
+.icon-circle::after {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(
+        to bottom right,
+        rgba(255, 255, 255, 0) 0%,
+        rgba(255, 255, 255, 0.1) 40%,
+        rgba(255, 255, 255, 0.3) 50%,
+        rgba(255, 255, 255, 0.1) 60%,
+        rgba(255, 255, 255, 0) 100%
+    );
+    transform: rotate(30deg);
+    animation: shine 6s infinite linear;
+}
+
+@keyframes shine {
+    0% {
+        transform: translateX(-100%) rotate(30deg);
+    }
+    100% {
+        transform: translateX(100%) rotate(30deg);
+    }
+}
+
+/* Animación para el efecto de shake en validación */
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    20%, 60% { transform: translateX(-5px); }
+    40%, 80% { transform: translateX(5px); }
+}
+
+.shake {
+    animation: shake 0.5s ease;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .main-container {
+        padding: 30px 15px;
+    }
+    
+    .registro-container {
+        padding: 30px 20px;
+        border-radius: 12px;
+    }
+    
+    .registro-header h1 {
+        font-size: 26px;
+    }
+    
+    .form-group {
+        margin-bottom: 20px;
+    }
+    
+    .form-group input[type="text"],
+    .form-group input[type="email"],
+    .form-group input[type="tel"],
+    .form-group input[type="password"] {
+        padding: 14px 16px;
+        font-size: 15px;
+    }
+    
+    .btn-registro {
+        padding: 14px;
+    }
+    
+    .mensaje-exito h2 {
+        font-size: 24px;
+    }
+    
+    .registration-icons {
+        flex-wrap: wrap;
+    }
+    
+    .registration-icon {
+        margin: 0 10px 15px;
+    }
+}
+
+/* Estilos para el footer */
+.footer {
+    background-color: #333;
+    color: white;
+    padding: 0;
+    margin-top: 60px;
+}
+
+.footer-main {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    padding: 40px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.footer-section {
+    flex: 1;
+    min-width: 250px;
+    margin-bottom: 30px;
+    padding: 0 15px;
+}
+
+.footer-section h3 {
+    color: #FF5000;
+    font-size: 20px;
+    margin-bottom: 20px;
+    position: relative;
+    font-weight: 600;
+}
+
+.contact-info {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.contact-info li {
+    margin-bottom: 15px;
+    display: flex;
+    align-items: flex-start;
+}
+
+.contact-info li i {
+    color: #FF5000;
+    margin-right: 10px;
+    font-size: 18px;
+    min-width: 20px;
+}
+
+.social-links {
+    display: flex;
+    gap: 15px;
+}
+
+.social-link {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 50%;
+    color: white;
+    transition: all 0.3s ease;
+}
+
+.social-link:hover {
+    background-color: #FF5000;
+    transform: translateY(-3px);
+}
+
+.newsletter-form {
+    display: flex;
+    flex-direction: column;
+}
+
+.newsletter-form input {
+    padding: 12px 15px;
+    border: none;
+    border-radius: 4px;
+    margin-bottom: 10px;
+    background-color: rgba(255, 255, 255, 0.1);
+    color: white;
+}
+
+.newsletter-form input::placeholder {
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.newsletter-form button {
+    padding: 12px 20px;
+    background-color: #FF5000;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    font-weight: 600;
+}
+
+.newsletter-form button:hover {
+    background-color: #ff7b44;
+}
+
+.footer-bottom {
+    background-color: #222;
+    text-align: center;
+    padding: 15px;
+    font-size: 14px;
+}
+
+/* Responsive para el footer */
+@media (max-width: 768px) {
+    .footer-main {
+        flex-direction: column;
+        padding: 30px 20px;
+    }
+    
+    .footer-section {
+        margin-bottom: 30px;
+        padding: 0;
+    }
+} 

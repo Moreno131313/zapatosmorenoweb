@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zapatos Moreno - Pedido Confirmado</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/estilos-carrito.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #ff4500;
+            --secondary-color: #ff6347;
+        }
+
+        .confirmacion-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .mensaje-exito {
+            background-color: #e8f5e9;
+            color: #2e7d32;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .mensaje-exito i {
+            font-size: 3em;
+            margin-bottom: 15px;
+        }
+
+        .mensaje-exito h2 {
+            margin-bottom: 10px;
+        }
+
+        .detalles-pedido {
+            background-color: #f9f9f9;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+        }
+
+        .detalles-pedido h3 {
+            margin-top: 0;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .info-pedido {
+            margin-bottom: 20px;
+        }
+
+        .info-pedido-item {
+            display: flex;
+            margin: 10px 0;
+        }
+
+        .info-pedido-etiqueta {
+            font-weight: bold;
+            width: 150px;
+        }
+
+        .seguimiento-pedido {
+            margin-top: 30px;
+        }
+
+        .timeline {
+            position: relative;
+            padding-left: 30px;
+            margin-top: 20px;
+            border-left: 2px solid #ddd;
+        }
+
+        .timeline-item {
+            position: relative;
+            padding-bottom: 20px;
+        }
+
+        .timeline-item:last-child {
+            padding-bottom: 0;
+        }
+
+        .timeline-punto {
+            position: absolute;
+            left: -10px;
+            top: 0;
+            width: 16px;
+            height: 16px;
+            background-color: var(--primary-color);
+            border-radius: 50%;
+            border: 2px solid white;
+        }
+
+        .timeline-punto.activo {
+            background-color: var(--primary-color);
+        }
+
+        .timeline-punto.pendiente {
+            background-color: #ddd;
+        }
+
+        .timeline-fecha {
+            font-size: 0.8em;
+            color: #666;
+            margin-bottom: 5px;
+        }
+
+        .timeline-titulo {
+            font-weight: bold;
+            margin: 0;
+        }
+
+        .timeline-descripcion {
+            margin-top: 5px;
+            color: #666;
+        }
+
+        .botones-accion {
+            display: flex;
+            gap: 10px;
+            margin-top: 30px;
+        }
+
+        .btn-accion {
+            flex: 1;
+            padding: 12px;
+            text-align: center;
+            border-radius: 5px;
+            text-decoration: none;
+            font-weight: bold;
+            display: inline-block;
+        }
+
+        .btn-primario {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .btn-secundario {
+            background-color: #f5f5f5;
+            color: #333;
+            border: 1px solid #ddd;
+        }
+
+        .productos-lista {
+            margin-top: 20px;
+        }
+
+        .producto-item {
+            display: flex;
+            padding: 10px 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        .producto-imagen {
+            width: 80px;
+            margin-right: 15px;
+        }
+
+        .producto-info {
+            flex: 1;
+        }
+
+        .producto-titulo {
+            margin: 0 0 5px 0;
+        }
+
+        .producto-atributos {
+            font-size: 0.9em;
+            color: #666;
+            margin-bottom: 5px;
+        }
+
+        .producto-precio {
+            font-weight: bold;
+        }
+
+        .producto-cantidad {
+            font-size: 0.9em;
+            color: #666;
+        }
+
+        @media (max-width: 768px) {
+            .botones-accion {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="main-header">
+        <div class="header-container">
+            <div class="brand">
+                <img src="imagenes/productos/logo.png" alt="Logo Zapatos Moreno" class="logo">
+                <h1>Zapatos Moreno</h1>
+            </div>
+            <div class="header-icons">
+                <a href="carrito.html" class="cart-link" title="Carrito de compras">
+                    <i class="fas fa-shopping-cart"></i>
+                    <span class="cart-count">0</span>
+                </a>
+                <a href="contacto.html" title="Ayuda"><i class="fas fa-question-circle"></i></a>
+                <a href="login.html" title="Iniciar Sesión"><i class="fas fa-user"></i></a>
+            </div>
+        </div>
+        <nav class="main-nav">
+            <button class="menu-toggle" aria-label="Menú">
+                <i class="fas fa-bars"></i>
+            </button>
+            <ul class="nav-links">
+                <li><a href="index.html">Inicio</a></li>
+                <li><a href="hombres.html">Hombres</a></li>
+                <li><a href="mujeres.html">Mujeres</a></li>
+                <li><a href="ninos.html">Niños</a></li>
+                <li><a href="contacto.html">Contacto</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main class="confirmacion-container">
+        <div class="mensaje-exito">
+            <i class="fas fa-check-circle"></i>
+            <h2>¡Pedido Confirmado!</h2>
+            <p>Gracias por tu compra. Hemos recibido tu pedido correctamente.</p>
+        </div>
+
+        <div class="detalles-pedido">
+            <h3>Información del Pedido</h3>
+            
+            <div class="info-pedido">
+                <div class="info-pedido-item">
+                    <span class="info-pedido-etiqueta">Número de pedido:</span>
+                    <span id="numero-pedido">PED-12345678</span>
+                </div>
+                
+                <div class="info-pedido-item">
+                    <span class="info-pedido-etiqueta">Fecha de pedido:</span>
+                    <span id="fecha-pedido">25 de febrero de 2025, 10:30 AM</span>
+                </div>
+                
+                <div class="info-pedido-item">
+                    <span class="info-pedido-etiqueta">Estado:</span>
+                    <span id="estado-pedido">Pendiente</span>
+                </div>
+                
+                <div class="info-pedido-item">
+                    <span class="info-pedido-etiqueta">Método de pago:</span>
+                    <span id="metodo-pago">Tarjeta de crédito</span>
+                </div>
+                
+                <div class="info-pedido-item">
+                    <span class="info-pedido-etiqueta">Dirección de envío:</span>
+                    <span id="direccion-envio">Calle 123, Villavicencio, Meta</span>
+                </div>
+
+                <div class="info-pedido-item">
+                    <span class="info-pedido-etiqueta">Total:</span>
+                    <span id="total-pedido">$159.900</span>
+                </div>
+            </div>
+            
+            <div class="productos-resumen">
+                <h4>Productos</h4>
+                <div id="lista-productos">
+                    <!-- Los productos se cargarán dinámicamente aquí -->
+                </div>
+            </div>
+            
+            <div class="seguimiento-pedido">
+                <h4>Seguimiento del Pedido</h4>
+                
+                <div class="timeline" id="timeline-seguimiento">
+                    <!-- El timeline de seguimiento se cargará dinámicamente aquí -->                  
+                </div>
+            </div>
+        </div>
+        
+        <div class="botones-accion">
+            <a href="index.html" class="btn-accion btn-secundario">
+                <i class="fas fa-arrow-left"></i> Seguir Comprando
+            </a>
+            <a href="mis-pedidos.html" class="btn-accion btn-primario">
+                <i class="fas fa-box"></i> Ver Mis Pedidos
+            </a>
+        </div>
+    </main>
+
+    <footer class="main-footer">
+        <div class="footer-container container">
+            <div class="footer-section">
+                <h3>Contáctanos</h3>
+                <address>
+                    <p><i class="fas fa-map-marker-alt"></i> Calle 123, Villavicencio, Meta</p>
+                    <p><i class="fas fa-phone"></i> +57 323 456 7890</p>
+                    <p><i class="fas fa-envelope"></i> info@zapatosmoreno.com</p>
+                </address>
+            </div>
+            <div class="footer-section">
+                <h3>Síguenos</h3>
+                <div class="social-links">
+                    <a href="#" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+                    <a href="#" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
+                </div>
+            </div>
+            <div class="footer-section">
+                <h3>Newsletter</h3>
+                <form class="newsletter-form">
+                    <input type="email" placeholder="Tu correo electrónico" required>
+                    <button type="submit">Suscribirse</button>
+                </form>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2024 Zapatos Moreno. Todos los derechos reservados.</p>
+        </div>
+    </footer>
+
+    <script src="js/confirmacion-pedido.js"></script>
+</body>
+</html>

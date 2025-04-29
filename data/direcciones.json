@@ -1,0 +1,15 @@
+{
+  "direcciones": [
+    {
+      "id": 1,
+      "nombre": "casa",
+      "direccion": "k 32 # 40-60, centro",
+      "ciudad": "villavicencio",
+      "codigo_postal": "50001",
+      "telefono": "3255656666",
+      "es_principal": true,
+      "usuario_id": 1
+    }
+  ],
+  "contador": 2
+}

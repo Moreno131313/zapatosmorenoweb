@@ -1,0 +1,751 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro - Zapatos Moreno</title>
+    <!-- Favicon -->
+    <link rel="shortcut icon" href="img/favicon.ico" type="image/x-icon">
+    <!-- Estilos principales -->
+    <link rel="stylesheet" href="css/styles.css">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/estilos-login.css">
+    <style>
+        :root {
+            --primary-color: #FF5000;
+            --secondary-color: #ff7b44;
+            --text-color: #333333;
+            --light-color: #f8f9fa;
+            --border-color: #dee2e6;
+            --gray-color: #6c757d;
+        }
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f5f5f5;
+            min-height: 100vh;
+        }
+        
+        /* Header */
+        .header {
+            background-color: #FF5000;
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo-container {
+            display: flex;
+            align-items: center;
+        }
+        
+        .logo {
+            height: 40px;
+            margin-right: 10px;
+        }
+        
+        .site-name {
+            color: white;
+            font-size: 24px;
+            font-weight: 500;
+            margin: 0;
+        }
+        
+        .header-icons {
+            display: flex;
+            gap: 20px;
+        }
+        
+        .header-icons a {
+            color: white;
+            font-size: 22px;
+            text-decoration: none;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .header-icons a:hover {
+            opacity: 0.9;
+        }
+        
+        .cart-count {
+            position: absolute;
+            top: -10px;
+            right: -10px;
+            background-color: white;
+            color: #FF5000;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        
+        /* Navigation */
+        .menu-toggle {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            display: none;
+        }
+        
+        .main-nav {
+            background-color: #333;
+            display: flex;
+            justify-content: center;
+        }
+        
+        .nav-menu {
+            display: flex;
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+        
+        .nav-menu li {
+            margin: 0;
+        }
+        
+        .nav-menu a {
+            color: white;
+            text-decoration: none;
+            padding: 15px 25px;
+            display: block;
+            transition: background-color 0.3s;
+            font-weight: 500;
+        }
+        
+        .nav-menu a.active {
+            background-color: #FF5000;
+        }
+        
+        /* Contenedor principal de registro */
+        .main-container {
+            min-height: calc(100vh - 200px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 40px 20px;
+            background-color: #f5f5f5;
+        }
+        
+        .registro-container {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 500px;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .registro-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background-color: #FF5000;
+            z-index: 1;
+        }
+        
+        /* Icono de usuario */
+        .user-icon {
+            width: 70px;
+            height: 70px;
+            background-color: #FF5000;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 30px auto 20px;
+            color: white;
+            font-size: 30px;
+            box-shadow: 0 3px 6px rgba(255, 80, 0, 0.2);
+        }
+        
+        /* Título del formulario */
+        .registro-header {
+            text-align: center;
+            padding: 0 30px 15px;
+        }
+        
+        .registro-header h1 {
+            color: #333;
+            font-size: 26px;
+            margin-bottom: 8px;
+            position: relative;
+            display: inline-block;
+        }
+        
+        .registro-header h1::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background-color: #FF5000;
+            width: 50px;
+            margin: 0 auto;
+        }
+        
+        /* Estilos para el formulario */
+        .form-registro {
+            padding: 10px 30px 30px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+            position: relative;
+        }
+        
+        .form-group label {
+            display: flex;
+            align-items: center;
+            color: #555;
+            margin-bottom: 8px;
+            font-weight: 500;
+            font-size: 15px;
+        }
+        
+        .form-group label i {
+            color: #FF5000;
+            margin-right: 8px;
+            font-size: 16px;
+        }
+        
+        .form-group input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+            transition: all 0.3s;
+            box-sizing: border-box;
+        }
+        
+        .form-group input:focus {
+            border-color: #FF5000;
+            box-shadow: 0 0 0 2px rgba(255, 80, 0, 0.1);
+            outline: none;
+        }
+        
+        .password-container {
+            position: relative;
+        }
+        
+        .toggle-password {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: #777;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        
+        .toggle-password:hover {
+            color: #FF5000;
+        }
+        
+        /* Enlaces y botones */
+        .btn-registro {
+            background-color: #FF5000;
+            color: white;
+            border: none;
+            padding: 12px 15px;
+            width: 100%;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            margin-top: 10px;
+            transition: background-color 0.3s;
+        }
+        
+        .btn-registro:hover {
+            background-color: #ff6a1f;
+        }
+        
+        .form-footer {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 14px;
+            color: #555;
+        }
+        
+        .form-footer a {
+            color: #FF5000;
+            text-decoration: none;
+            font-weight: 600;
+        }
+        
+        .form-footer a:hover {
+            text-decoration: underline;
+        }
+        
+        /* Estilos para mensajes de error */
+        .error-message {
+            color: #e74c3c;
+            font-size: 13px;
+            margin-top: 5px;
+            display: none;
+        }
+        
+        .error-message.visible {
+            display: block;
+        }
+        
+        /* Recordar sesión */
+        .checkbox-container {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .checkbox-container input[type="checkbox"] {
+            width: auto;
+            margin-right: 10px;
+            cursor: pointer;
+        }
+        
+        .checkbox-container label {
+            margin-bottom: 0;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        
+        /* Olvidaste tu contraseña */
+        .forgot-password {
+            color: #FF5000;
+            text-decoration: none;
+            font-size: 14px;
+            display: block;
+            text-align: right;
+            margin-top: 5px;
+        }
+        
+        .forgot-password:hover {
+            text-decoration: underline;
+        }
+        
+        /* Footer */
+        .footer {
+            background-color: #333;
+            color: white;
+            padding: 0;
+        }
+        
+        .footer-main {
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            padding: 40px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .footer-section {
+            flex: 1;
+            min-width: 250px;
+            margin-bottom: 30px;
+            padding: 0 15px;
+        }
+        
+        .footer-section h3 {
+            color: #FF5000;
+            font-size: 20px;
+            margin-bottom: 20px;
+            position: relative;
+            font-weight: 600;
+        }
+        
+        .contact-info {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        
+        .contact-info li {
+            margin-bottom: 15px;
+            display: flex;
+            align-items: flex-start;
+        }
+        
+        .contact-info li i {
+            color: #FF5000;
+            margin-right: 10px;
+            font-size: 18px;
+            min-width: 20px;
+        }
+        
+        .social-links {
+            display: flex;
+            gap: 15px;
+        }
+        
+        .social-link {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            color: white;
+            transition: all 0.3s ease;
+        }
+        
+        .social-link:hover {
+            background-color: #FF5000;
+            transform: translateY(-3px);
+        }
+        
+        .newsletter-form {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .newsletter-form input {
+            padding: 12px 15px;
+            border: none;
+            border-radius: 4px;
+            margin-bottom: 10px;
+            background-color: rgba(255, 255, 255, 0.1);
+            color: white;
+        }
+        
+        .newsletter-form input::placeholder {
+            color: rgba(255, 255, 255, 0.7);
+        }
+        
+        .newsletter-form button {
+            padding: 12px 20px;
+            background-color: #FF5000;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            font-weight: 600;
+        }
+        
+        .newsletter-form button:hover {
+            background-color: #ff7b44;
+        }
+        
+        .footer-bottom {
+            background-color: #222;
+            text-align: center;
+            padding: 15px;
+            font-size: 14px;
+        }
+        
+        @media (max-width: 768px) {
+            .registro-container {
+                max-width: 100%;
+            }
+            
+            .form-registro {
+                padding: 20px 20px 30px;
+            }
+            
+            .footer-main {
+                flex-direction: column;
+                padding: 30px 20px;
+            }
+            
+            .footer-section {
+                margin-bottom: 30px;
+                padding: 0;
+            }
+            
+            .menu-toggle {
+                display: block;
+            }
+            
+            .nav-menu {
+                display: none;
+            }
+        }
+        
+        /* Estilos específicos para el registro */
+        .form-login {
+            max-width: 500px;
+        }
+        
+        .form-icon {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+        }
+        
+        .form-grupo {
+            margin-bottom: 1.25rem;
+        }
+        
+        .btn-primario {
+            margin-top: 0.5rem;
+        }
+        
+        .terminos-container {
+            margin-bottom: 1.5rem;
+        }
+        
+        .terminos-container a {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 500;
+        }
+        
+        .terminos-container a:hover {
+            text-decoration: underline;
+        }
+        
+        @media (max-width: 576px) {
+            .form-login {
+                padding: 2rem 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="main-header">
+        <div class="header-container">
+            <div class="brand">
+                <img src="imagenes/productos/logo.png" alt="Logo Zapatos Moreno" class="logo">
+                <h1>Zapatos Moreno</h1>
+            </div>
+            <div class="header-icons">
+                <a href="carrito.html" title="Carrito de compras">
+                    <i class="fas fa-shopping-cart"></i>
+                    <span class="cart-count">0</span>
+                </a>
+                <a href="contacto.html" title="Ayuda">
+                    <i class="fas fa-question-circle"></i>
+                </a>
+                <a href="login.html" title="Iniciar Sesión">
+                    <i class="fas fa-user"></i>
+                </a>
+            </div>
+        </div>
+        <nav class="main-nav">
+            <button class="menu-toggle" aria-label="Menú">
+                <i class="fas fa-bars"></i>
+            </button>
+            <ul class="nav-links">
+                <li><a href="index.html" class="active">Inicio</a></li>
+                <li><a href="hombres.html">Hombres</a></li>
+                <li><a href="mujeres.html">Mujeres</a></li>
+                <li><a href="ninos.html">Niños</a></li>
+                <li><a href="contacto.html">Contacto</a></li>
+            </ul>
+        </nav>
+    </header>
+    
+    <!-- Contenido principal -->
+    <main class="login-container">
+        <div class="form-login">
+            <div class="form-header">
+                <div class="form-icon">
+                    <i class="fas fa-user-plus"></i>
+                </div>
+            </div>
+            
+            <h2>Crear Cuenta</h2>
+            
+            <form id="form-registro">
+                <div class="form-grupo">
+                    <label for="nombre-completo">
+                        <i class="fas fa-user"></i>
+                        Nombre completo
+                    </label>
+                    <input 
+                        type="text" 
+                        id="nombre-completo" 
+                        name="nombre-completo" 
+                        placeholder="Tu nombre completo" 
+                        required
+                    >
+                    <div class="input-focus-border"></div>
+                    <span id="nombre-error" class="error-message"></span>
+                </div>
+
+                <div class="form-grupo">
+                    <label for="email">
+                        <i class="fas fa-envelope"></i>
+                        Correo Electrónico
+                    </label>
+                    <input 
+                        type="email" 
+                        id="email" 
+                        name="email" 
+                        placeholder="Tu correo electrónico" 
+                        required
+                        autocomplete="email"
+                    >
+                    <div class="input-focus-border"></div>
+                    <span id="email-error" class="error-message"></span>
+                </div>
+
+                <div class="form-grupo">
+                    <label for="telefono">
+                        <i class="fas fa-phone"></i>
+                        Teléfono (opcional)
+                    </label>
+                    <input 
+                        type="tel" 
+                        id="telefono" 
+                        name="telefono" 
+                        placeholder="Tu número de teléfono"
+                    >
+                    <div class="input-focus-border"></div>
+                    <span id="telefono-error" class="error-message"></span>
+                </div>
+
+                <div class="form-grupo">
+                    <label for="password">
+                        <i class="fas fa-lock"></i>
+                        Contraseña
+                    </label>
+                    <div class="password-wrapper">
+                        <input 
+                            type="password" 
+                            id="password" 
+                            name="password" 
+                            placeholder="Crea tu contraseña" 
+                            required
+                        >
+                        <button type="button" class="toggle-password" aria-label="Mostrar contraseña">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                        <div class="input-focus-border"></div>
+                    </div>
+                    <span id="password-error" class="error-message"></span>
+                </div>
+
+                <div class="form-grupo">
+                    <label for="confirm-password">
+                        <i class="fas fa-lock"></i>
+                        Confirmar Contraseña
+                    </label>
+                    <div class="password-wrapper">
+                        <input 
+                            type="password" 
+                            id="confirm-password" 
+                            name="confirm-password" 
+                            placeholder="Confirma tu contraseña" 
+                            required
+                        >
+                        <button type="button" class="toggle-password" aria-label="Mostrar contraseña">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                        <div class="input-focus-border"></div>
+                    </div>
+                    <span id="confirm-password-error" class="error-message"></span>
+                </div>
+
+                <div class="form-grupo terminos-container">
+                    <label class="checkbox-container">
+                        <input type="checkbox" id="terminos" name="terminos" required>
+                        <span class="checkmark"></span>
+                        Acepto los <a href="#">términos y condiciones</a> y la <a href="#">política de privacidad</a>
+                    </label>
+                    <span id="terminos-error" class="error-message"></span>
+                </div>
+
+                <div class="form-grupo">
+                    <button type="submit" id="btn-registro" class="btn-primario">
+                        <i class="fas fa-user-plus"></i> Crear Cuenta
+                    </button>
+                </div>
+            </form>
+
+            <div class="registro-link">
+                <p>¿Ya tienes una cuenta?</p>
+                <a href="login.html" class="btn-secundario">
+                    <i class="fas fa-sign-in-alt"></i> Iniciar Sesión
+                </a>
+            </div>
+        </div>
+    </main>
+
+    <!-- Pie de página -->
+    <footer class="main-footer">
+        <div class="footer-container">
+            <div class="footer-section">
+                <h3>Contáctanos</h3>
+                <p><i class="fas fa-map-marker-alt"></i> Calle 123, Villavicencio, Meta</p>
+                <p><i class="fas fa-phone"></i> +57 323 456 7890</p>
+                <p><i class="fas fa-envelope"></i> info@zapatosmoreno.com</p>
+            </div>
+            <div class="footer-section">
+                <h3>Síguenos</h3>
+                <div class="social-links">
+                    <a href="#"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                </div>
+            </div>
+            <div class="footer-section">
+                <h3>Newsletter</h3>
+                <form class="newsletter-form">
+                    <input type="email" placeholder="Tu correo electrónico" required>
+                    <button type="submit">Suscribirse</button>
+                </form>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2024 Zapatos Moreno. Todos los derechos reservados.</p>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="js/main.js"></script>
+    <script src="js/registro.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Toggle password visibility
+            const toggleBtns = document.querySelectorAll('.toggle-password');
+            
+            toggleBtns.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const input = this.previousElementSibling;
+                    const type = input.getAttribute('type') === 'password' ? 'text' : 'password';
+                    input.setAttribute('type', type);
+                    
+                    // Change icon
+                    const icon = this.querySelector('i');
+                    icon.classList.toggle('fa-eye');
+                    icon.classList.toggle('fa-eye-slash');
+                });
+            });
+            
+            function showError(element, message) {
+                element.textContent = message;
+                element.style.display = 'block';
+            }
+            
+            function hideError(element) {
+                element.textContent = '';
+                element.style.display = 'none';
+            }
+        });
+    </script>
+</body>
+</html>

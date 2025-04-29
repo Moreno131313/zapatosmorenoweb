@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mis Pedidos - Zapatos Moreno</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/estilos-pedidos.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #ff4500;
+            --secondary-color: #ff6347;
+        }
+    </style>
+</head>
+<body>
+    <header class="main-header">
+        <div class="header-container">
+            <div class="brand">
+                <img src="imagenes/productos/logo.png" alt="Logo Zapatos Moreno" class="logo">
+                <h1>Zapatos Moreno</h1>
+            </div>
+            <div class="header-icons">
+                <a href="carrito.html" class="cart-link" title="Carrito de compras">
+                    <i class="fas fa-shopping-cart"></i>
+                    <span class="cart-count">0</span>
+                </a>
+                <a href="#" title="Mi cuenta" id="cuenta-link"><i class="fas fa-user-check"></i></a>
+            </div>
+        </div>
+        <nav class="main-nav">
+            <button class="menu-toggle" aria-label="Menú">
+                <i class="fas fa-bars"></i>
+            </button>
+            <ul class="nav-links">
+                <li><a href="index.html">Inicio</a></li>
+                <li><a href="hombres.html">Hombres</a></li>
+                <li><a href="mujeres.html">Mujeres</a></li>
+                <li><a href="ninos.html">Niños</a></li>
+                <li><a href="contacto.html">Contacto</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main class="pedidos-container container">
+        <div class="pedidos-header">
+            <h1>Mis Pedidos</h1>
+            <p>Consulta el estado de tus compras</p>
+        </div>
+
+        <div class="pedidos-filtros">
+            <div class="filtro-busqueda">
+                <input type="text" id="buscar-pedido" placeholder="Buscar por número de pedido">
+                <button type="button" id="btn-buscar">
+                    <i class="fas fa-search"></i> Buscar
+                </button>
+            </div>
+            
+            <div class="filtro-estado">
+                <label for="filtro-estado-select">Filtrar por estado:</label>
+                <select id="filtro-estado-select">
+                    <option value="">Todos</option>
+                    <option value="pendiente">Pendiente</option>
+                    <option value="en-camino">En camino</option>
+                    <option value="entregado">Entregado</option>
+                    <option value="cancelado">Cancelado</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="pedidos-timeline">
+            <div class="timeline-header">
+                <div class="timeline-item">
+                    <span class="fecha">Fecha</span>
+                    <span class="pedido-id">Número de pedido</span>
+                    <span class="estado">Estado</span>
+                    <span class="total">Total</span>
+                    <span class="acciones">Acciones</span>
+                </div>
+            </div>
+            
+            <div id="pedidos-lista" class="timeline-content">
+                <!-- Los pedidos se cargarán dinámicamente aquí -->
+                <div class="timeline-item" data-pedido-id="ORD-2023-001" data-estado="entregado">
+                    <span class="fecha">22/02/2023</span>
+                    <span class="pedido-id">ORD-2023-001</span>
+                    <span class="estado">
+                        <span class="estado-badge entregado">Entregado</span>
+                    </span>
+                    <span class="total">$159.900</span>
+                    <span class="acciones">
+                        <button class="btn-detalles" data-pedido-id="ORD-2023-001">
+                            <i class="fas fa-eye"></i> Detalles
+                        </button>
+                    </span>
+                </div>
+
+                <div class="timeline-item" data-pedido-id="ORD-2023-002" data-estado="en-camino">
+                    <span class="fecha">15/03/2023</span>
+                    <span class="pedido-id">ORD-2023-002</span>
+                    <span class="estado">
+                        <span class="estado-badge en-camino">En camino</span>
+                    </span>
+                    <span class="total">$319.800</span>
+                    <span class="acciones">
+                        <button class="btn-detalles" data-pedido-id="ORD-2023-002">
+                            <i class="fas fa-eye"></i> Detalles
+                        </button>
+                        <button class="btn-tracking" data-pedido-id="ORD-2023-002">
+                            <i class="fas fa-truck"></i> Tracking
+                        </button>
+                    </span>
+                </div>
+                
+                <!-- Placeholder para cuando no hay pedidos -->
+                <div id="no-pedidos" class="no-pedidos" style="display: none;">
+                    <i class="fas fa-box-open"></i>
+                    <h3>No tienes pedidos aún</h3>
+                    <p>¡Comienza a comprar para ver tus pedidos aquí!</p>
+                    <a href="index.html" class="btn-comprar">
+                        <i class="fas fa-shopping-bag"></i> Ir a comprar
+                    </a>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Modal para detalles del pedido -->
+    <div id="modal-detalles" class="modal">
+        <div class="modal-contenido">
+            <span class="cerrar-modal">&times;</span>
+            <div class="modal-header">
+                <h2>Detalles del Pedido <span id="detalle-pedido-id">ORD-2023-001</span></h2>
+            </div>
+            <div class="modal-body">
+                <div class="detalle-info">
+                    <div class="detalle-fila">
+                        <span class="detalle-label">Fecha:</span>
+                        <span id="detalle-fecha" class="detalle-valor">22 de febrero de 2023</span>
+                    </div>
+                    <div class="detalle-fila">
+                        <span class="detalle-label">Estado:</span>
+                        <span id="detalle-estado" class="detalle-valor">
+                            <span class="estado-badge entregado">Entregado</span>
+                        </span>
+                    </div>
+                    <div class="detalle-fila">
+                        <span class="detalle-label">Dirección de envío:</span>
+                        <span id="detalle-direccion" class="detalle-valor">Calle 123 #45-67, Villavicencio</span>
+                    </div>
+                    <div class="detalle-fila">
+                        <span class="detalle-label">Método de pago:</span>
+                        <span id="detalle-pago" class="detalle-valor">Tarjeta de crédito (terminada en 4321)</span>
+                    </div>
+                </div>
+                
+                <h3>Productos</h3>
+                <div id="detalle-productos" class="detalle-productos">
+                    <div class="detalle-producto">
+                        <img src="img/zapatos/oxford-negro.jpg" alt="Zapato Oxford Negro" class="producto-imagen">
+                        <div class="producto-info">
+                            <h4>Zapato Oxford Negro</h4>
+                            <p>Talla: 42</p>
+                            <p>Cantidad: 1</p>
+                        </div>
+                        <div class="producto-precio">
+                            $159.900
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="detalle-totales">
+                    <div class="total-fila">
+                        <span>Subtotal:</span>
+                        <span id="detalle-subtotal">$159.900</span>
+                    </div>
+                    <div class="total-fila">
+                        <span>Envío:</span>
+                        <span id="detalle-envio">$0</span>
+                    </div>
+                    <div class="total-fila">
+                        <span>IVA (19%):</span>
+                        <span id="detalle-iva">$30.381</span>
+                    </div>
+                    <div class="total-fila total-final">
+                        <span>Total:</span>
+                        <span id="detalle-total">$159.900</span>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button id="btn-cerrar-modal" class="btn-secundario">
+                    <i class="fas fa-times"></i> Cerrar
+                </button>
+                <a href="#" id="btn-descargar-factura" class="btn-primario">
+                    <i class="fas fa-file-download"></i> Descargar factura
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para tracking del pedido -->
+    <div id="modal-tracking" class="modal">
+        <div class="modal-contenido">
+            <span class="cerrar-modal">&times;</span>
+            <div class="modal-header">
+                <h2>Seguimiento del Pedido <span id="tracking-pedido-id">ORD-2023-002</span></h2>
+            </div>
+            <div class="modal-body">
+                <div class="tracking-info">
+                    <div class="tracking-header">
+                        <div>
+                            <h3>Enviado por: Servicio Premium</h3>
+                            <p>Número de guía: <strong id="tracking-numero-guia">SP4567890123</strong></p>
+                        </div>
+                        <div class="tracking-estimado">
+                            <p>Entrega estimada:</p>
+                            <p class="fecha-estimada" id="tracking-fecha-estimada">20 de marzo de 2023</p>
+                        </div>
+                    </div>
+                    
+                    <div class="tracking-timeline">
+                        <div class="tracking-step completado">
+                            <div class="tracking-icon">
+                                <i class="fas fa-check-circle"></i>
+                            </div>
+                            <div class="tracking-content">
+                                <h4>Pedido confirmado</h4>
+                                <p class="tracking-date">15 de marzo de 2023, 10:25 AM</p>
+                                <p>Tu pedido ha sido confirmado y está siendo procesado.</p>
+                            </div>
+                        </div>
+                        
+                        <div class="tracking-step completado">
+                            <div class="tracking-icon">
+                                <i class="fas fa-check-circle"></i>
+                            </div>
+                            <div class="tracking-content">
+                                <h4>Pedido empacado</h4>
+                                <p class="tracking-date">16 de marzo de 2023, 2:10 PM</p>
+                                <p>Tu pedido ha sido empacado y está listo para ser enviado.</p>
+                            </div>
+                        </div>
+                        
+                        <div class="tracking-step actual">
+                            <div class="tracking-icon">
+                                <i class="fas fa-truck"></i>
+                            </div>
+                            <div class="tracking-content">
+                                <h4>En tránsito</h4>
+                                <p class="tracking-date">17 de marzo de 2023, 9:30 AM</p>
+                                <p>Tu pedido está en camino a tu dirección.</p>
+                            </div>
+                        </div>
+                        
+                        <div class="tracking-step">
+                            <div class="tracking-icon">
+                                <i class="fas fa-home"></i>
+                            </div>
+                            <div class="tracking-content">
+                                <h4>Entregado</h4>
+                                <p class="tracking-date">Pendiente</p>
+                                <p>Tu pedido será entregado en la dirección especificada.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button id="btn-cerrar-tracking" class="btn-secundario">
+                    <i class="fas fa-times"></i> Cerrar
+                </button>
+                <a href="#" id="btn-contactar" class="btn-primario">
+                    <i class="fas fa-headset"></i> Contactar soporte
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <footer class="main-footer">
+        <div class="footer-container container">
+            <div class="footer-section">
+                <h3>Contáctanos</h3>
+                <address>
+                    <p><i class="fas fa-map-marker-alt"></i> Calle 123, Villavicencio, Meta</p>
+                    <p><i class="fas fa-phone"></i> +57 323 456 7890</p>
+                    <p><i class="fas fa-envelope"></i> info@zapatosmoreno.com</p>
+                </address>
+            </div>
+            <div class="footer-section">
+                <h3>Síguenos</h3>
+                <div class="social-links">
+                    <a href="#" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+                    <a href="#" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
+                </div>
+            </div>
+            <div class="footer-section">
+                <h3>Newsletter</h3>
+                <form class="newsletter-form">
+                    <input type="email" placeholder="Tu correo electrónico" required>
+                    <button type="submit">Suscribirse</button>
+                </form>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2024 Zapatos Moreno. Todos los derechos reservados.</p>
+        </div>
+    </footer>
+
+    <script src="js/carrito.js"></script>
+    <script src="js/session-manager.js"></script>
+    <script src="js/pedidos.js"></script>
+</body>
+</html>

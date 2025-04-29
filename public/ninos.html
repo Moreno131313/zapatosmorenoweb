@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zapatos Moreno - Niños</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/ninos.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #ff4500;
+            --secondary-color: #ff6347;
+            --accent-color: #42B4E6;
+            --accent-secondary: #7ED957;
+        }
+    </style>
+</head>
+<body>
+    <header class="main-header">
+        <div class="header-container">
+            <div class="brand">
+                <img src="imagenes/productos/logo.png" alt="Logo Zapatos Moreno" class="logo">
+                <h1>Zapatos Moreno</h1>
+            </div>
+            <div class="header-icons">
+                <a href="carrito.html" class="cart-link" title="Carrito de compras">
+                    <i class="fas fa-shopping-cart"></i>
+                    <span class="cart-count">0</span>
+                </a>
+                <a href="contacto.html" title="Ayuda"><i class="fas fa-question-circle"></i></a>
+                <a href="login.html" title="Iniciar Sesión"><i class="fas fa-user"></i></a>
+            </div>
+        </div>
+        <nav class="main-nav">
+            <button class="menu-toggle" aria-label="Menú">
+                <i class="fas fa-bars"></i>
+            </button>
+            <ul class="nav-links">
+                <li><a href="index.html">Inicio</a></li>
+                <li><a href="hombres.html">Hombres</a></li>
+                <li><a href="mujeres.html">Mujeres</a></li>
+                <li><a href="ninos.html" class="active">Niños</a></li>
+                <li><a href="contacto.html">Contacto</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main class="catalogo-ninos container">
+        <h1 class="seccion-titulo">Zapatos para Niños</h1>
+        
+        <div class="filters-container">
+            <select id="genero-filtro" class="filter-select">
+                <option value="">Todos los Géneros</option>
+                <option value="ninos">Niños</option>
+                <option value="ninas">Niñas</option>
+                <option value="bebes">Bebés</option>
+            </select>
+            
+            <select id="tipo-filtro" class="filter-select">
+                <option value="">Todos los Tipos</option>
+                <option value="Escolar">Escolar</option>
+                <option value="Casual">Casual</option>
+                <option value="Deportivo">Deportivo</option>
+                <option value="Sandalias">Sandalias</option>
+                <option value="Botas">Botas</option>
+                <option value="Primeros Pasos">Primeros Pasos</option>
+            </select>
+            
+            <select id="talla-filtro" class="filter-select">
+                <option value="">Todas las Tallas</option>
+                <option value="18">18</option>
+                <option value="19">19</option>
+                <option value="20">20</option>
+                <option value="21">21</option>
+                <option value="22">22</option>
+                <option value="23">23</option>
+                <option value="24">24</option>
+                <option value="25">25</option>
+                <option value="26">26</option>
+                <option value="27">27</option>
+                <option value="28">28</option>
+                <option value="29">29</option>
+                <option value="30">30</option>
+                <option value="31">31</option>
+                <option value="32">32</option>
+                <option value="33">33</option>
+                <option value="34">34</option>
+                <option value="35">35</option>
+            </select>
+        </div>
+
+        <div id="productos-ninos" class="productos-container">
+            <!-- Los productos se cargarán dinámicamente con JavaScript -->
+        </div>
+        
+        <!-- Mensaje para cuando no hay productos que coincidan con los filtros (oculto por defecto) -->
+        <div id="no-productos" class="no-productos" style="display: none;">
+            <i class="fas fa-search"></i>
+            <h3>No se encontraron productos</h3>
+            <p>Prueba con diferentes filtros o reinicia la búsqueda</p>
+            <button id="reset-filtros" class="btn-reset">
+                <i class="fas fa-sync-alt"></i> Reiniciar filtros
+            </button>
+        </div>
+        
+        <!-- Sección de características/beneficios -->
+        <section class="features-section">
+            <h2 class="features-title">Por qué elegir nuestros zapatos</h2>
+            <div class="features-grid">
+                <div class="feature-item">
+                    <i class="fas fa-check-circle"></i>
+                    <h3>Calidad Premium</h3>
+                    <p>Materiales cuidadosamente seleccionados para pies en desarrollo.</p>
+                </div>
+                <div class="feature-item">
+                    <i class="fas fa-heart"></i>
+                    <h3>Confort y Soporte</h3>
+                    <p>Diseños anatómicos que favorecen el desarrollo correcto del pie.</p>
+                </div>
+                <div class="feature-item">
+                    <i class="fas fa-truck"></i>
+                    <h3>Envío Rápido</h3>
+                    <p>Entrega a domicilio en todo el país con seguimiento en tiempo real.</p>
+                </div>
+                <div class="feature-item">
+                    <i class="fas fa-exchange-alt"></i>
+                    <h3>Cambios Fáciles</h3>
+                    <p>30 días para cambios o devoluciones con garantía de satisfacción.</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <section class="guia-tallas container">
+        <h2 class="section-title">Guía de Tallas</h2>
+        <div class="guia-tallas-content">
+            <div class="guia-imagen">
+                <img src="/imagenes/productos/ninos/guia-tallas.jpg" alt="Guía de Tallas para Niños">
+            </div>
+            <div class="guia-info">
+                <p>Para medir el pie de tu niño correctamente:</p>
+                <ol>
+                    <li>Coloca un papel en el suelo contra una pared.</li>
+                    <li>Haz que el niño se pare sobre el papel con el talón tocando la pared.</li>
+                    <li>Marca la punta del dedo más largo.</li>
+                    <li>Mide la distancia desde la pared hasta la marca.</li>
+                </ol>
+                <p>Compara la medida con nuestra tabla:</p>
+                <table class="tallas-tabla">
+                    <thead>
+                        <tr>
+                            <th>Talla</th>
+                            <th>CM</th>
+                            <th>Edad Aprox.</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>18</td><td>11.0</td><td>6-9 meses</td></tr>
+                        <tr><td>19</td><td>11.7</td><td>9-12 meses</td></tr>
+                        <tr><td>20</td><td>12.3</td><td>12-15 meses</td></tr>
+                        <tr><td>21</td><td>13.0</td><td>15-18 meses</td></tr>
+                        <tr><td>22</td><td>13.7</td><td>18-21 meses</td></tr>
+                        <tr><td>23</td><td>14.3</td><td>21-24 meses</td></tr>
+                        <tr><td>24</td><td>15.0</td><td>2 años</td></tr>
+                        <tr><td>25</td><td>15.7</td><td>2-3 años</td></tr>
+                        <tr><td>26</td><td>16.3</td><td>3 años</td></tr>
+                        <tr><td>27</td><td>17.0</td><td>3-4 años</td></tr>
+                        <tr><td>28</td><td>17.7</td><td>4 años</td></tr>
+                        <tr><td>29</td><td>18.3</td><td>4-5 años</td></tr>
+                        <tr><td>30</td><td>19.0</td><td>5-6 años</td></tr>
+                        <tr><td>31</td><td>19.7</td><td>6-7 años</td></tr>
+                        <tr><td>32</td><td>20.3</td><td>7-8 años</td></tr>
+                        <tr><td>33</td><td>21.0</td><td>8-9 años</td></tr>
+                        <tr><td>34</td><td>21.7</td><td>9-10 años</td></tr>
+                        <tr><td>35</td><td>22.3</td><td>10-11 años</td></tr>
+                    </tbody>
+                </table>
+                <p class="consejo-talla">Recomendamos elegir 0.5-1cm más grande para permitir el crecimiento.</p>
+            </div>
+        </div>
+    </section>
+
+    <footer class="main-footer">
+        <div class="footer-container container">
+            <div class="footer-section">
+                <h3>Contáctanos</h3>
+                <address>
+                    <p><i class="fas fa-map-marker-alt"></i> Calle 123, Villavicencio, Meta</p>
+                    <p><i class="fas fa-phone"></i> +57 323 456 7890</p>
+                    <p><i class="fas fa-envelope"></i> info@zapatosmoreno.com</p>
+                </address>
+            </div>
+            <div class="footer-section">
+                <h3>Síguenos</h3>
+                <div class="social-links">
+                    <a href="#" aria-label="Facebook"><i class="fab fa-facebook"></i></a>
+                    <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+                    <a href="#" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
+                </div>
+            </div>
+            <div class="footer-section">
+                <h3>Newsletter</h3>
+                <form class="newsletter-form">
+                    <input type="email" placeholder="Tu correo electrónico" required>
+                    <button type="submit">Suscribirse</button>
+                </form>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2024 Zapatos Moreno. Todos los derechos reservados.</p>
+        </div>
+    </footer>
+
+    <script src="js/productos-base.js"></script>
+    <script src="js/productos-ninos.js"></script>
+    <script src="js/carrito.js"></script>
+    <script src="js/main.js"></script>
+</body>
+</html>

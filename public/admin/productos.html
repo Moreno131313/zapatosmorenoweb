@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Productos - Zapatos Moreno</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="/css/admin.css">
+</head>
+<body>
+    <div class="admin-container">
+        <nav class="admin-sidebar">
+            <div class="sidebar-header">
+                <img src="/imagenes/logo.png" alt="Logo" class="admin-logo">
+                <h2>Panel Admin</h2>
+            </div>
+            <ul class="admin-menu">
+                <li>
+                    <a href="/admin"><i class="fas fa-home"></i> Dashboard</a>
+                </li>
+                <li class="active">
+                    <a href="/admin/productos.html"><i class="fas fa-shoe-prints"></i> Productos</a>
+                </li>
+                <li>
+                    <a href="/admin/categorias.html"><i class="fas fa-tags"></i> Categorías</a>
+                </li>
+                <li>
+                    <a href="/admin/pedidos.html"><i class="fas fa-shopping-cart"></i> Pedidos</a>
+                </li>
+                <li>
+                    <a href="/admin/usuarios.html"><i class="fas fa-users"></i> Usuarios</a>
+                </li>
+                <li>
+                    <a href="/admin/cupones.html"><i class="fas fa-ticket-alt"></i> Cupones</a>
+                </li>
+            </ul>
+        </nav>
+
+        <main class="admin-main">
+            <header class="admin-header">
+                <div class="header-search">
+                    <input type="text" id="search-productos" placeholder="Buscar productos...">
+                    <button><i class="fas fa-search"></i></button>
+                </div>
+                <button class="btn-primary" id="btn-nuevo-producto">
+                    <i class="fas fa-plus"></i> Nuevo Producto
+                </button>
+            </header>
+
+            <div class="filters-container">
+                <select id="filter-categoria">
+                    <option value="">Todas las categorías</option>
+                </select>
+                <select id="filter-tipo">
+                    <option value="">Todos los tipos</option>
+                    <option value="formal">Formal</option>
+                    <option value="casual">Casual</option>
+                    <option value="deportivo">Deportivo</option>
+                </select>
+                <select id="filter-disponibilidad">
+                    <option value="">Toda disponibilidad</option>
+                    <option value="1">Disponible</option>
+                    <option value="0">No disponible</option>
+                </select>
+            </div>
+
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Imagen</th>
+                            <th>Nombre</th>
+                            <th>Categoría</th>
+                            <th>Precio</th>
+                            <th>Stock</th>
+                            <th>Estado</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="productos-table">
+                        <!-- Se llenará dinámicamente -->
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Modal para nuevo/editar producto -->
+            <div class="modal" id="producto-modal">
+                <div class="modal-content">
+                    <span class="close">&times;</span>
+                    <h2 id="modal-title">Nuevo Producto</h2>
+                    <form id="producto-form">
+                        <div class="form-group">
+                            <label for="nombre">Nombre</label>
+                            <input type="text" id="nombre" name="nombre" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="descripcion">Descripción</label>
+                            <textarea id="descripcion" name="descripcion" required></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="precio">Precio</label>
+                            <input type="number" id="precio" name="precio" min="0" step="100" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="categoria">Categoría</label>
+                            <select id="categoria" name="categoria" required>
+                                <!-- Se llenará dinámicamente -->
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="tipo">Tipo</label>
+                            <select id="tipo" name="tipo" required>
+                                <option value="formal">Formal</option>
+                                <option value="casual">Casual</option>
+                                <option value="deportivo">Deportivo</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="imagen">Imagen</label>
+                            <input type="file" id="imagen" name="imagen" accept="image/*">
+                            <div id="imagen-preview"></div>
+                        </div>
+                        <div class="form-group">
+                            <label>Tallas Disponibles</label>
+                            <div class="tallas-grid" id="tallas-container">
+                                <!-- Se llenará dinámicamente -->
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Colores Disponibles</label>
+                            <div class="colores-grid" id="colores-container">
+                                <!-- Se llenará dinámicamente -->
+                            </div>
+                        </div>
+                        <div class="form-actions">
+                            <button type="submit" class="btn-primary">Guardar</button>
+                            <button type="button" class="btn-secondary" onclick="closeModal()">Cancelar</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="/js/admin/productos.js"></script>
+</body>
+</html> 

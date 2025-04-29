@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zapatos Moreno - Mujeres</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/mujeres.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #ff4500;
+            --secondary-color: #ff6347;
+        }
+    </style>
+</head>
+<body>
+    <header class="main-header">
+        <div class="header-container">
+            <div class="brand">
+                <img src="imagenes/productos/logo.png" alt="Logo Zapatos Moreno" class="logo">
+                <h1>Zapatos Moreno</h1>
+            </div>
+            <div class="header-icons">
+                <a href="carrito.html" class="cart-link" title="Carrito de compras">
+                    <i class="fas fa-shopping-cart"></i>
+                    <span class="cart-count">0</span>
+                </a>
+                <a href="contacto.html" title="Ayuda"><i class="fas fa-question-circle"></i></a>
+                <a href="login.html" title="Iniciar Sesión"><i class="fas fa-user"></i></a>
+            </div>
+        </div>
+        <nav class="main-nav">
+            <button class="menu-toggle" aria-label="Menú">
+                <i class="fas fa-bars"></i>
+            </button>
+            <ul class="nav-links">
+                <li><a href="index.html">Inicio</a></li>
+                <li><a href="hombres.html">Hombres</a></li>
+                <li><a href="mujeres.html" class="active">Mujeres</a></li>
+                <li><a href="ninos.html">Niños</a></li>
+                <li><a href="contacto.html">Contacto</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main class="catalogo-mujeres container">
+        <h1 class="seccion-titulo">Zapatos para Mujeres</h1>
+        
+        <div class="filters-container">
+            <select id="tipo-filtro" class="filter-select">
+                <option value="">Todos los Tipos</option>
+                <option value="Tacones">Tacones</option>
+                <option value="Sandalias">Sandalias</option>
+                <option value="Botas">Botas</option>
+                <option value="Casuales">Casuales</option>
+                <option value="Baletas">Baletas</option>
+            </select>
+            
+            <select id="talla-filtro" class="filter-select">
+                <option value="">Todas las Tallas</option>
+                <option value="35">35</option>
+                <option value="36">36</option>
+                <option value="37">37</option>
+                <option value="38">38</option>
+                <option value="39">39</option>
+            </select>
+            
+            <select id="color-filtro" class="filter-select">
+                <option value="">Todos los Colores</option>
+                <option value="Negro">Negro</option>
+                <option value="Rojo">Rojo</option>
+                <option value="Beige">Beige</option>
+                <option value="Marrón">Marrón</option>
+                <option value="Azul">Azul</option>
+                <option value="Nude">Nude</option>
+                <option value="Blanco">Blanco</option>
+                <option value="Rosa">Rosa</option>
+                <option value="Dorado">Dorado</option>
+                <option value="Plateado">Plateado</option>
+            </select>
+        </div>
+
+        <div id="productos-mujeres" class="productos-container">
+            <!-- Los productos se cargarán dinámicamente con JavaScript -->
+        </div>
+        
+        <!-- Mensaje para cuando no hay productos que coincidan con los filtros (oculto por defecto) -->
+        <div id="no-productos" class="no-productos" style="display: none;">
+            <i class="fas fa-search"></i>
+            <h3>No se encontraron productos</h3>
+            <p>Prueba con diferentes filtros o reinicia la búsqueda</p>
+            <button id="reset-filtros" class="btn-reset">
+                <i class="fas fa-sync-alt"></i> Reiniciar filtros
+            </button>
+        </div>
+        
+        <!-- Sección de características/beneficios -->
+        <section class="features-section">
+            <h2 class="features-title">Por qué elegir nuestros zapatos</h2>
+            <div class="features-grid">
+                <div class="feature-item">
+                    <i class="fas fa-check-circle"></i>
+                    <h3>Calidad Premium</h3>
+                    <p>Materiales seleccionados y acabados impecables en cada par de zapatos.</p>
+                </div>
+                <div class="feature-item">
+                    <i class="fas fa-heart"></i>
+                    <h3>Confort Garantizado</h3>
+                    <p>Diseñados pensando en tu comodidad durante todo el día.</p>
+                </div>
+                <div class="feature-item">
+                    <i class="fas fa-truck"></i>
+                    <h3>Envío Rápido</h3>
+                    <p>Entrega a domicilio en todo el país con seguimiento en tiempo real.</p>
+                </div>
+                <div class="feature-item">
+                    <i class="fas fa-exchange-alt"></i>
+                    <h3>Cambios y Devoluciones</h3>
+                    <p>30 días para cambios o devoluciones si no estás completamente satisfecha.</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="main-footer">
+        <div class="footer-container container">
+            <div class="footer-section">
+                <h3>Contáctanos</h3>
+                <address>
+                    <p><i class="fas fa-map-marker-alt"></i> Calle 123, Villavicencio, Meta</p>
+                    <p><i class="fas fa-phone"></i> +57 323 456 7890</p>
+                    <p><i class="fas fa-envelope"></i> info@zapatosmoreno.com</p>
+                </address>
+            </div>
+            <div class="footer-section">
+                <h3>Síguenos</h3>
+                <div class="social-links">
+                    <a href="#" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+                    <a href="#" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
+                </div>
+            </div>
+            <div class="footer-section">
+                <h3>Newsletter</h3>
+                <form class="newsletter-form">
+                    <input type="email" placeholder="Tu correo electrónico" required>
+                    <button type="submit">Suscribirse</button>
+                </form>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2024 Zapatos Moreno. Todos los derechos reservados.</p>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="js/productos-base.js"></script>
+    <script src="js/productos-mujeres.js"></script>
+    <script src="js/carrito.js"></script>
+    <script src="js/main.js"></script>
+</body>
+</html>

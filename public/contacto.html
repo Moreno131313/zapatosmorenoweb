@@ -1,0 +1,742 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contacto - Zapatos Moreno</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/estilos-login.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #ff4500;
+            --secondary-color: #ff6347;
+            --accent-color: #ffac41;
+            --dark-color: #333;
+            --light-color: #fff;
+            --gray-100: #f8f9fa;
+            --gray-200: #e9ecef;
+            --gray-300: #dee2e6;
+            --gray-400: #ced4da;
+            --gray-500: #adb5bd;
+            --gray-600: #6c757d;
+            --gray-700: #495057;
+            --gray-800: #343a40;
+            --shadow-sm: 0 2px 4px rgba(0,0,0,0.05);
+            --shadow-md: 0 4px 8px rgba(0,0,0,0.1);
+            --shadow-lg: 0 8px 16px rgba(0,0,0,0.1);
+            --radius-sm: 4px;
+            --radius-md: 8px;
+            --radius-lg: 12px;
+            --transition: all 0.3s ease;
+        }
+        
+        .contacto-main {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 50px 20px;
+        }
+        
+        .section-title {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 3rem;
+            color: var(--dark-color);
+            position: relative;
+        }
+        
+        .section-title:after {
+            content: '';
+            display: block;
+            width: 80px;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+            margin: 0.8rem auto 0;
+            border-radius: 2px;
+        }
+        
+        .contacto-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 40px;
+            margin-bottom: 50px;
+            background-color: var(--light-color);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            box-shadow: var(--shadow-lg);
+        }
+        
+        .contacto-info {
+            flex: 1;
+            min-width: 300px;
+            background: linear-gradient(135deg, #333 0%, #444 100%);
+            color: white;
+            padding: 40px;
+            position: relative;
+        }
+        
+        .contacto-info::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 6px;
+            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+        }
+        
+        .contacto-info h2 {
+            font-size: 1.8rem;
+            margin-bottom: 1.5rem;
+            color: var(--light-color);
+        }
+        
+        .contacto-info p {
+            font-size: 1rem;
+            line-height: 1.6;
+            margin-bottom: 2rem;
+            color: var(--gray-300);
+        }
+        
+        .info-list {
+            list-style: none;
+            padding: 0;
+            margin: 0 0 2rem;
+        }
+        
+        .info-list li {
+            display: flex;
+            margin-bottom: 1.5rem;
+            align-items: flex-start;
+        }
+        
+        .info-list i {
+            background: var(--primary-color);
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            flex-shrink: 0;
+            font-size: 1rem;
+            box-shadow: 0 4px 8px rgba(255, 69, 0, 0.3);
+        }
+        
+        .info-list span {
+            line-height: 1.5;
+        }
+        
+        .info-list strong {
+            display: block;
+            margin-bottom: 0.3rem;
+            color: var(--light-color);
+        }
+        
+        .horario {
+            background-color: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: var(--radius-md);
+            margin-top: 2rem;
+        }
+        
+        .horario h3 {
+            font-size: 1.3rem;
+            margin-bottom: 1rem;
+            color: var(--light-color);
+            position: relative;
+            padding-left: 30px;
+        }
+        
+        .horario h3:before {
+            content: '\f017';
+            font-family: "Font Awesome 6 Free";
+            font-weight: 900;
+            position: absolute;
+            left: 0;
+            top: 0;
+            color: var(--primary-color);
+        }
+        
+        .horario-lista {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        
+        .horario-lista li {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.8rem;
+            color: var(--gray-300);
+        }
+        
+        .contacto-form {
+            flex: 1.5;
+            min-width: 300px;
+            padding: 40px;
+            background-color: var(--light-color);
+        }
+        
+        .contacto-form h2 {
+            font-size: 1.8rem;
+            margin-bottom: 1.5rem;
+            color: var(--dark-color);
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+            position: relative;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--gray-700);
+            font-weight: 500;
+            font-size: 0.95rem;
+        }
+        
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            font-size: 1rem;
+            border: 1px solid var(--gray-300);
+            border-radius: var(--radius-md);
+            background-color: var(--light-color);
+            transition: var(--transition);
+        }
+        
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(255, 69, 0, 0.15);
+        }
+        
+        .form-group textarea {
+            height: 150px;
+            resize: vertical;
+        }
+        
+        .btn-enviar {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.75rem 1.5rem;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: var(--radius-md);
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            width: 100%;
+        }
+        
+        .btn-enviar:hover {
+            background: var(--secondary-color);
+            transform: translateY(-2px);
+        }
+        
+        .btn-enviar i {
+            margin-right: 8px;
+        }
+        
+        .mensaje {
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+        }
+        
+        .mensaje-exito {
+            background-color: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+        }
+        
+        .mensaje i {
+            margin-right: 10px;
+            font-size: 1.2rem;
+        }
+        
+        .login-registro-opciones {
+            background-color: var(--light-color);
+            border-radius: var(--radius-lg);
+            padding: 30px;
+            margin-bottom: 50px;
+            box-shadow: var(--shadow-md);
+            display: flex;
+            flex-wrap: wrap;
+            gap: 30px;
+            justify-content: space-around;
+            align-items: center;
+        }
+        
+        .login-link {
+            text-align: center;
+            flex: 1;
+            min-width: 250px;
+        }
+        
+        .login-link p {
+            margin-bottom: 1rem;
+            color: var(--gray-700);
+        }
+        
+        .btn-secundario {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.7rem 1.2rem;
+            background-color: white;
+            border: 2px solid var(--primary-color);
+            color: var(--primary-color);
+            border-radius: var(--radius-md);
+            font-weight: 600;
+            text-decoration: none;
+            transition: var(--transition);
+        }
+        
+        .btn-secundario:hover {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        .btn-secundario i {
+            margin-right: 8px;
+        }
+        
+        .registro-social {
+            text-align: center;
+            flex: 1;
+            min-width: 250px;
+        }
+        
+        .registro-social p {
+            position: relative;
+            margin-bottom: 1.5rem;
+            color: var(--gray-600);
+            display: inline-block;
+        }
+        
+        .registro-social p:before,
+        .registro-social p:after {
+            content: "";
+            position: absolute;
+            top: 50%;
+            width: 70px;
+            height: 1px;
+            background-color: var(--gray-300);
+        }
+        
+        .registro-social p:before {
+            right: 100%;
+            margin-right: 15px;
+        }
+        
+        .registro-social p:after {
+            left: 100%;
+            margin-left: 15px;
+        }
+        
+        .botones-social {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+        }
+        
+        .btn-facebook,
+        .btn-google {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.6rem 1rem;
+            border-radius: var(--radius-md);
+            text-decoration: none;
+            font-weight: 500;
+            transition: var(--transition);
+            box-shadow: var(--shadow-sm);
+        }
+        
+        .btn-facebook {
+            background-color: #3b5998;
+            color: white;
+        }
+        
+        .btn-facebook:hover {
+            background-color: #2d4373;
+        }
+        
+        .btn-google {
+            background-color: white;
+            color: #EA4335;
+            border: 1px solid #eaeaea;
+        }
+        
+        .btn-google:hover {
+            background-color: #f8f8f8;
+            box-shadow: var(--shadow-md);
+        }
+        
+        .btn-facebook i,
+        .btn-google i {
+            margin-right: 8px;
+        }
+        
+        .mapa-ubicacion {
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            box-shadow: var(--shadow-lg);
+            margin-bottom: 50px;
+            height: 450px;
+        }
+        
+        .mapa-ubicacion iframe {
+            width: 100%;
+            height: 100%;
+            border: 0;
+        }
+        
+        /* Decorative elements */
+        .contacto-form:before {
+            content: '';
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            width: 100px;
+            height: 100px;
+            background: url('imagenes/decorative-dot-pattern.png') no-repeat;
+            opacity: 0.1;
+            z-index: 0;
+        }
+        
+        /* Responsive styles */
+        @media (max-width: 768px) {
+            .contacto-container {
+                flex-direction: column;
+            }
+            
+            .contacto-info,
+            .contacto-form {
+                min-width: 100%;
+            }
+            
+            .horario {
+                margin-top: 1rem;
+            }
+            
+            .login-registro-opciones {
+                flex-direction: column;
+                gap: 20px;
+            }
+            
+            .section-title {
+                font-size: 2rem;
+                margin-bottom: 2rem;
+            }
+            
+            .contacto-form,
+            .contacto-info {
+                padding: 30px;
+            }
+            
+            .info-list i {
+                width: 35px;
+                height: 35px;
+            }
+            
+            .mapa-ubicacion {
+                height: 350px;
+            }
+        }
+        
+        .header-icons {
+            display: flex;
+            gap: 20px;
+        }
+        
+        .header-icons a {
+            color: white;
+            font-size: 22px;
+            text-decoration: none;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .header-icons a:hover {
+            opacity: 0.9;
+        }
+        
+        .cart-count {
+            position: absolute;
+            top: -10px;
+            right: -10px;
+            background-color: white;
+            color: #FF5000;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <header class="main-header">
+        <div class="header-container">
+            <div class="brand">
+                <img src="imagenes/productos/logo.png" alt="Logo Zapatos Moreno" class="logo">
+                <h1>Zapatos Moreno</h1>
+            </div>
+            <div class="header-icons">
+                <a href="carrito.html" title="Carrito de compras">
+                    <i class="fas fa-shopping-cart"></i>
+                    <span class="cart-count">0</span>
+                </a>
+                <a href="contacto.html" title="Ayuda">
+                    <i class="fas fa-question-circle"></i>
+                </a>
+                <a href="login.html" title="Iniciar Sesión">
+                    <i class="fas fa-user"></i>
+                </a>
+            </div>
+        </div>
+        <nav class="main-nav">
+            <button class="menu-toggle" aria-label="Menú">
+                <i class="fas fa-bars"></i>
+            </button>
+            <ul class="nav-links">
+                <li><a href="index.html">Inicio</a></li>
+                <li><a href="hombres.html">Hombres</a></li>
+                <li><a href="mujeres.html">Mujeres</a></li>
+                <li><a href="ninos.html">Niños</a></li>
+                <li><a href="contacto.html" class="active">Contacto</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main class="contacto-main">
+        <h1 class="section-title">Ponte en Contacto</h1>
+        
+        <div class="contacto-container">
+            <div class="contacto-info">
+                <h2>Información de Contacto</h2>
+                <p>Estamos aquí para ayudarte con cualquier consulta. Nuestro equipo de atención al cliente estará encantado de asistirte con tus dudas sobre nuestros productos o servicios.</p>
+                
+                <ul class="info-list">
+                    <li>
+                        <i class="fas fa-map-marker-alt"></i>
+                        <span>
+                            <strong>Dirección</strong>
+                            Calle 123, Villavicencio, Meta, Colombia
+                        </span>
+                    </li>
+                    <li>
+                        <i class="fas fa-phone"></i>
+                        <span>
+                            <strong>Teléfono</strong>
+                            +57 323 456 7890
+                        </span>
+                    </li>
+                    <li>
+                        <i class="fas fa-envelope"></i>
+                        <span>
+                            <strong>Email</strong>
+                            info@zapatosmoreno.com
+                        </span>
+                    </li>
+                </ul>
+                
+                <div class="horario">
+                    <h3>Horario de Atención</h3>
+                    <ul class="horario-lista">
+                        <li>
+                            <span>Lunes - Viernes:</span>
+                            <span>9:00 AM - 8:00 PM</span>
+                        </li>
+                        <li>
+                            <span>Sábados:</span>
+                            <span>10:00 AM - 6:00 PM</span>
+                        </li>
+                        <li>
+                            <span>Domingos:</span>
+                            <span>12:00 PM - 5:00 PM</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="contacto-form">
+                <h2>Envíanos un Mensaje</h2>
+                
+                <!-- Mensaje de éxito (oculto por defecto) -->
+                <!-- <div class="mensaje mensaje-exito">
+                    <i class="fas fa-check-circle"></i>
+                    Tu mensaje ha sido enviado correctamente. Te responderemos a la brevedad.
+                </div> -->
+                
+                <form id="formulario-contacto">
+                    <div class="form-group">
+                        <label for="nombre">Nombre completo</label>
+                        <input type="text" id="nombre" name="nombre" placeholder="Tu nombre y apellido" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="email">Correo electrónico</label>
+                        <input type="email" id="email" name="email" placeholder="ejemplo@correo.com" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="asunto">Asunto</label>
+                        <select id="asunto" name="asunto" required>
+                            <option value="">Seleccionar asunto</option>
+                            <option value="consulta">Consulta general</option>
+                            <option value="pedido">Información sobre pedido</option>
+                            <option value="devolución">Devolución o cambio</option>
+                            <option value="reclamo">Reclamo</option>
+                            <option value="otro">Otro</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="mensaje">Mensaje</label>
+                        <textarea id="mensaje" name="mensaje" placeholder="Escribe tu mensaje aquí..." required></textarea>
+                    </div>
+                    
+                    <button type="submit" class="btn-enviar">
+                        <i class="fas fa-paper-plane"></i> Enviar Mensaje
+                    </button>
+                </form>
+            </div>
+        </div>
+        
+        <div class="login-registro-opciones">
+            <div class="login-link">
+                <p>¿Ya tienes una cuenta? Accede para hacer seguimiento a tus consultas</p>
+                <a href="login.html" class="btn-secundario">
+                    <i class="fas fa-sign-in-alt"></i> Iniciar Sesión
+                </a>
+            </div>
+            
+            <div class="registro-social">
+                <p>O regístrate con:</p>
+                <div class="botones-social">
+                    <a href="#" class="btn-facebook">
+                        <i class="fab fa-facebook-f"></i> Facebook
+                    </a>
+                    <a href="#" class="btn-google">
+                        <i class="fab fa-google"></i> Google
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="mapa-ubicacion">
+            <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d63798.91072423855!2d-73.67961349118361!3d4.133535741629791!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x8e3e2de56e1fe3f7%3A0x42e1d5b73fe9130!2sVillavicencio%2C%20Meta!5e0!3m2!1ses!2sco!4v1613747204436!5m2!1ses!2sco" allowfullscreen="" loading="lazy"></iframe>
+        </div>
+    </main>
+
+    <footer class="main-footer">
+        <div class="footer-container">
+            <div class="footer-section">
+                <h3>Contáctanos</h3>
+                <p><i class="fas fa-map-marker-alt"></i> Calle 123, Villavicencio, Meta</p>
+                <p><i class="fas fa-phone"></i> +57 323 456 7890</p>
+                <p><i class="fas fa-envelope"></i> info@zapatosmoreno.com</p>
+            </div>
+            <div class="footer-section">
+                <h3>Síguenos</h3>
+                <div class="social-links">
+                    <a href="#"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                </div>
+            </div>
+            <div class="footer-section">
+                <h3>Newsletter</h3>
+                <form class="newsletter-form">
+                    <input type="email" placeholder="Tu correo electrónico" required>
+                    <button type="submit">Suscribirse</button>
+                </form>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2024 Zapatos Moreno. Todos los derechos reservados.</p>
+        </div>
+    </footer>
+
+    <script src="js/contacto.js"></script>
+    <script src="js/session-manager.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('formulario-contacto');
+            
+            if (form) {
+                form.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    
+                    // Get form data
+                    const nombre = document.getElementById('nombre').value;
+                    const email = document.getElementById('email').value;
+                    const asunto = document.getElementById('asunto').value;
+                    const mensaje = document.getElementById('mensaje').value;
+                    
+                    // Simple validation
+                    if (!nombre || !email || !asunto || !mensaje) {
+                        alert('Por favor completa todos los campos');
+                        return;
+                    }
+                    
+                    // Simulate sending data
+                    const submitBtn = form.querySelector('.btn-enviar');
+                    const originalBtnText = submitBtn.innerHTML;
+                    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Enviando...';
+                    submitBtn.disabled = true;
+                    
+                    // Simulate API call delay
+                    setTimeout(function() {
+                        // Create success message
+                        const successMsg = document.createElement('div');
+                        successMsg.className = 'mensaje mensaje-exito';
+                        successMsg.innerHTML = '<i class="fas fa-check-circle"></i> Tu mensaje ha sido enviado correctamente. Te responderemos a la brevedad.';
+                        
+                        // Insert before the form
+                        form.parentNode.insertBefore(successMsg, form);
+                        
+                        // Reset form
+                        form.reset();
+                        
+                        // Reset button
+                        submitBtn.innerHTML = originalBtnText;
+                        submitBtn.disabled = false;
+                        
+                        // Scroll to success message
+                        successMsg.scrollIntoView({ behavior: 'smooth' });
+                        
+                        // Remove message after some time
+                        setTimeout(function() {
+                            successMsg.style.opacity = '0';
+                            setTimeout(function() {
+                                successMsg.remove();
+                            }, 300);
+                        }, 5000);
+                    }, 1500);
+                });
+            }
+        });
+    </script>
+</body>
+</html>

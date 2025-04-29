@@ -1,0 +1,424 @@
+content="width=device-width, initial-scale=1.0">
+    <title>Zapatos Moreno - Proceso de Pago</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/estilos-carrito.css">
+    <link rel="stylesheet" href="css/estilos-pago.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #ff4500;
+            --secondary-color: #ff6347;
+        }
+
+        /* Estilos básicos para la página de pago */
+        .pago-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .formulario-pago-container {
+            flex: 2;
+            min-width: 300px;
+        }
+
+        .resumen-pago {
+            flex: 1;
+            min-width: 300px;
+            background-color: #f9f9f9;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .metodos-pago {
+            margin: 20px 0;
+        }
+
+        .metodo-pago-opcion {
+            display: flex;
+            align-items: center;
+            margin: 10px 0;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .metodo-pago-opcion:hover {
+            background-color: #f5f5f5;
+        }
+
+        .metodo-pago-opcion input {
+            margin-right: 10px;
+        }
+
+        .metodo-pago-opcion img {
+            height: 30px;
+            margin-right: 10px;
+        }
+
+        .formulario-pago {
+            display: none;
+            margin-top: 20px;
+        }
+
+        .campo-form {
+            margin-bottom: 15px;
+        }
+
+        .campo-form label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        .campo-form input,
+        .campo-form select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+
+        .campo-form-grupo {
+            display: flex;
+            gap: 10px;
+        }
+
+        .campo-form-grupo .campo-form {
+            flex: 1;
+        }
+
+        .producto-resumen {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        .producto-atributos {
+            font-size: 0.9em;
+            color: #666;
+        }
+
+        .producto-atributos span {
+            display: block;
+            margin: 2px 0;
+        }
+
+        .totales-resumen {
+            margin-top: 20px;
+        }
+
+        .total-linea {
+            display: flex;
+            justify-content: space-between;
+            margin: 5px 0;
+        }
+
+        .total-final {
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 2px solid #ddd;
+            font-weight: bold;
+            font-size: 1.2em;
+        }
+
+        .btn-confirmar-pago {
+            width: 100%;
+            padding: 12px;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 1.1em;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            margin-top: 20px;
+        }
+
+        .btn-confirmar-pago:hover {
+            background-color: var(--secondary-color);
+        }
+
+        .pantalla-carga {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+        }
+
+        .carga-contenido {
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .spinner {
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid var(--primary-color);
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        #errores-pago {
+            background-color: #ffebee;
+            color: #c62828;
+            padding: 10px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+            display: none;
+        }
+
+        .descuento-aplicado {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <header class="main-header">
+        <div class="header-container">
+            <div class="brand">
+                <img src="imagenes/productos/logo.png" alt="Logo Zapatos Moreno" class="logo">
+                <h1>Zapatos Moreno</h1>
+            </div>
+            <div class="header-icons">
+                <a href="carrito.html" class="cart-link active" title="Carrito de compras">
+                    <i class="fas fa-shopping-cart"></i>
+                    <span class="cart-count">0</span>
+                </a>
+                <a href="contacto.html" title="Ayuda"><i class="fas fa-question-circle"></i></a>
+                <a href="login.html" title="Iniciar Sesión"><i class="fas fa-user"></i></a>
+            </div>
+        </div>
+        <nav class="main-nav">
+            <button class="menu-toggle" aria-label="Menú">
+                <i class="fas fa-bars"></i>
+            </button>
+            <ul class="nav-links">
+                <li><a href="index.html">Inicio</a></li>
+                <li><a href="hombres.html">Hombres</a></li>
+                <li><a href="mujeres.html">Mujeres</a></li>
+                <li><a href="ninos.html">Niños</a></li>
+                <li><a href="contacto.html">Contacto</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main class="container">
+        <div class="breadcrumb">
+            <a href="index.html">Inicio</a> &gt;
+            <a href="carrito.html">Carrito</a> &gt;
+            <span>Pago</span>
+        </div>
+
+        <h1 class="section-title">Finalizar Compra</h1>
+
+        <div id="errores-pago" style="background-color: #ffebee; color: #c62828; padding: 10px; margin-bottom: 20px; border-radius: 5px; display: none;"></div>
+
+        <div class="pago-container">
+            <div class="formulario-pago-container">
+                <h2>1. Información de Envío</h2>
+                <form id="form-pago">
+                    <div class="campo-form">
+                        <label for="nombre">Nombre completo*</label>
+                        <input type="text" id="nombre" name="nombre" required>
+                    </div>
+                    
+                    <div class="campo-form">
+                        <label for="direccion">Dirección de envío*</label>
+                        <input type="text" id="direccion" name="direccion" required>
+                    </div>
+                    
+                    <div class="campo-form-grupo">
+                        <div class="campo-form">
+                            <label for="ciudad">Ciudad*</label>
+                            <input type="text" id="ciudad" name="ciudad" required>
+                        </div>
+                        
+                        <div class="campo-form">
+                            <label for="codigo-postal">Código postal</label>
+                            <input type="text" id="codigo-postal" name="codigo-postal">
+                        </div>
+                    </div>
+                    
+                    <div class="campo-form">
+                        <label for="telefono">Teléfono de contacto*</label>
+                        <input type="tel" id="telefono" name="telefono" required>
+                    </div>
+                    
+                    <div class="campo-form">
+                        <label for="instrucciones-envio">Instrucciones de entrega (opcional)</label>
+                        <input type="text" id="instrucciones-envio" name="instrucciones-envio" placeholder="Ej: Dejar con el portero">
+                    </div>
+                    
+                    <h2>2. Método de Pago</h2>
+                    
+                    <div class="metodos-pago">
+                        <label class="metodo-pago-opcion">
+                            <input type="radio" name="metodo-pago" value="tarjeta" checked>
+                            <img src="img/tarjetas.png" alt="Tarjeta de crédito/débito">
+                            <span>Tarjeta de crédito/débito</span>
+                        </label>
+                        
+                        <label class="metodo-pago-opcion">
+                            <input type="radio" name="metodo-pago" value="pse">
+                            <img src="img/pse.png" alt="PSE">
+                            <span>PSE - Débito bancario</span>
+                        </label>
+                        
+                        <label class="metodo-pago-opcion">
+                            <input type="radio" name="metodo-pago" value="efectivo">
+                            <img src="img/efectivo.png" alt="Efectivo">
+                            <span>Pago contra entrega</span>
+                        </label>
+                    </div>
+                    
+                    <div id="form-tarjeta" class="formulario-pago" style="display: block;">
+                        <div class="campo-form">
+                            <label for="numero-tarjeta">Número de tarjeta*</label>
+                            <input type="text" id="numero-tarjeta" name="numero-tarjeta" placeholder="1234 5678 9012 3456" required>
+                        </div>
+                        
+                        <div class="campo-form">
+                            <label for="nombre-tarjeta">Nombre en la tarjeta*</label>
+                            <input type="text" id="nombre-tarjeta" name="nombre-tarjeta" required>
+                        </div>
+                        
+                        <div class="campo-form-grupo">
+                            <div class="campo-form">
+                                <label for="fecha-vencimiento">Fecha de vencimiento*</label>
+                                <input type="text" id="fecha-vencimiento" name="fecha-vencimiento" placeholder="MM/AA" required>
+                            </div>
+                            
+                            <div class="campo-form">
+                                <label for="cvv">CVV*</label>
+                                <input type="text" id="cvv" name="cvv" required>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div id="form-pse" class="formulario-pago">
+                        <div class="campo-form">
+                            <label for="banco">Seleccione su banco*</label>
+                            <select id="banco" name="banco" required>
+                                <option value="">Seleccione un banco</option>
+                                <option value="bancolombia">Bancolombia</option>
+                                <option value="davivienda">Davivienda</option>
+                                <option value="bbva">BBVA</option>
+                                <option value="bogota">Banco de Bogotá</option>
+                                <option value="popular">Banco Popular</option>
+                                <option value="occidente">Banco de Occidente</option>
+                            </select>
+                        </div>
+                        
+                        <div class="campo-form">
+                            <label for="tipo-cuenta">Tipo de cuenta*</label>
+                            <select id="tipo-cuenta" name="tipo-cuenta" required>
+                                <option value="">Seleccione tipo de cuenta</option>
+                                <option value="ahorros">Cuenta de ahorros</option>
+                                <option value="corriente">Cuenta corriente</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div id="form-efectivo" class="formulario-pago">
+                        <p>Has seleccionado pago contra entrega. El pago se realizará en efectivo cuando recibas tu pedido.</p>
+                        <p><strong>Nota:</strong> Asegúrate de tener el monto exacto para facilitar la entrega.</p>
+                    </div>
+                    
+                    <button type="button" class="btn-confirmar-pago" id="btn-confirmar-pagar">
+                        <i class="fas fa-lock"></i> Confirmar y Pagar
+                    </button>
+                </form>
+            </div>
+
+            <div class="resumen-pago">
+                <h2>Resumen del Pedido</h2>
+                
+                <div id="resumen-productos">
+                    <!-- Aquí se cargarán dinámicamente los productos -->
+                </div>
+                
+                <div class="totales-resumen">
+                    <div class="total-linea">
+                        <span>Subtotal:</span>
+                        <span id="resumen-subtotal">$0</span>
+                    </div>
+                    
+                    <div class="total-linea">
+                        <span>IVA (19%):</span>
+                        <span id="resumen-iva">$0</span>
+                    </div>
+                    
+                    <div class="total-linea descuento-aplicado">
+                        <span>Descuento:</span>
+                        <span id="resumen-descuento">$0</span>
+                    </div>
+                    
+                    <div class="total-linea total-final">
+                        <span>Total:</span>
+                        <span id="resumen-total">$0</span>
+                    </div>
+                </div>
+                
+                <div class="politicas-compra">
+                    <p><i class="fas fa-shield-alt"></i> Pago 100% seguro</p>
+                    <p><i class="fas fa-truck"></i> Envío gratis en compras mayores a $150.000</p>
+                    <p><i class="fas fa-exchange-alt"></i> 30 días para cambios o devoluciones</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="main-footer">
+        <div class="footer-container container">
+            <div class="footer-section">
+                <h3>Contáctanos</h3>
+                <address>
+                    <p><i class="fas fa-map-marker-alt"></i> Calle 123, Villavicencio, Meta</p>
+                    <p><i class="fas fa-phone"></i> +57 323 456 7890</p>
+                    <p><i class="fas fa-envelope"></i> info@zapatosmoreno.com</p>
+                </address>
+            </div>
+            <div class="footer-section">
+                <h3>Síguenos</h3>
+                <div class="social-links">
+                    <a href="#" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+                    <a href="#" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
+                </div>
+            </div>
+            <div class="footer-section">
+                <h3>Newsletter</h3>
+                <form class="newsletter-form">
+                    <input type="email" placeholder="Tu correo electrónico" required>
+                    <button type="submit">Suscribirse</button>
+                </form>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2024 Zapatos Moreno. Todos los derechos reservados.</p>
+        </div>
+    </footer>
+
+    <script src="js/pago.js"></script>
+</body>
+</html>
