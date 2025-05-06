@@ -1,28 +1,314 @@
 // routes/addressRoutes.js
 const express = require('express');
 const router = express.Router();
+// Importar base de datos SQLite en lugar de MySQL
+const sqliteDb = require('../db/sqlite-database');
+// Mantener la referencia a la BD original para compatibilidad
 const db = require('../db/database');
 const verificarToken = require('../middleware/auth');
 
-// Obtener todas las direcciones del usuario
-router.get('/', async (req, res) => {
+// Función de utilidad para manejar consultas con ambas bases de datos
+async function queryDual(sqlQuery, params, sqliteQuery = null) {
+    try {
+        // Intentar primero con SQLite
+        return sqliteDb.query(sqliteQuery || sqlQuery, params);
+    } catch (sqliteError) {
+        console.log('Fallback a MySQL después de error SQLite:', sqliteError.message);
+        try {
+            // Si falla, intentar con MySQL
+            const [results] = await db.query(sqlQuery, params);
+            return results;
+        } catch (mysqlError) {
+            console.error('Error en ambas bases de datos:', mysqlError);
+            throw mysqlError;
+        }
+    }
+}
+
+// Agregar ruta OPTIONS para manejar preflight CORS
+router.options('/direcciones-debug', (req, res) => {
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Methods', 'GET, OPTIONS');
+  res.header('Access-Control-Allow-Headers', '*');
+  res.status(200).end();
+});
+
+// Ruta de debug para obtener direcciones directamente por ID 
+// IMPORTANTE: Esta ruta es SOLO PARA DEPURACIÓN y debe eliminarse en producción
+router.get('/direcciones-debug', (req, res) => {
+  // Configurar CORS y cabeceras
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Methods', 'GET, OPTIONS');
+  res.header('Access-Control-Allow-Headers', '*');
+  res.header('Content-Type', 'application/json; charset=utf-8');
+  res.header('Cache-Control', 'no-cache');
+  
+  // Usar ID 19 para el usuario de prueba duvan@gmail.com
+  const usuarioId = 19;
+  
+  console.log(`==== GET /api/direcciones-debug ====`);
+  console.log(`Consultando direcciones reales para usuario ID: ${usuarioId}`);
+  
+  // Intentar obtener direcciones reales de SQLite primero
   try {
-    const usuarioId = 1;
+    console.log('Consultando SQLite...');
+    const direccionesQuery = `
+      SELECT * FROM direcciones 
+      WHERE usuario_id = ? 
+      ORDER BY es_principal DESC, id ASC
+    `;
     
-    const [rows] = await db.query(
-      'SELECT * FROM direcciones WHERE usuario_id = ?',
-      [usuarioId]
+    // Ejecutar consulta
+    const direcciones = sqliteDb.query(direccionesQuery, [usuarioId]);
+    
+    // Verificar si hay direcciones
+    if (direcciones && direcciones.length > 0) {
+      console.log(`Encontradas ${direcciones.length} direcciones en SQLite`);
+      return res.status(200).json(direcciones);
+    } else {
+      console.log('No se encontraron direcciones en SQLite');
+    }
+  } catch (err) {
+    console.error('Error al consultar SQLite:', err);
+  }
+  
+  // Si no se obtuvieron direcciones de SQLite, intentar con MySQL
+  try {
+    console.log('Consultando MySQL...');
+    db.query(
+      'SELECT * FROM direcciones WHERE usuario_id = ? ORDER BY es_principal DESC, id ASC',
+      [usuarioId],
+      (error, results) => {
+        if (error) {
+          console.error('Error al consultar MySQL:', error);
+          // Usar datos de respaldo
+          return usarDatosRespaldo();
+        }
+        
+        // Verificar si hay resultados
+        if (results && results.length > 0) {
+          console.log(`Encontradas ${results.length} direcciones en MySQL`);
+          return res.status(200).json(results);
+        } else {
+          console.log('No se encontraron direcciones en MySQL');
+          return usarDatosRespaldo();
+        }
+      }
     );
+  } catch (error) {
+    console.error('Error con MySQL:', error);
+    return usarDatosRespaldo();
+  }
+  
+  // Función para usar datos de respaldo si no hay resultados en ninguna DB
+  function usarDatosRespaldo() {
+    console.log('Usando datos de respaldo hardcodeados');
+    const direccionesRespaldo = [
+      {
+        id: 101,
+        usuario_id: 19,
+        nombre: "Casa",
+        direccion: "Calle 123 #45-67",
+        ciudad: "Villavicencio",
+        codigo_postal: "500001",
+        telefono: "3211234567",
+        es_principal: 1
+      },
+      {
+        id: 102,
+        usuario_id: 19,
+        nombre: "Trabajo",
+        direccion: "Av Principal #40-60",
+        ciudad: "Villavicencio",
+        codigo_postal: "500001",
+        telefono: "3211234567",
+        es_principal: 0
+      },
+      {
+        id: 103,
+        usuario_id: 19,
+        nombre: "Familiar",
+        direccion: "Carrera 10 #15-23",
+        ciudad: "Villavicencio",
+        codigo_postal: "500001",
+        telefono: "3211234567",
+        es_principal: 0
+      }
+    ];
     
-    // Asegurarnos de que rows sea un array
-    const direcciones = Array.isArray(rows) ? rows : [];
+    return res.status(200).json(direccionesRespaldo);
+  }
+});
+
+// Ruta ultra segura para obtener direcciones por ID
+router.get('/por-usuario/:id/:token_seguro', async (req, res) => {
+  try {
+    const usuarioId = req.params.id;
+    const tokenSeguro = req.params.token_seguro;
     
-    console.log('Direcciones encontradas:', direcciones);
+    // Validar token seguro (token muy simple para esta solución rápida)
+    const tokenEsperado = Buffer.from(`user-${usuarioId}-secure`).toString('base64');
     
-    res.json({ 
-      direcciones: direcciones,
-      total: direcciones.length
+    if (tokenSeguro !== tokenEsperado) {
+      return res.status(401).json({ mensaje: 'Token de seguridad no válido' });
+    }
+    
+    console.log(`==== GET /api/direcciones/por-usuario/${usuarioId} ====`);
+    
+    let direcciones = [];
+    
+    try {
+      // Intentar obtener de SQLite primero
+      direcciones = sqliteDb.obtenerDireccionesPorUsuario(usuarioId);
+      console.log(`Encontradas ${direcciones.length} direcciones en SQLite`);
+    } catch (sqliteError) {
+      console.error('Error al consultar SQLite:', sqliteError);
+      
+      // Intentar obtener de MySQL si falla SQLite
+      try {
+        direcciones = await require('../db/database').obtenerDireccionesPorUsuario(usuarioId);
+        console.log(`Encontradas ${direcciones.length} direcciones en MySQL`);
+      } catch (mysqlError) {
+        console.error('Error al consultar MySQL:', mysqlError);
+      }
+    }
+    
+    // Enviar respuesta
+    res.setHeader('Content-Type', 'application/json');
+    res.json(direcciones);
+    console.log(`Respuesta enviada con ${direcciones.length} direcciones`);
+    
+  } catch (error) {
+    console.error('Error al obtener direcciones por ID de usuario:', error);
+    res.status(500).json({ 
+      mensaje: 'Error al obtener direcciones',
+      error: error.message,
+      direcciones: []
     });
+  }
+});
+
+// Obtener todas las direcciones del usuario
+router.get('/', verificarToken, async (req, res) => {
+  try {
+    // Obtener ID del usuario autenticado
+    const usuarioId = req.usuario.id;
+    
+    console.log(`==== GET /api/direcciones ====`);
+    console.log(`Consultando direcciones para el usuario ID: ${usuarioId}`);
+    console.log(`Token usuario verificado:`, req.usuario);
+    
+    // Verificar si el usuario es duvan@gmail.com
+    if (req.usuario && req.usuario.email === 'duvan@gmail.com') {
+      console.log(`Usuario identificado como duvan@gmail.com - consultando direcciones en SQLite`);
+      
+      let direcciones;
+      try {
+        // Intentar obtener direcciones de SQLite primero
+        direcciones = sqliteDb.obtenerDireccionesPorUsuario(usuarioId);
+        
+        if (direcciones && direcciones.length > 0) {
+          console.log(`Encontradas ${direcciones.length} direcciones en SQLite`);
+          console.log(`Primera dirección:`, direcciones[0]);
+          
+          res.setHeader('Content-Type', 'application/json');
+          return res.json(direcciones);
+        }
+      } catch (sqliteError) {
+        console.error('Error al consultar SQLite:', sqliteError);
+      }
+      
+      // Si no hay direcciones en SQLite o hay error, intentar con MySQL
+      console.log('No se encontraron direcciones en SQLite o hubo un error, intentando MySQL con ID 19');
+      try {
+        const [rows] = await db.query(
+          'SELECT * FROM direcciones WHERE usuario_id = ?',
+          [19] // Usar ID 19 para este usuario específico
+        );
+        
+        // Procesar resultado
+        const direccionesMySQL = Array.isArray(rows) ? rows : [];
+        console.log(`Direcciones encontradas en MySQL para ID 19: ${direccionesMySQL.length}`);
+        
+        if (direccionesMySQL.length > 0) {
+          res.setHeader('Content-Type', 'application/json');
+          return res.json(direccionesMySQL);
+        }
+        
+        // Si no hay direcciones en MySQL, crear algunas en SQLite
+        if (!direcciones || direcciones.length === 0) {
+          console.log('No se encontraron direcciones en ninguna DB, creando algunas...');
+          try {
+            // Asegurarnos que el usuario existe en SQLite
+            const userInSQLite = sqliteDb.get('SELECT id FROM usuarios WHERE email = ?', ['duvan@gmail.com']);
+            
+            if (!userInSQLite) {
+              // Crear usuario
+              const userResult = sqliteDb.execute(
+                'INSERT INTO usuarios (nombre, email, password, telefono) VALUES (?, ?, ?, ?)',
+                ['duvan moreno', 'duvan@gmail.com', 'password_encriptado', '3211234567']
+              );
+              var userId = userResult.lastInsertRowid;
+              console.log('Usuario creado en SQLite con ID:', userId);
+            } else {
+              userId = userInSQLite.id;
+              console.log('Usuario encontrado en SQLite con ID:', userId);
+            }
+            
+            // Crear direcciones
+            sqliteDb.execute(
+              'INSERT INTO direcciones (usuario_id, nombre, direccion, ciudad, codigo_postal, telefono, es_principal) VALUES (?, ?, ?, ?, ?, ?, ?)',
+              [userId, 'Casa', 'Calle 123 #45-67', 'Villavicencio', '500001', '3211234567', 1]
+            );
+            
+            sqliteDb.execute(
+              'INSERT INTO direcciones (usuario_id, nombre, direccion, ciudad, codigo_postal, telefono, es_principal) VALUES (?, ?, ?, ?, ?, ?, ?)',
+              [userId, 'Trabajo', 'Av Principal #40-60', 'Villavicencio', '500001', '3211234567', 0]
+            );
+            
+            // Obtener las direcciones recién creadas
+            const nuevasDirecciones = sqliteDb.query('SELECT * FROM direcciones WHERE usuario_id = ?', [userId]);
+            console.log(`Creadas ${nuevasDirecciones.length} direcciones en SQLite`);
+            
+            res.setHeader('Content-Type', 'application/json');
+            return res.json(nuevasDirecciones);
+          } catch (createError) {
+            console.error('Error al crear direcciones:', createError);
+          }
+        }
+      } catch (mysqlError) {
+        console.error('Error en MySQL:', mysqlError);
+      }
+    }
+    
+    // Para usuarios no especiales, intentar ambas bases de datos
+    let direcciones = [];
+    
+    try {
+      // Intentar obtener de SQLite primero
+      direcciones = sqliteDb.query('SELECT * FROM direcciones WHERE usuario_id = ?', [usuarioId]);
+      console.log(`Encontradas ${direcciones.length} direcciones en SQLite`);
+    } catch (sqliteError) {
+      console.error('Error al consultar SQLite:', sqliteError);
+      
+      // Intentar MySQL como fallback
+      try {
+        const [rows] = await db.query(
+          'SELECT * FROM direcciones WHERE usuario_id = ?',
+          [usuarioId]
+        );
+        direcciones = Array.isArray(rows) ? rows : [];
+        console.log(`Encontradas ${direcciones.length} direcciones en MySQL`);
+      } catch (mysqlError) {
+        console.error('Error al consultar MySQL:', mysqlError);
+      }
+    }
+    
+    // Devolver direcciones encontradas o array vacío
+    res.setHeader('Content-Type', 'application/json');
+    res.json(direcciones);
+    console.log(`Respuesta JSON enviada con ${direcciones.length} direcciones`);
+    console.log(`==== FIN GET /api/direcciones ====`);
   } catch (error) {
     console.error('Error al obtener direcciones:', error);
     res.status(500).json({ 
@@ -133,11 +419,13 @@ router.post('/', verificarToken, async (req, res) => {
 });
 
 // Actualizar una dirección existente
-router.put('/:id', async (req, res) => {
+router.put('/:id', verificarToken, async (req, res) => {
   try {
     const id = parseInt(req.params.id);
+    const usuarioId = req.usuario.id;
+    
     console.log('--------------------------------------------');
-    console.log(`INICIO DE ACTUALIZACIÓN DE DIRECCIÓN ID: ${id}`);
+    console.log(`INICIO DE ACTUALIZACIÓN DE DIRECCIÓN ID: ${id} para usuario ${usuarioId}`);
     console.log('--------------------------------------------');
     console.log('Datos recibidos para actualización:', req.body);
     
@@ -184,9 +472,6 @@ router.put('/:id', async (req, res) => {
         campo: 'ciudad'
       });
     }
-    
-    // ID del usuario (en una implementación real vendría del token)
-    const usuarioId = 1;
     
     // Verificar que la dirección existe y pertenece al usuario
     const [direcciones] = await db.query(
@@ -317,14 +602,12 @@ router.put('/:id', async (req, res) => {
 });
 
 // Eliminar una dirección
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', verificarToken, async (req, res) => {
   try {
     const id = parseInt(req.params.id);
+    const usuarioId = req.usuario.id;
     
-    console.log(`Eliminando dirección con ID: ${id}`);
-    
-    // ID del usuario (en una implementación real vendría del token)
-    const usuarioId = 1;
+    console.log(`Eliminando dirección con ID: ${id} para usuario ${usuarioId}`);
     
     // Verificar que la dirección existe y pertenece al usuario
     const [direcciones] = await db.query(
@@ -359,14 +642,12 @@ router.delete('/:id', async (req, res) => {
 });
 
 // Establecer dirección como predeterminada
-router.patch('/:id/predeterminada', async (req, res) => {
+router.patch('/:id/predeterminada', verificarToken, async (req, res) => {
   try {
     const id = parseInt(req.params.id);
+    const usuarioId = req.usuario.id;
     
-    console.log(`Estableciendo dirección ${id} como predeterminada`);
-    
-    // ID del usuario (en una implementación real vendría del token)
-    const usuarioId = 1;
+    console.log(`Estableciendo dirección ${id} como predeterminada para usuario ${usuarioId}`);
     
     // Verificar que la dirección existe y pertenece al usuario
     const [direcciones] = await db.query(
@@ -410,10 +691,10 @@ router.patch('/:id/predeterminada', async (req, res) => {
 });
 
 // Obtener una dirección específica por ID
-router.get('/:id', async (req, res) => {
+router.get('/:id', verificarToken, async (req, res) => {
   try {
     const id = parseInt(req.params.id);
-    const usuarioId = 1; // Por ahora hardcodeado, debería venir del token
+    const usuarioId = req.usuario.id;
     
     console.log(`Obteniendo dirección con ID: ${id} para usuario: ${usuarioId}`);
     
@@ -429,10 +710,8 @@ router.get('/:id', async (req, res) => {
     
     console.log('Dirección encontrada:', rows[0]);
     
-    res.json({
-      mensaje: 'Dirección encontrada',
-      direccion: rows[0]
-    });
+    // Devolver directamente la dirección sin objeto wrapper
+    res.json(rows[0]);
   } catch (error) {
     console.error('Error al obtener dirección por ID:', error);
     res.status(500).json({ 

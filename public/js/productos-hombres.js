@@ -8,13 +8,109 @@ class ProductosHombres extends ProductosManager {
 }
 
 // Inicializar cuando el DOM esté listo
-document.addEventListener('DOMContentLoaded', () => {
-    const productosHombres = new ProductosManager('hombre');
-    productosHombres.init();
-});
+// document.addEventListener('DOMContentLoaded', () => {
+//     window.productosHombres = new ProductosManager('hombre');
+//     window.productosHombres.init();
+// });
+
+// Datos de productos para hombres
+const productosHombres = [
+    {
+        id: 1,
+        nombre: "Zapatos Oxford Negros",
+        precio: 159900,
+        descripcion: "Elegantes zapatos Oxford ideales para ocasiones formales.",
+        imagen: "/imagenes/productos/hombres/oxford-negro.jpg",
+        tipo: "formal",
+        tallas: ["38", "39", "40", "41", "42", "43", "44"],
+        colores: ["Negro", "Marrón"],
+        materiales: "Cuero genuino, suela de goma antideslizante, forro interior de tela suave",
+        inventario: {
+            "Negro": ["38", "39", "40", "41", "42", "43"],
+            "Marrón": ["39", "40", "41", "42"]
+        }
+    },
+    {
+        id: 2,
+        nombre: "Botas Casuales Marrones",
+        precio: 189900,
+        descripcion: "Botas casuales en cuero marrón, perfectas para uso diario.",
+        imagen: "/imagenes/productos/hombres/botas-casual.jpg",
+        tipo: "casual",
+        tallas: ["38", "39", "40", "41", "42", "43"],
+        colores: ["Marrón", "Negro"],
+        materiales: "Exterior de cuero natural, interior acolchado, suela de goma resistente",
+        inventario: {
+            "Marrón": ["38", "39", "40", "41", "42", "43"],
+            "Negro": ["38", "40", "41", "43"]
+        }
+    },
+    {
+        id: 3,
+        nombre: "Tenis Deportivos",
+        precio: 129900,
+        descripcion: "Tenis deportivos con diseño moderno y máxima comodidad.",
+        imagen: "/imagenes/productos/hombres/tenis-deportivo.jpg",
+        tipo: "deportivo",
+        tallas: ["38", "39", "40", "41", "42", "43", "44"],
+        colores: ["Azul", "Negro", "Rojo"],
+        materiales: "Malla transpirable, plantilla de espuma viscoelástica, suela de goma con tecnología de amortiguación",
+        inventario: {
+            "Azul": ["38", "39", "40", "42", "43", "44"],
+            "Negro": ["38", "39", "40", "41", "42", "43", "44"],
+            "Rojo": ["39", "40", "42", "43"]
+        }
+    },
+    {
+        id: 4,
+        nombre: "Mocasines Elegantes",
+        precio: 149900,
+        descripcion: "Mocasines elegantes y cómodos, ideales para uso diario o eventos casuales.",
+        imagen: "/imagenes/productos/hombres/mocasines.jpg",
+        tipo: "casual",
+        tallas: ["38", "39", "40", "41", "42", "43"],
+        colores: ["Negro", "Marrón"],
+        materiales: "Cuero premium, plantilla acolchada, suela flexible de goma",
+        inventario: {
+            "Negro": ["38", "39", "40", "41", "42"],
+            "Marrón": ["38", "39", "41", "42", "43"]
+        }
+    },
+    {
+        id: 5,
+        nombre: "Zapatos de Vestir",
+        precio: 179900,
+        descripcion: "Zapatos de vestir en cuero de primera calidad, perfectos para reuniones formales.",
+        imagen: "/imagenes/productos/hombres/zapatos-vestir.jpg",
+        tipo: "formal",
+        tallas: ["38", "39", "40", "41", "42", "43"],
+        colores: ["Negro", "Marrón"],
+        materiales: "Cuero italiano de alta calidad, suela de cuero, forro interior de piel",
+        inventario: {
+            "Negro": ["39", "40", "41", "42", "43"],
+            "Marrón": ["38", "40", "41", "42"]
+        }
+    },
+    {
+        id: 6,
+        nombre: "Zapatillas Running",
+        precio: 199900,
+        descripcion: "Zapatillas especiales para running con tecnología de amortiguación avanzada.",
+        imagen: "/imagenes/productos/hombres/zapatillas-running.jpg",
+        tipo: "deportivo",
+        tallas: ["38", "39", "40", "41", "42", "43", "44"],
+        colores: ["Azul", "Negro", "Rojo"],
+        materiales: "Tejido sintético ligero, plantilla de espuma con memoria, suela con tecnología de absorción de impactos",
+        inventario: {
+            "Azul": ["38", "39", "41", "42", "43", "44"],
+            "Negro": ["38", "39", "40", "41", "42", "43"],
+            "Rojo": ["39", "40", "42", "44"]
+        }
+    }
+];
 
 // public/js/productos-hombres.js (continuación)
-async function cargarProductos() {
+function cargarProductos() {
   const contenedorProductos = document.getElementById('productos-hombres');
   const noProductos = document.getElementById('no-productos');
   
@@ -29,14 +125,20 @@ async function cargarProductos() {
   const color = document.getElementById('color-filtro')?.value || '';
   
   try {
-    // Construir URL con parámetros de filtro
-    let url = '/api/productos?genero=hombre';
-    if (tipo) url += `&tipo=${tipo}`;
-    if (talla) url += `&talla=${talla}`;
-    if (color) url += `&color=${color}`;
+    // Filtrar productos localmente en lugar de usar la API
+    let productos = [...productosHombres];
     
-    const response = await fetch(url);
-    const productos = await response.json();
+    if (tipo) {
+      productos = productos.filter(p => p.tipo.toLowerCase() === tipo.toLowerCase());
+    }
+    
+    if (talla) {
+      productos = productos.filter(p => p.tallas.includes(talla));
+    }
+    
+    if (color) {
+      productos = productos.filter(p => p.colores.some(c => c.toLowerCase() === color.toLowerCase()));
+    }
     
     if (productos.length === 0) {
       if (contenedorProductos) contenedorProductos.style.display = 'none';
@@ -49,41 +151,54 @@ async function cargarProductos() {
     
     // Renderizar productos
     contenedorProductos.innerHTML = productos.map(producto => {
-      // Determinar tallas disponibles
-      const tallas = producto.tallas ? producto.tallas.split(',') : [];
-      const colores = producto.colores ? producto.colores.split(',') : [];
-      
       // Formatear precio
-      const precioFormateado = parseInt(producto.precio).toLocaleString('es-CO');
+      const precioFormateado = producto.precio.toLocaleString('es-CO');
+      
+      // Asegurar que la imagen tenga ruta absoluta
+      let imagenSrc = producto.imagen || '/imagenes/productos/placeholder.jpg';
+      if (!imagenSrc.startsWith('/')) {
+        imagenSrc = '/' + imagenSrc;
+      }
       
       return `
         <div class="producto-card" data-id="${producto.id}">
-          <img src="${producto.imagen || '/imagenes/productos/placeholder.jpg'}" alt="${producto.nombre}" class="producto-img">
-          <h3 class="producto-titulo">${producto.nombre}</h3>
-          <p class="producto-precio">$${precioFormateado}</p>
-          <p class="producto-descripcion">${producto.descripcion ? producto.descripcion.substring(0, 100) + '...' : ''}</p>
-          
-          <div class="producto-opciones">
-            <div class="select-grupo">
-              <label for="talla-${producto.id}">Talla</label>
-              <select class="select-talla" id="talla-${producto.id}" required>
-                <option value="">Seleccionar talla</option>
-                ${tallas.map(talla => `<option value="${talla}">${talla}</option>`).join('')}
-              </select>
+          <a href="/detalle-producto.html?id=${producto.id}" class="producto-link">
+            <img src="${imagenSrc}" alt="${producto.nombre}" class="producto-img">
+          </a>
+          <div class="producto-info">
+            <a href="/detalle-producto.html?id=${producto.id}" class="producto-link">
+              <h3 class="producto-titulo">${producto.nombre}</h3>
+            </a>
+            <p class="producto-precio">$${precioFormateado}</p>
+            <p class="producto-descripcion">${producto.descripcion ? producto.descripcion.substring(0, 100) + '...' : ''}</p>
+            
+            <div class="producto-opciones">
+              <div class="select-grupo">
+                <label for="talla-${producto.id}">Talla</label>
+                <select class="select-talla" id="talla-${producto.id}" required>
+                  <option value="">Seleccionar talla</option>
+                  ${producto.tallas.map(talla => `<option value="${talla}">${talla}</option>`).join('')}
+                </select>
+              </div>
+              
+              <div class="select-grupo">
+                <label for="color-${producto.id}">Color</label>
+                <select class="select-color" id="color-${producto.id}" required>
+                  <option value="">Seleccionar color</option>
+                  ${producto.colores.map(color => `<option value="${color}">${color}</option>`).join('')}
+                </select>
+              </div>
             </div>
             
-            <div class="select-grupo">
-              <label for="color-${producto.id}">Color</label>
-              <select class="select-color" id="color-${producto.id}" required>
-                <option value="">Seleccionar color</option>
-                ${colores.map(color => `<option value="${color}">${color}</option>`).join('')}
-              </select>
+            <div class="producto-acciones">
+              <button class="btn-agregar-carrito" data-id="${producto.id}">
+                <i class="fas fa-shopping-cart"></i> Agregar al carrito
+              </button>
+              <a href="/detalle-producto.html?id=${producto.id}" class="btn-ver-detalle">
+                <i class="fas fa-eye"></i> Ver detalle
+              </a>
             </div>
           </div>
-          
-          <button class="btn-agregar-carrito" data-id="${producto.id}">
-            <i class="fas fa-shopping-cart"></i> Agregar al carrito
-          </button>
         </div>
       `;
     }).join('');
@@ -121,184 +236,64 @@ function agregarAlCarrito(event) {
     imagen: productoCard.querySelector('.producto-img').src,
   };
   
-  console.log("Enviando al carrito:", producto, talla, color);
-  
   // Agregar al carrito
-  Carrito.agregarItem(producto, talla, color, 1);
+  if (typeof Carrito !== 'undefined') {
+    try {
+      producto.talla = talla;
+      producto.color = color;
+      producto.cantidad = 1;
+      
+      Carrito.agregarItem(producto);
+      
+      // Mostrar notificación
+      const notificacion = document.createElement('div');
+      notificacion.className = 'notificacion';
+      notificacion.textContent = `${producto.nombre} añadido al carrito`;
+      document.body.appendChild(notificacion);
+      
+      setTimeout(() => {
+        notificacion.classList.add('fadeout');
+        setTimeout(() => notificacion.remove(), 500);
+      }, 2500);
+      
+    } catch (error) {
+      console.error('Error al agregar al carrito:', error);
+      alert('Ocurrió un error al agregar el producto al carrito');
+    }
+  } else {
+    console.error('El objeto Carrito no está disponible');
+    alert('Error: No se pudo agregar al carrito');
+  }
 }
 
 function resetearFiltros() {
-  const tipo = document.getElementById('tipo-filtro');
-  const talla = document.getElementById('talla-filtro');
-  const color = document.getElementById('color-filtro');
+  // Obtener elementos
+  const tipoFiltro = document.getElementById('tipo-filtro');
+  const tallaFiltro = document.getElementById('talla-filtro');
+  const colorFiltro = document.getElementById('color-filtro');
   
-  if (tipo) tipo.value = '';
-  if (talla) talla.value = '';
-  if (color) color.value = '';
+  // Resetear valores
+  if (tipoFiltro) tipoFiltro.value = '';
+  if (tallaFiltro) tallaFiltro.value = '';
+  if (colorFiltro) colorFiltro.value = '';
   
+  // Volver a cargar productos sin filtros
   cargarProductos();
 }
 
-// Datos de productos para hombres
-const productosHombres = [
-    {
-        id: 1,
-        nombre: "Zapatos Oxford Negros",
-        precio: 159900,
-        descripcion: "Elegantes zapatos Oxford ideales para ocasiones formales.",
-        imagen: "/imagenes/productos/hombres/oxford-negro.jpg",
-        tipo: "formal",
-        tallas: ["38", "39", "40", "41", "42", "43", "44"]
-    },
-    {
-        id: 2,
-        nombre: "Botas Casuales Marrones",
-        precio: 189900,
-        descripcion: "Botas casuales en cuero marrón, perfectas para uso diario.",
-        imagen: "/imagenes/productos/hombres/botas-casual.jpg",
-        tipo: "casual",
-        tallas: ["38", "39", "40", "41", "42", "43"]
-    },
-    {
-        id: 3,
-        nombre: "Tenis Deportivos",
-        precio: 129900,
-        descripcion: "Tenis deportivos con diseño moderno y máxima comodidad.",
-        imagen: "/imagenes/productos/hombres/tenis-deportivo.jpg",
-        tipo: "deportivo",
-        tallas: ["38", "39", "40", "41", "42", "43", "44"]
-    },
-    {
-        id: 4,
-        nombre: "Mocasines Elegantes",
-        precio: 149900,
-        descripcion: "Mocasines elegantes y cómodos, ideales para uso diario o eventos casuales.",
-        imagen: "/imagenes/productos/hombres/mocasines.jpg",
-        tipo: "casual",
-        tallas: ["38", "39", "40", "41", "42", "43"]
-    },
-    {
-        id: 5,
-        nombre: "Zapatos de Vestir",
-        precio: 179900,
-        descripcion: "Zapatos de vestir en cuero de primera calidad, perfectos para reuniones formales.",
-        imagen: "/imagenes/productos/hombres/zapatos-vestir.jpg",
-        tipo: "formal",
-        tallas: ["38", "39", "40", "41", "42", "43"]
-    },
-    {
-        id: 6,
-        nombre: "Zapatillas Running",
-        precio: 199900,
-        descripcion: "Zapatillas especiales para running con tecnología de amortiguación avanzada.",
-        imagen: "/imagenes/productos/hombres/zapatillas-running.jpg",
-        tipo: "deportivo",
-        tallas: ["38", "39", "40", "41", "42", "43", "44"]
-    }
-];
-
+// Inicializar cuando el DOM esté listo
 document.addEventListener('DOMContentLoaded', function() {
-    const contenedorProductos = document.getElementById('productos-hombres');
-    const noProductos = document.getElementById('no-productos');
-    const filtroTipo = document.getElementById('tipo-filtro');
-    const filtroTalla = document.getElementById('talla-filtro');
-
-    // Función para crear el HTML de un producto
-    function crearProductoHTML(producto) {
-        const precioFormateado = producto.precio.toLocaleString('es-CO');
-        return `
-            <div class="producto-card">
-                <img src="${producto.imagen}" alt="${producto.nombre}" class="producto-img">
-                <div class="producto-info">
-                    <h3 class="producto-titulo">${producto.nombre}</h3>
-                    <p class="producto-precio">$${precioFormateado}</p>
-                    <p class="producto-descripcion">${producto.descripcion}</p>
-                    <div class="talla-selector">
-                        <label for="talla-${producto.id}">Talla:</label>
-                        <select id="talla-${producto.id}" class="select-talla">
-                            <option value="">Seleccionar talla</option>
-                            ${producto.tallas.map(talla => `<option value="${talla}">${talla}</option>`).join('')}
-                        </select>
-                    </div>
-                    <button class="btn-agregar-carrito" data-id="${producto.id}">
-                        <i class="fas fa-shopping-cart"></i>
-                        Agregar al carrito
-                    </button>
-                </div>
-            </div>
-        `;
-    }
-
-    // Función para filtrar productos
-    function filtrarProductos() {
-        const tipo = filtroTipo.value;
-        const talla = filtroTalla.value;
-
-        const productosFiltrados = productosHombres.filter(producto => {
-            const cumpleTipo = !tipo || producto.tipo === tipo;
-            const cumpleTalla = !talla || producto.tallas.includes(talla);
-            return cumpleTipo && cumpleTalla;
-        });
-
-        if (productosFiltrados.length === 0) {
-            if (contenedorProductos) contenedorProductos.style.display = 'none';
-            if (noProductos) noProductos.style.display = 'flex';
-        } else {
-            if (contenedorProductos) contenedorProductos.style.display = 'grid';
-            if (noProductos) noProductos.style.display = 'none';
-            contenedorProductos.innerHTML = productosFiltrados
-                .map(producto => crearProductoHTML(producto))
-                .join('');
-            
-            // Agregar event listeners a los botones
-            const botonesAgregar = document.querySelectorAll('.btn-agregar-carrito');
-            botonesAgregar.forEach(boton => {
-                boton.addEventListener('click', agregarAlCarrito);
-            });
-        }
-    }
-
-    // Función para agregar al carrito
-    function agregarAlCarrito(event) {
-        event.preventDefault();
-        
-        const boton = event.currentTarget;
-        const productoId = boton.dataset.id;
-        const productoCard = boton.closest('.producto-card');
-        
-        const talla = productoCard.querySelector('.select-talla').value;
-        
-        if (!talla) {
-            alert('Por favor selecciona una talla');
-            return;
-        }
-        
-        const producto = productosHombres.find(p => p.id === parseInt(productoId));
-        if (producto) {
-            // Asumiendo que existe una clase Carrito global
-            if (typeof Carrito !== 'undefined') {
-                Carrito.agregarItem(producto, talla, 1);
-                alert('Producto agregado al carrito');
-            } else {
-                console.error('La clase Carrito no está definida');
-            }
-        }
-    }
-
-    // Event listeners para filtros
-    if (filtroTipo) filtroTipo.addEventListener('change', filtrarProductos);
-    if (filtroTalla) filtroTalla.addEventListener('change', filtrarProductos);
-
-    // Botón para resetear filtros
-    const btnReset = document.getElementById('reset-filtros');
-    if (btnReset) {
-        btnReset.addEventListener('click', function() {
-            if (filtroTipo) filtroTipo.value = '';
-            if (filtroTalla) filtroTalla.value = '';
-            filtrarProductos();
-        });
-    }
-
-    // Cargar todos los productos inicialmente
-    filtrarProductos();
+  const filtroTipo = document.getElementById('tipo-filtro');
+  const filtroTalla = document.getElementById('talla-filtro');
+  const filtroColor = document.getElementById('color-filtro');
+  const btnResetear = document.getElementById('reset-filtros');
+  
+  // Añadir event listeners a los filtros
+  if (filtroTipo) filtroTipo.addEventListener('change', cargarProductos);
+  if (filtroTalla) filtroTalla.addEventListener('change', cargarProductos);
+  if (filtroColor) filtroColor.addEventListener('change', cargarProductos);
+  if (btnResetear) btnResetear.addEventListener('click', resetearFiltros);
+  
+  // Cargar productos al inicio
+  cargarProductos();
 });

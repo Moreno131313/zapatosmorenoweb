@@ -5,49 +5,50 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Zapatos Moreno - Tu tienda de calzado en Villavicencio">
     <title>Zapatos Moreno - Inicio</title>
-    <!-- Script para eliminar barra azul del carrito instantáneamente -->
+    <!-- Solución inmediata para eliminar la barra de carrito -->
+    <style>
+    body > div:not(.main-header):not(.overlay):not(.modal):not(.categories):not(.cart-grid) {
+        display: none !important;
+    }
+    body > div > span.close-modal {
+        display: none !important;
+    }
+    body > main, body > footer, body > header, #cart-modal, .main-footer {
+        display: block !important;
+    }
+    </style>
     <script>
-        (function() {
-            function quitarBarraAzul() {
-                // Seleccionar todos los elementos fijos en la parte superior
-                var elementos = document.querySelectorAll('div');
-                for (var i = 0; i < elementos.length; i++) {
-                    var el = elementos[i];
-                    var estilo = window.getComputedStyle(el);
-                    
-                    // Verificar si es la barra azul
-                    if (estilo.position === 'fixed' && estilo.top === '0px' && 
-                        (estilo.backgroundColor.includes('blue') || el.textContent.includes('Tu Carrito') || 
-                         el.textContent.includes('tu carrito'))) {
-                        el.style.display = 'none';
-                        el.style.visibility = 'hidden';
-                        el.style.opacity = '0';
-                        el.style.height = '0';
-                        el.style.overflow = 'hidden';
-                    }
-                    
-                    // Eliminar primer div hijo del body (que suele ser la barra)
-                    if (el.parentNode === document.body && el === document.body.firstElementChild) {
-                        if (!el.classList.contains('main-header') && !el.id.includes('modal')) {
-                            el.style.display = 'none';
-                        }
-                    }
+    // Ejecución inmediata para eliminar la barra de carrito antes de cualquier renderizado
+    document.addEventListener('DOMContentLoaded', function() {
+        const removeCartBar = function() {
+            // Eliminar específicamente la barra con "Tu Carrito"
+            document.querySelectorAll('body > div').forEach(function(el) {
+                if (el.textContent.includes('Tu Carrito') && !el.id.includes('cart-modal')) {
+                    el.remove();
                 }
-            }
-            
-            // Ejecutar inmediatamente
-            quitarBarraAzul();
-            
-            // Volver a ejecutar cuando el DOM esté listo
-            document.addEventListener('DOMContentLoaded', quitarBarraAzul);
-            
-            // Y también cuando la página esté completamente cargada
-            window.addEventListener('load', quitarBarraAzul);
-            
-            // Por último, ejecutar periódicamente durante los primeros segundos
-            var intervalId = setInterval(quitarBarraAzul, 500);
-            setTimeout(function() { clearInterval(intervalId); }, 5000);
-        })();
+                if (el.textContent.trim() === '×' || el.textContent.trim() === 'x') {
+                    el.remove();
+                }
+                // Eliminar divs sospechosos que no pertenecen a la estructura de la página
+                if (!el.classList.contains('main-header') && 
+                    !el.classList.contains('overlay') && 
+                    !el.id.includes('cart-modal') && 
+                    !el.classList.contains('modal') && 
+                    !el.tagName === 'MAIN' &&
+                    el.style.position === 'fixed' && 
+                    el.style.top === '0px') {
+                    el.remove();
+                }
+            });
+        };
+        
+        // Ejecutar inmediatamente
+        removeCartBar();
+        
+        // Ejecutar periódicamente durante la carga
+        const interval = setInterval(removeCartBar, 100);
+        setTimeout(function() { clearInterval(interval); }, 3000);
+    });
     </script>
     <link rel="stylesheet" href="css/styles.css">
     <link rel="stylesheet" href="css/hombres.css">
@@ -59,7 +60,8 @@
     
         .hero {
             position: relative;
-            height: 80vh;
+            height: 100vh;
+            width: 100%;
             min-height: 500px;
             display: flex;
             align-items: center;
@@ -70,6 +72,43 @@
             background-position: center;
             background-attachment: fixed;
             color: white;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* Reglas para eliminar elementos no deseados */
+        body > div:not(.overlay):not(.main-header):not(#cart-modal):not(.modal):not(.categories):not(.hero):not(.cart-grid):not(.main):not(.footer) {
+            display: none !important;
+            visibility: hidden !important;
+            opacity: 0 !important;
+            height: 0 !important;
+            width: 0 !important;
+            position: absolute !important;
+            left: -9999px !important;
+            top: -9999px !important;
+            z-index: -1 !important;
+            pointer-events: none !important;
+        }
+        
+        /* Exceptuar elementos legítimos */
+        main, footer, .main-footer, section, header {
+            display: block !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+        }
+        
+        /* Ocultar cualquier elemento con posición fija en la parte superior que no sea nuestro header */
+        body > div[style*="position:fixed"][style*="top:0"]:not(.main-header):not(#cart-modal) {
+            display: none !important;
+            visibility: hidden !important;
+            opacity: 0 !important;
+            height: 0 !important;
+            overflow: hidden !important;
+        }
+        
+        /* Eliminar la X que aparece en la esquina */
+        body > div:not(.overlay):not(.main-header) > span:first-child:only-child {
+            display: none !important;
         }
 
         .hero:before {
@@ -91,25 +130,39 @@
         .hero-content {
             position: relative;
             z-index: 2;
-            text-align: left;
-            max-width: 600px;
-            padding: 2rem;
-            margin-left: 5%;
+            text-align: center;
+            max-width: 800px;
+            padding: 3rem;
+            margin: 0 auto;
             animation: fadeInUp 1.2s ease-out;
+            background: rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(5px);
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            border: none;
         }
 
-        .hero h2 {
-            font-size: 3.5rem;
+        .hero h1 {
+            font-size: 4rem;
             font-weight: 800;
-            margin-bottom: 1rem;
+            margin-bottom: 1.5rem;
             text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+            letter-spacing: -0.5px;
+            line-height: 1.2;
+            color: #fff;
         }
 
         .hero p {
-            font-size: 1.5rem;
-            margin-bottom: 2rem;
+            font-size: 1.8rem;
+            margin-bottom: 2.5rem;
             text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
             font-weight: 300;
+            opacity: 0.9;
+            color: #f8f8f8;
+            line-height: 1.6;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
         }
 
         .hero-badge {
@@ -124,7 +177,57 @@
             box-shadow: 0 4px 15px rgba(255, 69, 0, 0.3);
             animation: pulse 2s infinite;
         }
-
+        
+        .hero-actions {
+            display: flex;
+            gap: 15px;
+            margin-top: 25px;
+        }
+        
+        .hero-actions .btn-primary {
+            padding: 14px 28px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            border: none;
+            border-radius: 50px;
+            background: linear-gradient(135deg, #ff4500, #ff6347);
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            box-shadow: 0 4px 15px rgba(255, 69, 0, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .hero-actions .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(255, 69, 0, 0.4);
+        }
+        
+        .hero-actions .btn-primary:active {
+            transform: translateY(1px);
+        }
+        
+        .hero-actions .btn-primary::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50px;
+            transform: scale(0);
+            opacity: 0;
+            transition: all 0.5s;
+        }
+        
+        .hero-actions .btn-primary:hover::after {
+            transform: scale(1.5);
+            opacity: 0;
+        }
     
         .categories {
             padding: 4rem 0;
@@ -245,7 +348,7 @@
                 padding: 1rem;
             }
             
-            .hero h2 {
+            .hero h1 {
                 font-size: 2.5rem;
             }
             
@@ -347,39 +450,43 @@
         </div>
     </div>
 
-    <main>
-        <section class="hero">
-            <div class="hero-content">
-                <span class="hero-badge">NUEVA COLECCIÓN 2024</span>
-                <h2>Bienvenido a<br>Zapatos Moreno</h2>
-                <p>Descubre nuestras colecciones exclusivas con el mejor estilo y confort para toda la familia</p>
+    <main class="main-content">
+        <!-- Banner principal -->
+        <section class="hero-section">
+            <div class="hero">
+                <div class="hero-content">
+                    <span class="hero-badge">¡Lo mejor en calzado!</span>
+                    <h1>El mejor calzado para toda la familia</h1>
+                    <p>Calidad, confort y estilo a precios increíbles. Encuentra el modelo perfecto para cada ocasión.</p>
+                </div>
             </div>
         </section>
-
+        
+        <!-- Categorías -->
         <section class="categories">
             <h2>Nuestras Categorías</h2>
             <div class="categories-grid">
                 <div class="category-card">
-                    <img src="imagenes/productos/hombres.jpg" alt="Calzado para Hombres">
+                    <img src="/imagenes/productos/hombres.jpg" alt="Calzado para Hombres">
                     <div class="category-content">
                         <h3>Hombres</h3>
-                        <a href="hombres.html" class="category-link">Ver colección</a>
+                        <a href="/hombres.html" class="category-link">Ver colección</a>
                     </div>
                 </div>
 
                 <div class="category-card">
-                    <img src="imagenes/productos/mujeres.jpg" alt="Calzado para Mujeres">
+                    <img src="/imagenes/productos/mujeres.jpg" alt="Calzado para Mujeres">
                     <div class="category-content">
                         <h3>Mujeres</h3>
-                        <a href="mujeres.html" class="category-link">Ver colección</a>
+                        <a href="/mujeres.html" class="category-link">Ver colección</a>
                     </div>
                 </div>
 
                 <div class="category-card">
-                    <img src="imagenes/productos/niños.jpg" alt="Calzado para Niños">
+                    <img src="/imagenes/productos/niños.jpg" alt="Calzado para Niños">
                     <div class="category-content">
                         <h3>Niños</h3>
-                        <a href="ninos.html" class="category-link">Ver colección</a>
+                        <a href="/ninos.html" class="category-link">Ver colección</a>
                     </div>
                 </div>
             </div>
@@ -416,10 +523,6 @@
     </footer>
 
     <script src="js/productos-base.js"></script>
-    <script src="js/productos-novedades.js"></script>
-    <script src="js/productos-ofertas.js"></script>
-    <script src="js/productos-liquidacion.js"></script>
-    <script src="js/productos-temporada.js"></script>
     <script src="js/carrito.js"></script>
     <script src="js/main.js"></script>
     <script src="js/session-manager.js"></script>
@@ -430,29 +533,40 @@
             // Comprobar si el usuario está logueado
             const token = localStorage.getItem('token');
             if (token) {
-                document.querySelector('.auth-links').style.display = 'none';
-                document.querySelector('.user-menu').style.display = 'block';
+                // Solo manipular los elementos si existen
+                const authLinks = document.querySelector('.auth-links');
+                const userMenu = document.querySelector('.user-menu');
+                if (authLinks) authLinks.style.display = 'none';
+                if (userMenu) userMenu.style.display = 'block';
                 
-                if (document.querySelector('.auth-links-mobile')) {
-                    document.querySelector('.auth-links-mobile').style.display = 'none';
-                    document.querySelector('.user-menu-mobile').style.display = 'block';
-                }
+                const authLinksMobile = document.querySelector('.auth-links-mobile');
+                const userMenuMobile = document.querySelector('.user-menu-mobile');
+                if (authLinksMobile) authLinksMobile.style.display = 'none';
+                if (userMenuMobile) userMenuMobile.style.display = 'block';
             }
             
             // Inicializar carrito
-            const carrito = new Carrito();
-            carrito.actualizarContador();
+            if (typeof Carrito !== 'undefined') {
+                Carrito.inicializar();
+                Carrito.actualizarContador();
+            } else {
+                console.error('El objeto Carrito no está definido. Asegúrate de que carrito.js se cargue correctamente.');
+            }
             
-            // Evento para cerrar sesión
-            document.getElementById('logout-btn').addEventListener('click', function(e) {
-                e.preventDefault();
-                localStorage.removeItem('token');
-                localStorage.removeItem('user');
-                window.location.href = '/';
-            });
+            // Evento para cerrar sesión - solo agregar si el elemento existe
+            const logoutBtn = document.getElementById('logout-btn');
+            if (logoutBtn) {
+                logoutBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    localStorage.removeItem('token');
+                    localStorage.removeItem('user');
+                    window.location.href = '/';
+                });
+            }
             
-            if (document.getElementById('mobile-logout-btn')) {
-                document.getElementById('mobile-logout-btn').addEventListener('click', function(e) {
+            const mobileLogoutBtn = document.getElementById('mobile-logout-btn');
+            if (mobileLogoutBtn) {
+                mobileLogoutBtn.addEventListener('click', function(e) {
                     e.preventDefault();
                     localStorage.removeItem('token');
                     localStorage.removeItem('user');

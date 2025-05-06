@@ -80,7 +80,58 @@ document.addEventListener('DOMContentLoaded', function() {
 
 // Función para eliminar barras externas no deseadas
 function eliminarBarrasExternas() {
-    // Buscar y eliminar elementos que coincidan con estas características
+    console.log("Ejecutando eliminación de barras no deseadas");
+    
+    // MÉTODO 1: Eliminación directa con querySelector
+    // Específicamente eliminar elementos con "Tu Carrito"
+    document.querySelectorAll('body > *').forEach(el => {
+        try {
+            if (el && el.textContent && 
+                (el.textContent.includes('Tu Carrito') || el.textContent.includes('tu carrito'))) {
+                
+                // Excluir nuestros propios elementos legítimos
+                if (el.id !== 'cart-modal' && 
+                    !el.classList.contains('main-header') && 
+                    !el.classList.contains('cart-items')) {
+                    
+                    console.log('ELIMINANDO BARRA DE CARRITO:', el);
+                    el.parentNode.removeChild(el);
+                }
+            }
+            
+            // Eliminar la X
+            if (el && el.textContent && 
+                (el.textContent.trim() === '×' || el.textContent.trim() === 'x')) {
+                console.log('ELIMINANDO X:', el);
+                el.parentNode.removeChild(el);
+            }
+        } catch (e) {
+            console.error("Error al procesar elemento:", e);
+        }
+    });
+    
+    // MÉTODO 2: Ocultamiento con estilos
+    // Agregar estilos para ocultar elementos no deseados
+    if (!document.getElementById('carrito-blocker-style')) {
+        const style = document.createElement('style');
+        style.id = 'carrito-blocker-style';
+        style.innerHTML = `
+            body > div:not(.overlay):not(.main-header):not(#cart-modal):not(.modal):not(.categories):not(.cart-grid) {
+                display: none !important;
+                visibility: hidden !important;
+            }
+            body > span:first-child {
+                display: none !important;
+            }
+            body > main, body > footer, body > header, .modal, .cart-grid, #cart-modal {
+                display: block !important;
+                visibility: visible !important;
+            }
+        `;
+        document.head.appendChild(style);
+    }
+    
+    // MÉTODO 3: Eliminar elementos específicos por configuración
     const selectores = [
         // Elementos con estilos inline específicos
         'div[style*="position:fixed"][style*="top:0"]',
@@ -88,49 +139,88 @@ function eliminarBarrasExternas() {
         'div[style*="background-color:blue"]',
         'div[style*="background:blue"]',
         // Elementos relacionados con carritos externos
-        'div[class*="carrito"]:not(.carrito-container):not(.carrito-item):not(.carrito-info):not(.carrito-cantidad):not(.carrito-total):not(#lista-productos-carrito)',
-        'div[id*="carrito"]:not(#cart-container):not(#lista-productos-carrito)',
-        'div[class*="cart"]:not(.cart-count):not(.cart-link):not(.cart-items):not(.cart-container):not(.cart-item):not(.cart-item-details):not(.cart-summary):not(.cart-actions):not(.cart-empty)',
-        'div[id*="cart"]:not(#cart-modal):not(#cart-container):not(#lista-productos-carrito)',
-        // Primer div hijo del body que no sea parte de nuestra estructura
-        'body > div:first-child:not(.main-header):not(.modal):not(.container):not(.overlay)'
+        'div[class*="carrito"]:not(.carrito-container):not(.cart-items)',
+        'div[id*="carrito"]:not(#cart-container)',
+        'div[class*="cart"]:not(.cart-count):not(.cart-link):not(.cart-items):not(.cart-grid)',
+        'div[id*="cart"]:not(#cart-modal)',
+        // Específico para la X y Tu Carrito
+        'body > div:first-child:not(.main-header):not(.modal):not(.overlay)',
+        'body > span:first-child'
     ];
 
-    // Obtener todos los elementos que coincidan con los selectores
+    // Procesar todos los selectores
     selectores.forEach(selector => {
-        const elementos = document.querySelectorAll(selector);
-        elementos.forEach(elemento => {
-            // No eliminar nuestro contenedor de carrito
-            if (elemento.id === 'lista-productos-carrito' || 
-                elemento.classList.contains('cart-items') ||
-                elemento.closest('#lista-productos-carrito')) {
-                console.log('Elemento protegido, no se eliminará:', elemento);
-                return;
-            }
-            
-            // Verificar si es una barra azul o similar (por color o posición)
-            const estilos = window.getComputedStyle(elemento);
-            const esBarraNoDeseada = 
-                (estilos.backgroundColor.includes('blue') || 
-                 estilos.backgroundColor.includes('rgb(0, 0, 255)') ||
-                 estilos.backgroundColor.includes('rgb(0, 0, 205)') ||
-                 estilos.backgroundColor.includes('rgb(30, 144, 255)')) &&
-                estilos.position === 'fixed' && 
-                parseInt(estilos.top) < 20;
-
-            if (esBarraNoDeseada || elemento.textContent.includes('Tu Carrito') || elemento.textContent.includes('tu carrito')) {
-                console.log('Elemento eliminado:', elemento);
-                elemento.remove();
-            }
-        });
-    });
-
-    // Comprobar si hay iframes externos y ocultarlos
-    document.querySelectorAll('iframe').forEach(iframe => {
-        if (!iframe.src.includes(window.location.hostname)) {
-            iframe.style.display = 'none';
+        try {
+            document.querySelectorAll(selector).forEach(elemento => {
+                // Verificar si es un elemento legítimo de nuestra aplicación
+                if (elemento.id === 'cart-modal' || 
+                    elemento.classList.contains('main-header') ||
+                    elemento.classList.contains('overlay') ||
+                    elemento.closest('#cart-modal')) {
+                    return; // No eliminar elementos legítimos
+                }
+                
+                // Verificar si tiene texto "Tu Carrito" o es solo una X
+                if (elemento.textContent && 
+                    (elemento.textContent.includes('Tu Carrito') || 
+                     elemento.textContent.includes('tu carrito') ||
+                     elemento.textContent.trim() === '×' || 
+                     elemento.textContent.trim() === 'x')) {
+                    
+                    console.log('BARRA DE CARRITO ELIMINADA POR SELECTOR:', selector);
+                    elemento.parentNode.removeChild(elemento);
+                }
+                
+                // Verificar por características visuales (barra azul)
+                const estilos = window.getComputedStyle(elemento);
+                if (estilos.position === 'fixed' && 
+                    parseInt(estilos.top) < 50 && 
+                    estilos.zIndex > 1000) {
+                    
+                    console.log('BARRA FLOTANTE ELIMINADA:', elemento);
+                    elemento.parentNode.removeChild(elemento);
+                }
+            });
+        } catch (e) {
+            console.error("Error al procesar selector:", selector, e);
         }
     });
+    
+    // Verificar recursivamente elementos sospechosos
+    try {
+        const limpiarRecursivamente = (elemento) => {
+            if (!elemento) return;
+            
+            // Verificar si el elemento tiene texto Tu Carrito o X
+            if (elemento.textContent && 
+                (elemento.textContent.includes('Tu Carrito') || 
+                 elemento.textContent.trim() === '×')) {
+                
+                if (elemento.id !== 'cart-modal' && 
+                    !elemento.classList.contains('cart-items') &&
+                    elemento !== document.body) {
+                    
+                    console.log('ELIMINANDO ELEMENTO RECURSIVO:', elemento);
+                    if (elemento.parentNode) {
+                        elemento.parentNode.removeChild(elemento);
+                    }
+                    return;
+                }
+            }
+            
+            // Procesar hijos
+            if (elemento.children && elemento.children.length > 0) {
+                Array.from(elemento.children).forEach(hijo => {
+                    limpiarRecursivamente(hijo);
+                });
+            }
+        };
+        
+        // Aplicar limpieza recursiva desde el body
+        limpiarRecursivamente(document.body);
+    } catch (e) {
+        console.error("Error en limpieza recursiva:", e);
+    }
 }
 
 // Inicializar menú móvil

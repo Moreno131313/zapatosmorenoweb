@@ -11,11 +11,34 @@ class Usuario {
   static async findById(id) {
     try {
       console.log(`[Usuario.findById] Buscando usuario con ID: ${id}`);
+      
+      if (!id) {
+        console.error('[Usuario.findById] Error: ID no proporcionado o inválido');
+        return null;
+      }
+      
+      // Asegurar que id sea un número
+      const userId = parseInt(id, 10);
+      if (isNaN(userId)) {
+        console.error(`[Usuario.findById] Error: ID inválido: ${id}`);
+        return null;
+      }
+      
+      console.log(`[Usuario.findById] Ejecutando consulta para usuario ID: ${userId}`);
       const usuarios = await db.query(
         'SELECT id, nombre, email, telefono, fecha_nacimiento, genero FROM usuarios WHERE id = ?',
-        [id]
+        [userId]
       );
+      
+      console.log(`[Usuario.findById] Resultado consulta:`, usuarios);
       console.log(`[Usuario.findById] Resultado: ${usuarios.length > 0 ? 'Usuario encontrado' : 'Usuario no encontrado'}`);
+      
+      if (usuarios.length === 0) {
+        console.error(`[Usuario.findById] No se encontró usuario con ID: ${userId}`);
+        return null;
+      }
+      
+      console.log(`[Usuario.findById] Usuario encontrado:`, usuarios[0]);
       return usuarios.length > 0 ? usuarios[0] : null;
     } catch (error) {
       console.error('[Usuario.findById] Error:', error);

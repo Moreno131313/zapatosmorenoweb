@@ -81,10 +81,14 @@ class ProductosManager {
         return `
             <div class="producto-card" data-id="${producto.id}">
                 <div class="producto-img-container">
-                    <img src="${producto.imagen}" alt="${producto.nombre}" class="producto-img">
+                    <a href="detalle-producto.html?id=${producto.id}" class="producto-link">
+                        <img src="${producto.imagen}" alt="${producto.nombre}" class="producto-img">
+                    </a>
                 </div>
                 <div class="producto-info">
-                    <h3 class="producto-titulo">${producto.nombre}</h3>
+                    <a href="detalle-producto.html?id=${producto.id}" class="producto-link">
+                        <h3 class="producto-titulo">${producto.nombre}</h3>
+                    </a>
                     <p class="producto-precio">$${producto.precio.toLocaleString('es-CO')}</p>
                     <p class="producto-descripcion">${producto.descripcion}</p>
                     
@@ -106,9 +110,14 @@ class ProductosManager {
                         </div>
                     </div>
                     
-                    <button class="btn-agregar-carrito" onclick="window['productos${this.categoria.charAt(0).toUpperCase() + this.categoria.slice(1)}'].agregarAlCarrito('${producto.id}')">
-                        <i class="fas fa-shopping-cart"></i> Agregar al carrito
-                    </button>
+                    <div class="producto-acciones">
+                        <button class="btn-agregar-carrito" onclick="window['productos${this.categoria.charAt(0).toUpperCase() + this.categoria.slice(1)}'].agregarAlCarrito('${producto.id}')">
+                            <i class="fas fa-shopping-cart"></i> Agregar al carrito
+                        </button>
+                        <a href="detalle-producto.html?id=${producto.id}" class="btn-ver-detalle">
+                            <i class="fas fa-eye"></i> Ver detalle
+                        </a>
+                    </div>
                 </div>
             </div>
         `;
@@ -157,17 +166,6 @@ class ProductosManager {
         
         if (typeof Carrito !== 'undefined') {
             Carrito.agregarItem(item);
-            
-            // Mostrar mensaje de éxito
-            const mensaje = document.createElement('div');
-            mensaje.className = 'mensaje-agregado';
-            mensaje.innerHTML = '<i class="fas fa-check"></i> Producto agregado al carrito';
-            document.body.appendChild(mensaje);
-            
-            // Ocultar mensaje después de 2 segundos
-            setTimeout(() => {
-                mensaje.remove();
-            }, 2000);
         } else {
             console.error('El objeto Carrito no está definido');
         }

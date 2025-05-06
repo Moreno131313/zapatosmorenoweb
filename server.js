@@ -14,12 +14,16 @@ const authRoutes = require('./routes/auth');
 const productRoutes = require('./routes/productRoutes');
 const orderRoutes = require('./routes/orderRoutes');
 const addressRoutes = require('./routes/addressRoutes');
+const sqliteAddressRoutes = require('./routes/sqlite-address-routes'); // Rutas SQLite
 const profileRoutes = require('./routes/profileRoutes');
 const usuarioRoutes = require('./routes/usuarioRoutes');
 const cartRoutes = require('./routes/cartRoutes');
 
 const app = express();
 const PORT = parseInt(process.env.PORT || '3000');
+
+// Variable para forzar el uso de SQLite
+const USE_SQLITE_ONLY = false; // Usar MySQL
 
 // Configuración de CORS para permitir solicitudes de cualquier origen
 const corsOptions = {
@@ -82,9 +86,13 @@ app.use('/api/auth', authRoutes);
 app.use('/api/usuario', usuarioRoutes);
 app.use('/api/productos', productRoutes);
 app.use('/api/pedidos', orderRoutes);
-app.use('/api/direcciones', addressRoutes);
+app.use('/api/direcciones', sqliteAddressRoutes); // Usar SQLite en lugar de MySQL
 app.use('/api/usuario', profileRoutes);
 app.use('/api/carrito', cartRoutes);
+
+// Ruta de debug para direcciones (utilizando la ruta definida en addressRoutes)
+app.use('/api/direcciones-debug', sqliteAddressRoutes); // Usar SQLite en lugar de MySQL
+app.use('/api/direcciones-mysql', addressRoutes); // Mantener acceso a rutas MySQL por si acaso
 
 // Ruta directa para el perfil de usuario (GET)
 app.get('/api/perfil', async (req, res) => {
@@ -115,6 +123,12 @@ app.get('/api/perfil', async (req, res) => {
 
 // Ruta para SPA (frontend) - Esta debe ir después de las rutas API
 app.get('*', (req, res) => {
+  // Only redirect to index.html for non-API requests
+  if (req.url.startsWith('/api/')) {
+    // Skip handling for API routes that weren't handled by previous middleware
+    return res.status(404).json({ message: 'API endpoint not found' });
+  }
+  
   if (req.url.endsWith('.html')) {
     res.sendFile(path.join(__dirname, 'public', req.url.substring(1)));
   } else {
@@ -138,6 +152,12 @@ app.use((err, req, res, next) => {
 async function inicializarServidor() {
   try {
     // Verificar la conexión a la base de datos
+    if (USE_SQLITE_ONLY) {
+      console.log('ℹ️ Iniciando en modo SQLite solamente. Omitiendo verificación de MySQL.');
+      iniciarServidor();
+      return;
+    }
+    
     const conexionOk = await inicializarBaseDatos();
     
     if (!conexionOk) {
@@ -161,22 +181,57 @@ async function inicializarServidor() {
   }
 }
 
-// Iniciar el servidor
+// Intenta detectar y liberar el puerto si está en uso
+const detectPort = (port) => {
+  return new Promise((resolve, reject) => {
+    const server = require('http').createServer();
+    
+    server.on('error', (e) => {
+      if (e.code === 'EADDRINUSE') {
+        console.log(`⚠️ Puerto ${port} en uso, intentando forzar liberación...`);
+        
+        // Intentar liberar el puerto usando otro servidor
+        require('http').createServer().listen(port, () => {
+          console.log(`Puerto ${port} liberado con éxito`);
+          server.close();
+          resolve(port);
+        }).on('error', () => {
+          console.log(`❌ No se pudo liberar el puerto ${port}, usando puerto alternativo...`);
+          resolve(port + 1); // Usar puerto alternativo
+        });
+      } else {
+        reject(e);
+      }
+    });
+    
+    server.listen(port, () => {
+      server.close();
+      resolve(port);
+    });
+  });
+};
+
+// Iniciar el servidor con manejo de puerto automático
 async function iniciarServidor() {
   try {
-    // Inicializar la base de datos
-    await inicializarBaseDatos();
+    // Detectar y liberar puerto si es necesario
+    const puertoDisponible = await detectPort(PORT);
     
-    // Iniciar el servidor
-    app.listen(PORT, '0.0.0.0', () => {
-      console.log(`Servidor corriendo en http://localhost:${PORT}`);
-      console.log(`También puedes acceder desde otro dispositivo en la misma red usando:`);
-      console.log(`http://192.168.1.17:${PORT} (Wi-Fi)`);
+    if (puertoDisponible !== PORT) {
+      console.log(`⚠️ Puerto original ${PORT} en uso, usando puerto ${puertoDisponible} en su lugar`);
+    }
+    
+    // Iniciar servidor
+    app.listen(puertoDisponible, '0.0.0.0', () => {
+      console.log(`🚀 Servidor corriendo en http://localhost:${puertoDisponible}`);
+      console.log(`También puedes acceder desde otro dispositivo en la misma red`);
+      console.log(USE_SQLITE_ONLY ? '⚠️ Ejecutando con SQLite solamente (sin MySQL)' : '✅ MySQL conectado correctamente');
     });
   } catch (error) {
-    console.error('Error al iniciar el servidor:', error);
+    console.error('❌ Error crítico al iniciar el servidor:', error);
     process.exit(1);
   }
 }
 
+// Iniciar el servidor
 inicializarServidor();

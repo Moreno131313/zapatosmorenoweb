@@ -1,6 +1,6 @@
-/* Estilos específicos para la página de hombres */
+/* Estilos específicos para la página de niños */
 
-.catalogo-hombres {
+.catalogo-ninos {
     max-width: 1200px;
     margin: 0 auto;
     padding: 2rem 1rem;
@@ -19,7 +19,7 @@
     display: block;
     width: 100px;
     height: 3px;
-    background: linear-gradient(to right, #ff4500, #ff6347);
+    background: linear-gradient(to right, #4b6bfb, #3b5bd9);
     margin: 10px auto;
 }
 
@@ -84,7 +84,7 @@
 
 .producto-precio {
     font-size: 1.5rem;
-    color: #ff4500;
+    color: #4b6bfb;
     font-weight: bold;
     margin-bottom: 1rem;
 }
@@ -129,7 +129,7 @@
 .btn-agregar-carrito {
     width: 100%;
     padding: 1rem;
-    background-color: #ff4500;
+    background-color: #4b6bfb;
     color: white;
     border: none;
     border-radius: 5px;
@@ -143,7 +143,7 @@
 }
 
 .btn-agregar-carrito:hover {
-    background-color: #ff6347;
+    background-color: #3b5bd9;
 }
 
 .btn-ver-detalle {
@@ -166,17 +166,16 @@
 
 /* Sección de características */
 .features-section {
-    background: #2d3748;
+    background: #f8f9fa;
     padding: 4rem 0;
     margin-top: 4rem;
-    color: white;
 }
 
 .features-title {
     text-align: center;
     font-size: 2rem;
     margin-bottom: 3rem;
-    color: white;
+    color: #333;
 }
 
 .features-grid {
@@ -191,8 +190,9 @@
 .feature-item {
     text-align: center;
     padding: 2rem;
-    background: rgba(255, 255, 255, 0.1);
+    background: white;
     border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
     transition: transform 0.3s ease;
 }
 
@@ -202,18 +202,18 @@
 
 .feature-item i {
     font-size: 2.5rem;
-    color: #3498db;
+    color: #4b6bfb;
     margin-bottom: 1rem;
 }
 
 .feature-item h3 {
     font-size: 1.2rem;
     margin-bottom: 1rem;
-    color: white;
+    color: #333;
 }
 
 .feature-item p {
-    color: #cbd5e0;
+    color: #666;
     font-size: 0.9rem;
     line-height: 1.5;
 }
@@ -228,33 +228,115 @@
 
 /* Estilos para mensajes de error */
 .error {
-    background-color: #fee;
-    color: #c00;
+    background-color: #eef;
+    color: #00c;
     padding: 1rem;
     border-radius: 4px;
     text-align: center;
     margin: 1rem 0;
 }
 
-/* Estilos para la notificación del carrito */
-.cart-notification {
-    animation: slideIn 0.3s ease-out;
+/* Mensaje para cuando no hay productos */
+.no-productos {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 20px;
+    text-align: center;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    margin: 20px 0;
 }
 
-@keyframes slideIn {
-    from {
-        transform: translateX(100%);
-        opacity: 0;
-    }
-    to {
-        transform: translateX(0);
-        opacity: 1;
-    }
+.no-productos i {
+    font-size: 3rem;
+    color: #ccc;
+    margin-bottom: 15px;
+}
+
+.btn-reset {
+    margin-top: 15px;
+    padding: 8px 15px;
+    background-color: #4b6bfb;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.btn-reset:hover {
+    background-color: #3b5bd9;
+}
+
+/* Estilos para guía de tallas */
+.guia-tallas {
+    padding: 3rem 1rem;
+    background-color: #f9f9f9;
+    margin-top: 2rem;
+}
+
+.guia-tallas-content {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+.guia-imagen img {
+    width: 100%;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.guia-info {
+    padding: 1rem;
+}
+
+.guia-info ol {
+    margin: 1rem 0;
+    padding-left: 1.5rem;
+}
+
+.guia-info li {
+    margin-bottom: 0.5rem;
+}
+
+.tallas-tabla {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1.5rem 0;
+}
+
+.tallas-tabla th,
+.tallas-tabla td {
+    padding: 0.8rem;
+    text-align: center;
+    border: 1px solid #ddd;
+}
+
+.tallas-tabla th {
+    background-color: #4b6bfb;
+    color: white;
+}
+
+.tallas-tabla tr:nth-child(even) {
+    background-color: #f2f2f2;
+}
+
+.consejo-talla {
+    font-style: italic;
+    color: #666;
+    margin-top: 1rem;
 }
 
 /* Responsive */
 @media (max-width: 768px) {
-    .catalogo-hombres {
+    .catalogo-ninos {
         padding: 1rem;
     }
 
@@ -272,13 +354,13 @@
         min-width: auto;
     }
 
-    .producto-card {
-        margin: 0 1rem;
+    .productos-grid {
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        padding: 0 1rem;
     }
-
-    .features-grid {
+    
+    .guia-tallas-content {
         grid-template-columns: 1fr;
-        padding: 0 2rem;
     }
 }
 
@@ -286,4 +368,4 @@
     .productos-grid {
         grid-template-columns: 1fr;
     }
-}
+} 
