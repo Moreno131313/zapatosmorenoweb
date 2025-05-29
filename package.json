@@ -1,6 +1,7 @@
 {
   "name": "zapatosmoreno",
   "version": "1.0.0",
+  "description": "E-commerce de calzado",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
@@ -11,12 +12,20 @@
     "test:evidencias": "jest --coverage && mkdir -p evidencias && cp -r coverage/lcov-report evidencias/cobertura-html",
     "test:performance": "node tests/performance/run_performance_tests.js",
     "optimize:images": "node utils/imageOptimizer.js",
-    "start:optimized": "NODE_ENV=production node server.js"
+    "start:optimized": "NODE_ENV=production node server.js",
+    "lint": "eslint .",
+    "db:create": "node create-database.js",
+    "db:migrate": "node db-inventory-setup.js",
+    "db:seed": "node seed.js"
   },
-  "keywords": [],
+  "keywords": [
+    "ecommerce",
+    "zapatos",
+    "nodejs",
+    "express"
+  ],
   "author": "",
-  "license": "ISC",
-  "description": "",
+  "license": "MIT",
   "dependencies": {
     "axios": "^1.8.4",
     "bcrypt": "^5.1.1",
