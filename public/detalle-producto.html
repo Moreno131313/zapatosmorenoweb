@@ -1,0 +1,1122 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detalle de Producto | Zapatos Moreno</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        /* Estilos básicos */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            background-color: #f8f9fa;
+            color: #333;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        /* Header */
+        .header {
+            background-color: #ff4500;
+            color: white;
+            padding: 15px 0;
+        }
+        
+        .header-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        .brand {
+            display: flex;
+            align-items: center;
+        }
+        
+        .logo {
+            height: 50px;
+            margin-right: 10px;
+        }
+        
+        .brand h1 {
+            font-size: 1.5rem;
+        }
+        
+        .header-icons {
+            display: flex;
+            gap: 20px;
+        }
+        
+        .header-icons a {
+            color: white;
+            font-size: 22px;
+            text-decoration: none;
+            position: relative;
+        }
+        
+        .cart-count {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background-color: white;
+            color: #ff4500;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        
+        .main-nav {
+            background-color: #333;
+            padding: 10px 0;
+        }
+        
+        .nav-links {
+            display: flex;
+            justify-content: center;
+            list-style: none;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .nav-links li {
+            margin: 0 15px;
+        }
+        
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            padding: 5px 10px;
+            border-radius: 4px;
+            transition: background-color 0.3s;
+        }
+        
+        .nav-links a:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+        
+        /* Mobile menu toggle */
+        .menu-toggle {
+            display: none;
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+        
+        /* Breadcrumb */
+        .breadcrumb {
+            margin: 20px 0;
+            font-size: 0.9rem;
+        }
+        
+        .breadcrumb a {
+            color: #ff4500;
+            text-decoration: none;
+        }
+        
+        /* Detalle Producto */
+        .producto-detalle {
+            display: flex;
+            flex-wrap: wrap;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            margin: 20px 0;
+            padding: 20px;
+        }
+        
+        .producto-imagen-container {
+            flex: 1;
+            min-width: 300px;
+            padding: 20px;
+        }
+        
+        .producto-imagen {
+            width: 100%;
+            max-height: 400px;
+            object-fit: contain;
+        }
+        
+        .producto-info {
+            flex: 1;
+            min-width: 300px;
+            padding: 20px;
+        }
+        
+        .producto-nombre {
+            font-size: 1.8rem;
+            margin-bottom: 10px;
+        }
+        
+        .producto-precio {
+            font-size: 1.5rem;
+            color: #ff4500;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+        
+        .producto-descripcion {
+            margin-bottom: 20px;
+            line-height: 1.8;
+        }
+        
+        .producto-materiales {
+            margin-bottom: 20px;
+        }
+        
+        .producto-materiales h3 {
+            font-size: 1.2rem;
+            margin-bottom: 10px;
+        }
+        
+        .producto-materiales p {
+            margin-bottom: 10px;
+        }
+        
+        .producto-opciones {
+            margin-bottom: 20px;
+        }
+        
+        .select-grupo {
+            margin-bottom: 15px;
+        }
+        
+        .select-grupo label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        
+        select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        
+        select:disabled {
+            background-color: #f5f5f5;
+            color: #999;
+            cursor: not-allowed;
+        }
+        
+        select option {
+            padding: 5px;
+        }
+        
+        select option:disabled {
+            color: #999;
+            background-color: #f9f9f9;
+        }
+        
+        .inventario-info {
+            margin-top: 5px;
+            font-size: 0.85rem;
+            color: #666;
+        }
+        
+        .disponibilidad-tag {
+            display: inline-block;
+            padding: 2px 6px;
+            margin: 2px;
+            border-radius: 3px;
+            font-size: 0.7rem;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+        
+        .disponible {
+            background-color: #e8f5e9;
+            color: #388e3c;
+            border: 1px solid #c8e6c9;
+        }
+        
+        .no-disponible {
+            background-color: #ffebee;
+            color: #d32f2f;
+            border: 1px solid #ffcdd2;
+            text-decoration: line-through;
+        }
+        
+        .inventario-status {
+            display: flex;
+            flex-wrap: wrap;
+            margin-top: 10px;
+        }
+        
+        .cantidad-tag {
+            position: relative;
+            top: -1px;
+            font-size: 0.7rem;
+            background: #f5f5f5;
+            padding: 1px 4px;
+            border-radius: 10px;
+            margin-left: 3px;
+            color: #555;
+        }
+        
+        .cantidad-grupo {
+            margin-bottom: 20px;
+        }
+        
+        .cantidad-control {
+            display: flex;
+            align-items: center;
+            max-width: 150px;
+        }
+        
+        .btn-cantidad {
+            width: 40px;
+            height: 40px;
+            background: #f0f0f0;
+            border: 1px solid #ddd;
+            font-size: 1.2rem;
+            cursor: pointer;
+        }
+        
+        .cantidad-input {
+            width: 60px;
+            height: 40px;
+            text-align: center;
+            border: 1px solid #ddd;
+            border-left: none;
+            border-right: none;
+        }
+        
+        .btn-agregar {
+            background-color: #ff4500;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 4px;
+            font-size: 1rem;
+            cursor: pointer;
+            width: 100%;
+            transition: background-color 0.3s;
+        }
+        
+        .btn-agregar:hover {
+            background-color: #e63900;
+        }
+        
+        /* Footer */
+        .footer {
+            background-color: #333;
+            color: white;
+            padding: 40px 0 20px;
+            margin-top: 50px;
+        }
+        
+        .footer-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        .footer-section {
+            flex: 1;
+            min-width: 250px;
+            margin-bottom: 20px;
+        }
+        
+        .footer-section h3 {
+            color: #ff4500;
+            margin-bottom: 15px;
+        }
+        
+        .footer-section p {
+            margin-bottom: 10px;
+        }
+        
+        .footer-section i {
+            margin-right: 10px;
+        }
+        
+        .social-links {
+            display: flex;
+            gap: 15px;
+            margin-top: 10px;
+        }
+        
+        .social-links a {
+            color: white;
+            font-size: 18px;
+        }
+        
+        .newsletter-form input {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: none;
+            border-radius: 4px;
+        }
+        
+        .newsletter-form button {
+            background-color: #ff4500;
+            color: white;
+            border: none;
+            padding: 10px;
+            width: 100%;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        
+        .footer-bottom {
+            text-align: center;
+            padding-top: 20px;
+            margin-top: 20px;
+            border-top: 1px solid #444;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        /* Notificación */
+        .notificacion {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 25px;
+            background-color: #4CAF50;
+            color: white;
+            border-radius: 4px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            z-index: 1000;
+            animation: fadeIn 0.3s ease-out;
+        }
+        
+        .notificacion.fadeout {
+            animation: fadeOut 0.5s ease-out forwards;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        @keyframes fadeOut {
+            from { opacity: 1; transform: translateY(0); }
+            to { opacity: 0; transform: translateY(-20px); }
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header-container {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .menu-toggle {
+                display: block;
+                position: absolute;
+                top: 15px;
+                left: 15px;
+            }
+            
+            .nav-links {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .producto-detalle {
+                flex-direction: column;
+            }
+        }
+        
+        /* Debug info */
+        .debug-info {
+            padding: 10px;
+            margin: 10px 0;
+            background-color: #f0f0f0;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-container">
+            <button class="menu-toggle" aria-label="Menú">
+                <i class="fas fa-bars"></i>
+            </button>
+            
+            <div class="brand">
+                <a href="/">
+                    <img src="/imagenes/productos/logo.png" alt="Zapatos Moreno" class="logo">
+                </a>
+                <h1>Zapatos Moreno</h1>
+            </div>
+            
+            <div class="header-icons">
+                <a href="/carrito.html" title="Carrito">
+                    <i class="fas fa-shopping-cart"></i>
+                    <span class="cart-count" id="cart-count">0</span>
+                </a>
+                <a href="/ayuda.html" title="Ayuda">
+                    <i class="fas fa-question-circle"></i>
+                </a>
+                <a href="/perfil.html" title="Mi cuenta">
+                    <i class="fas fa-user"></i>
+                </a>
+            </div>
+        </div>
+        
+        <nav class="main-nav">
+            <ul class="nav-links">
+                <li><a href="/">Inicio</a></li>
+                <li><a href="/hombres.html">Hombres</a></li>
+                <li><a href="/mujeres.html">Mujeres</a></li>
+                <li><a href="/ninos.html">Niños</a></li>
+                <li><a href="/contacto.html">Contacto</a></li>
+            </ul>
+        </nav>
+    </header>
+    
+    <!-- Contenido principal -->
+    <main class="container">
+        <div class="breadcrumb">
+            <a href="/">Inicio</a> &gt; 
+            <span><a href="/" id="categoria-link">Categoría</a></span> &gt; 
+            <span id="producto-breadcrumb">Detalle del producto</span>
+        </div>
+        
+        <!-- Producto detalle - contenido estático inicial -->
+        <div class="producto-detalle" id="producto-detalle">
+            <div class="producto-imagen-container">
+                <img src="/imagenes/productos/placeholder.jpg" alt="Producto" class="producto-imagen" id="producto-imagen">
+            </div>
+            
+            <div class="producto-info">
+                <h1 class="producto-nombre" id="producto-nombre">Nombre del producto</h1>
+                <p class="producto-precio">$<span id="producto-precio">0</span></p>
+                
+                <div class="producto-descripcion" id="producto-descripcion">
+                    Descripción del producto...
+                </div>
+                
+                <div class="producto-materiales" id="producto-materiales">
+                    <h3>Materiales:</h3>
+                    <p id="materiales-descripcion">Información de materiales del producto...</p>
+                </div>
+                
+                <div class="producto-opciones">
+                    <div class="select-grupo">
+                        <label for="talla">Talla:</label>
+                        <select id="talla">
+                            <option value="">Seleccionar talla</option>
+                        </select>
+                        <div class="inventario-info" id="talla-info">Selecciona un color para ver tallas disponibles</div>
+                    </div>
+                    
+                    <div class="select-grupo">
+                        <label for="color">Color:</label>
+                        <select id="color">
+                            <option value="">Seleccionar color</option>
+                        </select>
+                        <div class="inventario-info" id="color-info">Selecciona una talla para ver colores disponibles</div>
+                    </div>
+                    
+                    <div class="inventario-status" id="inventario-status">
+                        <!-- Aquí se mostrarán las etiquetas de disponibilidad -->
+                    </div>
+                    
+                    <div class="cantidad-grupo">
+                        <label for="cantidad">Cantidad:</label>
+                        <div class="cantidad-control">
+                            <button class="btn-cantidad" id="disminuir-cantidad">-</button>
+                            <input type="number" id="cantidad" class="cantidad-input" value="1" min="1" max="10">
+                            <button class="btn-cantidad" id="aumentar-cantidad">+</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <button class="btn-agregar" id="btn-agregar-carrito">
+                    <i class="fas fa-shopping-cart"></i> Agregar al carrito
+                </button>
+            </div>
+        </div>
+    </main>
+    
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-container">
+            <div class="footer-section">
+                <h3>Contáctanos</h3>
+                <p><i class="fas fa-map-marker-alt"></i> Calle 123, Villavicencio, Meta</p>
+                <p><i class="fas fa-phone"></i> +57 323 456 7890</p>
+                <p><i class="fas fa-envelope"></i> info@zapatosmoreno.com</p>
+            </div>
+            
+            <div class="footer-section">
+                <h3>Síguenos</h3>
+                <div class="social-links">
+                    <a href="#"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                </div>
+            </div>
+            
+            <div class="footer-section">
+                <h3>Newsletter</h3>
+                <form class="newsletter-form">
+                    <input type="email" placeholder="Tu correo electrónico" required>
+                    <button type="submit">Suscribirse</button>
+                </form>
+            </div>
+        </div>
+        
+        <div class="footer-bottom">
+            <p>&copy; 2024 Zapatos Moreno. Todos los derechos reservados.</p>
+        </div>
+    </footer>
+    
+    <!-- Scripts -->
+    <script src="/js/productos-base.js"></script>
+    <script src="/js/productos-hombres.js"></script>
+    <script src="/js/productos-mujeres.js"></script>
+    <script src="/js/productos-ninos.js"></script>
+    <script src="/js/carrito.js"></script>
+    <script src="/js/inventario-api.js"></script>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Elementos del DOM
+            const productoImagen = document.getElementById('producto-imagen');
+            const productoNombre = document.getElementById('producto-nombre');
+            const productoPrecio = document.getElementById('producto-precio');
+            const productoDescripcion = document.getElementById('producto-descripcion');
+            const selectTalla = document.getElementById('talla');
+            const selectColor = document.getElementById('color');
+            const btnAgregarCarrito = document.getElementById('btn-agregar-carrito');
+            const categoriaLink = document.getElementById('categoria-link');
+            const productoBreadcrumb = document.getElementById('producto-breadcrumb');
+            const tallaInfo = document.getElementById('talla-info');
+            const colorInfo = document.getElementById('color-info');
+            const inventarioStatus = document.getElementById('inventario-status');
+            
+            // Variable global para almacenar el producto actual
+            let productoActual = null;
+            // Variable para almacenar el inventario real de la base de datos
+            let inventarioReal = null;
+            
+            // Obtener el ID del producto de la URL
+            const urlParams = new URLSearchParams(window.location.search);
+            const productoId = urlParams.get('id');
+            
+            // Si no hay ID de producto, mostrar mensaje de error
+            if (!productoId) {
+                return;
+            }
+            
+            // Función para cargar el inventario real desde la base de datos
+            async function cargarInventarioReal() {
+                try {
+                    console.log('Cargando inventario desde la base de datos...');
+                    
+                    // Usar nuestro nuevo InventarioAPI en lugar de llamar directamente a fetch
+                    const inventario = await window.InventarioAPI.obtenerInventario(productoId);
+                    console.log('Inventario obtenido:', inventario);
+                    
+                    // Almacenar el inventario
+                    inventarioReal = inventario;
+                    
+                    // Si ya tenemos el producto, actualizar la disponibilidad
+                    if (productoActual) {
+                        actualizarDisponibilidad();
+                    }
+                    
+                    return inventario;
+                } catch (error) {
+                    console.error('Error al cargar inventario:', error);
+                    // En caso de error, usar el inventario predefinido en el JS como respaldo
+                    console.log('Usando inventario predefinido como respaldo');
+                    return null;
+                }
+            }
+            
+            // Función para actualizar la disponibilidad basada en el inventario real
+            function actualizarDisponibilidad() {
+                if (!productoActual) return;
+                
+                // Usar el inventario real de la base de datos si está disponible
+                if (inventarioReal) {
+                    console.log('Actualizando disponibilidad con inventario real de la base de datos');
+                    productoActual.inventario = inventarioReal;
+                }
+                
+                // Actualizar las opciones de color con el inventario actualizado
+                llenarOpcionesColor();
+                
+                // Mostrar etiquetas de disponibilidad
+                actualizarEtiquetasDisponibilidad(productoActual);
+            }
+            
+            // Función para llenar opciones de color basadas en el inventario
+            function llenarOpcionesColor() {
+                if (!selectColor || !productoActual || !productoActual.colores) return;
+                
+                selectColor.innerHTML = '<option value="">Seleccionar color</option>';
+                
+                // Ordenar colores alfabéticamente
+                const coloresOrdenados = [...productoActual.colores].sort();
+                
+                coloresOrdenados.forEach(color => {
+                    const option = document.createElement('option');
+                    option.value = color;
+                    option.textContent = color;
+                    
+                    // Verificar si el color tiene alguna talla disponible en el inventario
+                    if (productoActual.inventario && 
+                        productoActual.inventario[color] && 
+                        productoActual.inventario[color].length > 0) {
+                        
+                        option.textContent += ` (${productoActual.inventario[color].length} disponibles)`;
+                    } else {
+                        option.disabled = true;
+                        option.textContent += ' (Agotado)';
+                    }
+                    
+                    selectColor.appendChild(option);
+                });
+                
+                // Actualizar información de colores disponibles
+                if (colorInfo) {
+                    let coloresDisponibles = 0;
+                    if (productoActual.inventario) {
+                        coloresDisponibles = Object.keys(productoActual.inventario)
+                            .filter(color => productoActual.inventario[color].length > 0).length;
+                    }
+                    
+                    if (coloresDisponibles > 0) {
+                        colorInfo.textContent = `${coloresDisponibles} ${coloresDisponibles === 1 ? 'color disponible' : 'colores disponibles'}`;
+                    } else {
+                        colorInfo.textContent = 'No hay colores disponibles';
+                    }
+                }
+            }
+            
+            // Buscar el producto según su ID
+            function buscarProducto() {
+                // Esperar a que los arrays de productos estén disponibles
+                if (typeof productosHombres === 'undefined' || 
+                    typeof productosMujeres === 'undefined' || 
+                    typeof productosNinos === 'undefined') {
+                    console.log('Esperando a que los datos de productos estén disponibles...');
+                    
+                    setTimeout(buscarProducto, 500);
+                    return;
+                }
+                
+                // Buscar en todas las categorías
+                const idNumerico = parseInt(productoId);
+                const idString = String(productoId);
+                let producto = null;
+                let categoria = '';
+                
+                // Buscar en hombres
+                console.log('Buscando en productosHombres...');
+                producto = productosHombres.find(p => String(p.id) === idString || p.id === idNumerico);
+                if (producto) {
+                    categoria = 'hombres';
+                    console.log('Producto encontrado en hombres:', producto);
+                }
+                
+                // Buscar en mujeres
+                if (!producto) {
+                    console.log('Buscando en productosMujeres...');
+                    producto = productosMujeres.find(p => String(p.id) === idString || p.id === idNumerico);
+                    if (producto) {
+                        categoria = 'mujeres';
+                        console.log('Producto encontrado en mujeres:', producto);
+                    }
+                }
+                
+                // Buscar en niños
+                if (!producto) {
+                    console.log('Buscando en productosNinos...');
+                    producto = productosNinos.find(p => String(p.id) === idString || p.id === idNumerico);
+                    if (producto) {
+                        categoria = 'ninos';
+                        console.log('Producto encontrado en niños:', producto);
+                    }
+                }
+                
+                // Si se encontró el producto, mostrarlo
+                if (producto) {
+                    productoActual = producto;
+                    
+                    // Cargar inventario real desde la base de datos
+                    cargarInventarioReal().then((data) => {
+                        // Si no recibimos datos del inventario real, usamos el inventario predefinido
+                        if (!data || !data.inventario) {
+                            console.log('Usando inventario predefinido del producto...');
+                            inventarioReal = null;
+                        }
+                        mostrarProducto(producto, categoria);
+                    }).catch(error => {
+                        console.error('Error al cargar inventario:', error);
+                        mostrarProducto(producto, categoria);
+                    });
+                } else {
+                    console.error('No se encontró ningún producto con ID:', productoId);
+                }
+            }
+            
+            // Mostrar el producto en la página
+            function mostrarProducto(producto, categoria) {
+                console.log('Mostrando producto:', producto);
+                
+                // Asegurar que la imagen tenga ruta absoluta
+                let rutaImagen = producto.imagen || '/imagenes/productos/placeholder.jpg';
+                if (!rutaImagen.startsWith('/')) {
+                    rutaImagen = '/' + rutaImagen;
+                }
+                
+                // Añadir parámetro para evitar caché
+                rutaImagen += '?v=' + new Date().getTime();
+                
+                // Cargar imagen
+                if (productoImagen) {
+                    productoImagen.src = rutaImagen;
+                    productoImagen.alt = producto.nombre;
+                }
+                
+                // Actualizar información del producto
+                if (productoNombre) productoNombre.textContent = producto.nombre;
+                if (productoPrecio) productoPrecio.textContent = producto.precio.toLocaleString('es-CO');
+                if (productoDescripcion) productoDescripcion.textContent = producto.descripcion || '';
+                
+                // Actualizar materiales del producto
+                const materialesElement = document.getElementById('materiales-descripcion');
+                if (materialesElement) {
+                    if (producto.materiales) {
+                        materialesElement.textContent = producto.materiales;
+                    } else {
+                        materialesElement.textContent = 'Información no disponible';
+                    }
+                }
+                
+                // Actualizar breadcrumb
+                if (productoBreadcrumb) productoBreadcrumb.textContent = producto.nombre;
+                
+                // Actualizar link de categoría
+                if (categoriaLink) {
+                    let categoriaTexto = '';
+                    let categoriaURL = '';
+                    
+                    switch(categoria) {
+                        case 'hombres':
+                            categoriaTexto = 'Hombres';
+                            categoriaURL = '/hombres.html';
+                            break;
+                        case 'mujeres':
+                            categoriaTexto = 'Mujeres';
+                            categoriaURL = '/mujeres.html';
+                            break;
+                        case 'ninos':
+                            categoriaTexto = 'Niños';
+                            categoriaURL = '/ninos.html';
+                            break;
+                        default:
+                            categoriaTexto = 'Productos';
+                            categoriaURL = '/';
+                    }
+                    
+                    categoriaLink.textContent = categoriaTexto;
+                    categoriaLink.href = categoriaURL;
+                }
+                
+                // Actualizar la disponibilidad y llenar opciones
+                actualizarDisponibilidad();
+                
+                // Configurar eventos para actualizar las opciones disponibles
+                if (selectColor) {
+                    selectColor.addEventListener('change', function() {
+                        actualizarTallasDisponibles(producto, selectColor.value);
+                    });
+                }
+                
+                if (selectTalla) {
+                    selectTalla.addEventListener('change', function() {
+                        actualizarColoresDisponibles(producto, selectTalla.value);
+                    });
+                }
+                
+                // Configurar botón de agregar al carrito
+                if (btnAgregarCarrito) {
+                    btnAgregarCarrito.onclick = function() {
+                        const talla = selectTalla.value;
+                        const color = selectColor.value;
+                        const cantidad = parseInt(document.getElementById('cantidad').value) || 1;
+                        
+                        if (!talla || !color) {
+                            alert('Por favor selecciona talla y color');
+                            return;
+                        }
+                        
+                        // Verificar disponibilidad
+                        if (producto.inventario && producto.inventario[color]) {
+                            const tallasDisponibles = producto.inventario[color];
+                            if (!tallasDisponibles.includes(talla)) {
+                                alert(`Lo sentimos, la combinación de talla ${talla} en color ${color} no está disponible actualmente.`);
+                                return;
+                            }
+                        }
+                        
+                        // Verificar si el carrito está disponible
+                        if (typeof Carrito !== 'undefined') {
+                            try {
+                                Carrito.agregarItem({
+                                    id: producto.id,
+                                    nombre: producto.nombre,
+                                    precio: producto.precio,
+                                    imagen: producto.imagen,
+                                    talla: talla,
+                                    color: color,
+                                    cantidad: cantidad
+                                });
+                                
+                                // Notificación más elegante
+                                const notificacion = document.createElement('div');
+                                notificacion.className = 'notificacion';
+                                notificacion.textContent = `${producto.nombre} añadido al carrito`;
+                                document.body.appendChild(notificacion);
+                                
+                                setTimeout(() => {
+                                    notificacion.classList.add('fadeout');
+                                    setTimeout(() => notificacion.remove(), 500);
+                                }, 2500);
+                            } catch (error) {
+                                console.error('Error al agregar al carrito:', error);
+                                alert('Ocurrió un error al agregar el producto al carrito');
+                            }
+                        } else {
+                            console.error('El objeto Carrito no está definido');
+                            alert('Error: El sistema de carrito no está disponible');
+                        }
+                    };
+                }
+            }
+            
+            // Función para actualizar las tallas disponibles según el color seleccionado
+            function actualizarTallasDisponibles(producto, colorSeleccionado) {
+                if (!selectTalla) return;
+                
+                // Guardar la talla seleccionada anteriormente
+                const tallaAnterior = selectTalla.value;
+                
+                // Limpiar el selector de tallas
+                selectTalla.innerHTML = '<option value="">Seleccionar talla</option>';
+                
+                if (!colorSeleccionado) {
+                    if (tallaInfo) tallaInfo.textContent = 'Selecciona un color para ver tallas disponibles';
+                    return;
+                }
+                
+                // Obtener tallas disponibles para el color seleccionado
+                const tallasDisponibles = producto.inventario && producto.inventario[colorSeleccionado] 
+                    ? producto.inventario[colorSeleccionado] 
+                    : [];
+                
+                // Ordenar tallas numéricamente
+                const tallasOrdenadas = [...producto.tallas].sort((a, b) => parseInt(a) - parseInt(b));
+                
+                // Agregar todas las tallas, pero deshabilitar las no disponibles
+                tallasOrdenadas.forEach(talla => {
+                    const option = document.createElement('option');
+                    option.value = talla;
+                    option.textContent = talla;
+                    
+                    if (!tallasDisponibles.includes(talla)) {
+                        option.disabled = true;
+                        option.textContent += ' (Agotado)';
+                    }
+                    
+                    selectTalla.appendChild(option);
+                });
+                
+                // Actualizar información de tallas disponibles
+                if (tallaInfo) {
+                    if (tallasDisponibles.length > 0) {
+                        tallaInfo.textContent = `${tallasDisponibles.length} ${tallasDisponibles.length === 1 ? 'talla disponible' : 'tallas disponibles'} en color ${colorSeleccionado}`;
+                    } else {
+                        tallaInfo.textContent = `No hay tallas disponibles en color ${colorSeleccionado}`;
+                    }
+                }
+                
+                // Intentar restaurar la talla seleccionada anteriormente si sigue disponible
+                if (tallaAnterior && !tallasDisponibles.includes(tallaAnterior)) {
+                    selectTalla.value = '';
+                } else if (tallaAnterior) {
+                    selectTalla.value = tallaAnterior;
+                }
+            }
+            
+            // Función para actualizar los colores disponibles según la talla seleccionada
+            function actualizarColoresDisponibles(producto, tallaSeleccionada) {
+                if (!selectColor) return;
+                
+                // Guardar el color seleccionado anteriormente
+                const colorAnterior = selectColor.value;
+                
+                // No limpiar el selector si no hay talla seleccionada
+                if (!tallaSeleccionada) return;
+                
+                // Encontrar colores disponibles para la talla seleccionada
+                const coloresDisponibles = [];
+                
+                if (producto.inventario) {
+                    Object.keys(producto.inventario).forEach(color => {
+                        if (producto.inventario[color].includes(tallaSeleccionada)) {
+                            coloresDisponibles.push(color);
+                        }
+                    });
+                }
+                
+                // Actualizar opciones del selector de colores
+                const opciones = selectColor.querySelectorAll('option');
+                opciones.forEach(option => {
+                    if (option.value === '') return; // Mantener la opción predeterminada
+                    
+                    if (!coloresDisponibles.includes(option.value)) {
+                        option.disabled = true;
+                        if (!option.textContent.includes('(Agotado)')) {
+                            option.textContent = option.textContent.split(' (')[0] + ' (Agotado en talla ' + tallaSeleccionada + ')';
+                        }
+                    } else {
+                        option.disabled = false;
+                        option.textContent = option.textContent.split(' (')[0] + ` (Disponible en talla ${tallaSeleccionada})`;
+                    }
+                });
+                
+                // Actualizar información de colores disponibles
+                if (colorInfo) {
+                    if (coloresDisponibles.length > 0) {
+                        colorInfo.textContent = `${coloresDisponibles.length} ${coloresDisponibles.length === 1 ? 'color disponible' : 'colores disponibles'} en talla ${tallaSeleccionada}`;
+                    } else {
+                        colorInfo.textContent = `No hay colores disponibles en talla ${tallaSeleccionada}`;
+                    }
+                }
+                
+                // Si el color anterior ya no está disponible, desseleccionarlo
+                if (colorAnterior && !coloresDisponibles.includes(colorAnterior)) {
+                    selectColor.value = '';
+                }
+            }
+            
+            // Función para mostrar etiquetas de disponibilidad para todas las combinaciones
+            function actualizarEtiquetasDisponibilidad(producto) {
+                if (!inventarioStatus || !producto.inventario) return;
+                
+                // Limpiar el contenedor
+                inventarioStatus.innerHTML = '';
+                
+                // Crear encabezado para etiquetas
+                const encabezado = document.createElement('div');
+                encabezado.classList.add('inventario-info');
+                encabezado.textContent = 'Disponibilidad por combinaciones:';
+                encabezado.style.width = '100%';
+                encabezado.style.marginBottom = '5px';
+                inventarioStatus.appendChild(encabezado);
+                
+                // Recorrer colores y tallas para crear etiquetas
+                Object.keys(producto.inventario).forEach(color => {
+                    const tallasDisponibles = producto.inventario[color];
+                    
+                    producto.tallas.forEach(talla => {
+                        const isDisponible = tallasDisponibles.includes(talla);
+                        
+                        const etiqueta = document.createElement('div');
+                        etiqueta.classList.add('disponibilidad-tag');
+                        etiqueta.classList.add(isDisponible ? 'disponible' : 'no-disponible');
+                        
+                        etiqueta.innerHTML = `${color} / ${talla}`;
+                        
+                        // Si un usuario hace clic en la etiqueta, seleccionar esa combinación
+                        if (isDisponible) {
+                            etiqueta.style.cursor = 'pointer';
+                            etiqueta.addEventListener('click', function() {
+                                selectColor.value = color;
+                                // Disparar el evento change para actualizar las tallas disponibles
+                                selectColor.dispatchEvent(new Event('change'));
+                                
+                                // Esperar un poco para que se actualicen las tallas
+                                setTimeout(() => {
+                                    selectTalla.value = talla;
+                                    selectTalla.dispatchEvent(new Event('change'));
+                                }, 100);
+                            });
+                        }
+                        
+                        inventarioStatus.appendChild(etiqueta);
+                    });
+                });
+            }
+            
+            // Configurar control de cantidad
+            const btnDisminuir = document.getElementById('disminuir-cantidad');
+            const btnAumentar = document.getElementById('aumentar-cantidad');
+            const inputCantidad = document.getElementById('cantidad');
+            
+            if (btnDisminuir && inputCantidad) {
+                btnDisminuir.addEventListener('click', function() {
+                    let valor = parseInt(inputCantidad.value) - 1;
+                    if (valor < 1) valor = 1;
+                    inputCantidad.value = valor;
+                });
+            }
+            
+            if (btnAumentar && inputCantidad) {
+                btnAumentar.addEventListener('click', function() {
+                    let valor = parseInt(inputCantidad.value) + 1;
+                    if (valor > 10) valor = 10;
+                    inputCantidad.value = valor;
+                });
+            }
+            
+            // Iniciar búsqueda del producto
+            buscarProducto();
+            
+            // Actualizar contador del carrito
+            function actualizarContadorCarrito() {
+                const cartCountElement = document.getElementById('cart-count');
+                if (cartCountElement && typeof Carrito !== 'undefined') {
+                    const itemsCount = Carrito.obtenerCantidadItems();
+                    cartCountElement.textContent = itemsCount;
+                }
+            }
+            
+            // Intentar actualizar el contador al cargar
+            actualizarContadorCarrito();
+            
+            // Establecer un intervalo para actualizar el contador periódicamente
+            setInterval(actualizarContadorCarrito, 2000);
+        });
+    </script>
+</body>
+</html> 

@@ -95,22 +95,35 @@
     line-height: 1.5;
 }
 
-.talla-selector {
+.producto-opciones {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    flex-direction: column;
+}
+
+.select-grupo {
     margin-bottom: 1rem;
 }
 
-.talla-selector label {
+.select-grupo label {
     display: block;
     margin-bottom: 0.5rem;
     color: #333;
 }
 
-.talla-selector select {
+.select-talla, .select-color {
     width: 100%;
     padding: 0.8rem;
     border: 1px solid #ddd;
     border-radius: 5px;
     background-color: white;
+}
+
+.producto-acciones {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
 }
 
 .btn-agregar-carrito {
@@ -131,6 +144,24 @@
 
 .btn-agregar-carrito:hover {
     background-color: #ff6347;
+}
+
+.btn-ver-detalle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.8rem;
+    color: #666;
+    background-color: #f5f5f5;
+    border-radius: 5px;
+    text-decoration: none;
+    gap: 0.5rem;
+    transition: background-color 0.3s ease;
+}
+
+.btn-ver-detalle:hover {
+    background-color: #e5e5e5;
+    color: #333;
 }
 
 /* Sección de características */
@@ -248,5 +279,11 @@
     .features-grid {
         grid-template-columns: 1fr;
         padding: 0 2rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .productos-grid {
+        grid-template-columns: 1fr;
     }
 }

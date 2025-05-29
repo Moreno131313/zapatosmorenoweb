@@ -210,6 +210,42 @@
         width: 100%;
         margin-right: 0;
     }
+    
+    /* Estilos responsivos para la página de detalle del producto */
+    .detalle-producto {
+        flex-direction: column;
+        gap: 1.5rem;
+    }
+    
+    .producto-imagen {
+        max-width: 100%;
+    }
+    
+    .producto-info h1 {
+        font-size: 1.75rem;
+    }
+    
+    .producto-precio {
+        font-size: 1.25rem;
+    }
+    
+    .producto-acciones {
+        flex-direction: column;
+    }
+    
+    .btn-ver-detalle,
+    .btn-agregar-carrito {
+        width: 100%;
+        text-align: center;
+    }
+    
+    .cantidad-control {
+        justify-content: center;
+    }
+    
+    .breadcrumb {
+        font-size: 0.8rem;
+    }
 }
 
 /* Estilos para dispositivos móviles */

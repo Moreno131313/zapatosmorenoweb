@@ -2,25 +2,26 @@
 const mysql = require('mysql2/promise');
 require('dotenv').config();
 
-console.log('Configurando conexión a la base de datos...');
-console.log('Configuración de conexión:', {
-  host: process.env.DB_HOST || 'localhost',
-  user: process.env.DB_USER || 'root',
-  password: process.env.DB_PASSWORD ? '[PASSWORD OCULTO]' : '', // No mostrar la contraseña real
-  database: process.env.DB_NAME || 'zapatosmoreno',
-  connectionLimit: 10
-});
+console.log('Configurando conexión a la base de datos MySQL...');
 
-// Crear un pool de conexiones para mejor rendimiento
-const pool = mysql.createPool({
-  host: process.env.DB_HOST || 'localhost',
-  user: process.env.DB_USER || 'root',
-  password: process.env.DB_PASSWORD || '',
-  database: process.env.DB_NAME || 'zapatosmoreno',
+// Configuración de conexión a MySQL con las credenciales correctas
+const dbConfig = {
+  host: 'localhost',
+  user: 'root',
+  password: '3312',
+  database: 'zapatosmoreno',
   waitForConnections: true,
   connectionLimit: 10,
   queueLimit: 0
+};
+
+console.log('CONFIG DEBUG:', {
+  ...dbConfig,
+  password: '[OCULTA POR SEGURIDAD]'
 });
+
+// Crear un pool de conexiones para mejor rendimiento
+const pool = mysql.createPool(dbConfig);
 
 /**
  * Ejecuta una consulta SQL con parámetros
@@ -347,9 +348,9 @@ async function inicializarBaseDatos() {
     console.log('Configurando conexión a la base de datos...');
     
     // Verificar conexión
-    const conexion = await pool.getConnection();
+    const connection = await pool.getConnection();
     console.log('[DB] Conexión obtenida correctamente');
-    conexion.release();
+    connection.release();
     
     // Verificar que existe la base de datos
     const [bases] = await pool.query('SHOW DATABASES LIKE ?', ['zapatosmoreno']);
@@ -385,6 +386,39 @@ async function inicializarBaseDatos() {
   }
 }
 
+// Función para obtener conexión directa al pool
+function getPool() {
+  return pool;
+}
+
+// Función de utilidad para obtener direcciones de usuario por ID
+async function obtenerDireccionesPorUsuario(usuarioId) {
+  try {
+    console.log(`[DB] Obteniendo direcciones para usuario ID: ${usuarioId}`);
+    
+    if (!usuarioId) {
+      console.error('[DB] Error: ID de usuario no proporcionado');
+      return [];
+    }
+    
+    const direcciones = await query(
+      'SELECT * FROM direcciones WHERE usuario_id = ?',
+      [usuarioId]
+    );
+    
+    console.log(`[DB] Encontradas ${direcciones.length} direcciones para usuario ID ${usuarioId}`);
+    
+    if (direcciones.length > 0) {
+      console.log(`[DB] Primera dirección encontrada:`, direcciones[0]);
+    }
+    
+    return direcciones;
+  } catch (error) {
+    console.error('[DB] Error al obtener direcciones:', error);
+    return [];
+  }
+}
+
 // Exportar funciones y el pool
 module.exports = {
   query,
@@ -392,5 +426,7 @@ module.exports = {
   pool,
   verificarConexion,
   verificarTablaDirecciones,
-  inicializarBaseDatos
+  inicializarBaseDatos,
+  getPool,
+  obtenerDireccionesPorUsuario
 };

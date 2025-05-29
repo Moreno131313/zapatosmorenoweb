@@ -1,19 +1,24 @@
 // public/js/carrito.js
 const Carrito = {
   items: [],
+  notificaciones: [],
   
   async sincronizarConServidor() {
     try {
-      // Verificar si hay un usuario autenticado
       const token = localStorage.getItem('token');
       if (!token) {
         console.log('No hay usuario autenticado, usando carrito local');
         return false;
       }
       
-      console.log('Usuario autenticado, sincronizando carrito con servidor');
+      // Si el carrito está vacío, no hay nada que sincronizar
+      if (this.items.length === 0) {
+        console.log('El carrito está vacío, no hay nada que sincronizar');
+        return true;
+      }
       
-      // Si el usuario está autenticado, sincronizar el carrito con el servidor
+      console.log('Intentando sincronizar carrito con el servidor...');
+      
       const response = await fetch('/api/carrito/sincronizar', {
         method: 'POST',
         headers: {
@@ -23,71 +28,108 @@ const Carrito = {
         body: JSON.stringify({ items: this.items })
       });
       
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('Error en respuesta del servidor:', response.status, errorText);
+        throw new Error(`Error ${response.status}: ${response.statusText}`);
+      }
+      
       const result = await response.json();
       
-      if (response.ok && result.success) {
+      if (result.success) {
         console.log('Carrito sincronizado con servidor:', result.data);
-        // Actualizar el carrito local con la versión del servidor
         this.items = result.data;
         this.guardarCarrito();
         this.actualizarContador();
+        
+        // Si estamos en la página de carrito, renderizar de nuevo
+        if (window.location.pathname.includes('carrito.html')) {
+          this.renderizarCarrito();
+        }
+        
+        this.mostrarNotificacion('Carrito sincronizado con éxito', 'success');
         return true;
       } else {
-        console.error('Error al sincronizar carrito:', result.mensaje || 'Error desconocido');
+        this.mostrarNotificacion(result.mensaje || 'Error al sincronizar carrito', 'error');
         return false;
       }
     } catch (error) {
       console.error('Error en sincronizarConServidor:', error);
+      this.mostrarNotificacion('Error al sincronizar carrito', 'error');
       return false;
     }
   },
   
   async cargarDesdeServidor() {
     try {
-      // Verificar si hay un usuario autenticado
       const token = localStorage.getItem('token');
       if (!token) {
-        console.log('No hay usuario autenticado, cargando carrito local');
-        this.cargarCarritoDesdeLocalStorage();
+        console.log('No hay usuario autenticado, usando carrito local');
         return false;
       }
       
-      console.log('Usuario autenticado, cargando carrito desde servidor');
+      console.log('Intentando cargar carrito desde el servidor...');
       
-      // Si el usuario está autenticado, obtener carrito del servidor
-      const response = await fetch('/api/carrito', {
-        method: 'GET',
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      });
-      
-      const result = await response.json();
-      
-      if (response.ok && result.success) {
-        console.log('Carrito cargado desde servidor:', result.data);
+      try {
+        const timeout = new Promise((_, reject) => 
+          setTimeout(() => reject(new Error('Tiempo de espera agotado')), 5000)
+        );
         
-        // Si no hay items en el servidor pero hay en localStorage
-        const carritoLocal = localStorage.getItem('carrito');
-        if (result.data.length === 0 && carritoLocal && carritoLocal !== '[]') {
-          console.log('Carrito vacío en servidor pero con datos en local, sincronizando...');
-          this.cargarCarritoDesdeLocalStorage();
-          await this.sincronizarConServidor();
-        } else {
-          // Usar carrito del servidor
-          this.items = result.data;
-          this.guardarCarrito();
-          this.actualizarContador();
+        const fetchPromise = fetch('/api/carrito', {
+          method: 'GET',
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+        
+        // Usar Promise.race para establecer un tiempo límite
+        const response = await Promise.race([fetchPromise, timeout]);
+        
+        // Manejar errores de red o del servidor
+        if (!response.ok) {
+          console.error(`Error al cargar carrito desde servidor: ${response.status} ${response.statusText}`);
+          // En caso de error, seguir usando el carrito local
+          return false;
         }
-        return true;
-      } else {
-        console.error('Error al cargar carrito desde servidor:', result.mensaje || 'Error desconocido');
+        
+        const result = await response.json();
+        
+        // Ahora siempre debería ser exitoso, pero verificamos igualmente
+        if (result.success) {
+          console.log('Carrito cargado desde servidor:', result.data);
+          
+          // Si el carrito del servidor está vacío pero hay items en localStorage
+          const carritoLocal = localStorage.getItem('carrito');
+          if (result.data.length === 0 && carritoLocal && carritoLocal !== '[]') {
+            console.log('Carrito vacío en servidor pero lleno en local, sincronizando...');
+            await this.sincronizarConServidor();
+          } else {
+            this.items = result.data;
+            this.guardarCarrito();
+          }
+          
+          this.actualizarContador();
+          return true;
+        } else {
+          console.warn('Respuesta del servidor no exitosa:', result.mensaje);
+          return false;
+        }
+      } catch (networkError) {
+        // Errores de red, CORS o timeout
+        console.error('Error de red al cargar carrito:', networkError);
+        
+        // Usar el carrito local en caso de error de red
+        console.log('Usando carrito local debido a error de red');
         this.cargarCarritoDesdeLocalStorage();
+        
         return false;
       }
     } catch (error) {
-      console.error('Error en cargarDesdeServidor:', error);
+      console.error('Error general en cargarDesdeServidor:', error);
+      
+      // Usar el carrito local en caso de error general
       this.cargarCarritoDesdeLocalStorage();
+      
       return false;
     }
   },
@@ -98,34 +140,63 @@ const Carrito = {
       const token = localStorage.getItem('token');
       if (!token) {
         console.log('No hay usuario autenticado, sólo se guardará localmente');
-        return false;
+        return true; // Retornar true porque se guardó localmente
       }
       
-      // Si el usuario está autenticado, agregar al servidor
-      const response = await fetch('/api/carrito/agregar', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
+      // Preparar los datos en el formato que espera el servidor
+      const productoData = {
+        producto_id: producto.id,
+        cantidad: producto.cantidad,
+        talla: producto.talla,
+        color: producto.color
+      };
+
+      console.log('Enviando datos al servidor:', productoData);
+      
+      // Usar reintentos para la operación de agregar producto
+      return await this.ejecutarConReintentos(
+        async () => {
+          // Si el usuario está autenticado, agregar al servidor
+          const response = await fetch('/api/carrito/agregar', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify(productoData),
+            signal: AbortSignal.timeout(7000) // Timeout de 7 segundos
+          });
+          
+          // En caso de error de red u otro error no controlado
+          if (!response.ok) {
+            const errorText = await response.text();
+            console.error('Error en respuesta del servidor:', response.status, errorText);
+            this.mostrarNotificacion(`Error al agregar producto: ${response.status}`, 'error');
+            throw new Error(`Error ${response.status}: ${response.statusText}`);
+          }
+          
+          const result = await response.json();
+          
+          if (result.success) {
+            console.log('Producto agregado al carrito en servidor:', result.data);
+            // Actualizar el carrito completo después de agregar
+            await this.actualizarCarritoCompleto();
+            this.animarAgregarProducto(producto);
+            this.mostrarNotificacion('Producto agregado al carrito', 'success');
+            return true;
+          } else {
+            const errorMsg = result.mensaje || 'Error al agregar producto';
+            console.error('Error al agregar producto al carrito en servidor:', errorMsg);
+            this.mostrarNotificacion(errorMsg, 'error');
+            throw new Error(errorMsg);
+          }
         },
-        body: JSON.stringify({ producto })
-      });
-      
-      const result = await response.json();
-      
-      if (response.ok && result.success) {
-        console.log('Producto agregado al carrito en servidor:', result.data);
-        // Actualizar el carrito local con la versión del servidor
-        this.items = result.data;
-        this.guardarCarrito();
-        this.actualizarContador();
-        return true;
-      } else {
-        console.error('Error al agregar producto al carrito en servidor:', result.mensaje || 'Error desconocido');
-        return false;
-      }
+        'agregar producto al servidor',
+        2 // Máximo 2 intentos
+      );
     } catch (error) {
       console.error('Error en agregarItemAlServidor:', error);
+      this.mostrarNotificacion('Error al agregar producto al carrito', 'error');
       return false;
     }
   },
@@ -146,17 +217,21 @@ const Carrito = {
         return false;
       }
       
+      // Verificar si tenemos carrito_id (necesario para actualizar en el servidor)
+      const carritoId = producto.carrito_id;
+      if (!carritoId) {
+        console.error('Este producto no tiene carrito_id, posiblemente no está sincronizado con el servidor');
+        return false;
+      }
+      
       // Si el usuario está autenticado, actualizar en servidor
-      const response = await fetch('/api/carrito/actualizar', {
+      const response = await fetch(`/api/carrito/actualizar/${carritoId}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`
         },
         body: JSON.stringify({
-          productoId: producto.id,
-          talla: producto.talla,
-          color: producto.color,
           cantidad
         })
       });
@@ -165,17 +240,16 @@ const Carrito = {
       
       if (response.ok && result.success) {
         console.log('Cantidad actualizada en servidor:', result.data);
-        // Actualizar el carrito local con la versión del servidor
-        this.items = result.data;
-        this.guardarCarrito();
-        this.actualizarContador();
+        this.mostrarNotificacion('Cantidad actualizada', 'success');
         return true;
       } else {
         console.error('Error al actualizar cantidad en servidor:', result.mensaje || 'Error desconocido');
+        this.mostrarNotificacion(result.mensaje || 'Error al actualizar cantidad', 'error');
         return false;
       }
     } catch (error) {
       console.error('Error en actualizarCantidadEnServidor:', error);
+      this.mostrarNotificacion('Error al actualizar cantidad', 'error');
       return false;
     }
   },
@@ -196,35 +270,35 @@ const Carrito = {
         return false;
       }
       
+      // Aquí está el problema: necesitamos el carrito_id, no el producto_id
+      const carritoId = producto.carrito_id;
+      if (!carritoId) {
+        console.error('Este producto no tiene carrito_id, posiblemente no está sincronizado con el servidor');
+        return false;
+      }
+      
       // Si el usuario está autenticado, eliminar en servidor
-      const response = await fetch('/api/carrito/eliminar', {
+      const response = await fetch(`/api/carrito/eliminar/${carritoId}`, {
         method: 'DELETE',
         headers: {
-          'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify({
-          productoId: producto.id,
-          talla: producto.talla,
-          color: producto.color
-        })
+        }
       });
       
       const result = await response.json();
       
       if (response.ok && result.success) {
         console.log('Producto eliminado en servidor:', result.data);
-        // Actualizar el carrito local con la versión del servidor
-        this.items = result.data;
-        this.guardarCarrito();
-        this.actualizarContador();
+        this.mostrarNotificacion('Producto eliminado del carrito', 'success');
         return true;
       } else {
         console.error('Error al eliminar producto en servidor:', result.mensaje || 'Error desconocido');
+        this.mostrarNotificacion(result.mensaje || 'Error al eliminar producto', 'error');
         return false;
       }
     } catch (error) {
       console.error('Error en eliminarProductoEnServidor:', error);
+      this.mostrarNotificacion('Error al eliminar producto del carrito', 'error');
       return false;
     }
   },
@@ -253,10 +327,12 @@ const Carrito = {
         return true;
       } else {
         console.error('Error al vaciar carrito en servidor:', result.mensaje || 'Error desconocido');
+        this.mostrarNotificacion(result.mensaje || 'Error al vaciar carrito', 'error');
         return false;
       }
     } catch (error) {
       console.error('Error en vaciarCarritoEnServidor:', error);
+      this.mostrarNotificacion('Error al vaciar carrito', 'error');
       return false;
     }
   },
@@ -317,13 +393,15 @@ const Carrito = {
       this.actualizarContador();
       
       // Intentar sincronizar con servidor
-      await this.agregarItemAlServidor(producto);
+      const exito = await this.agregarItemAlServidor(producto);
+      
+      // Mostrar notificación solo si la sincronización fue exitosa
+      if (exito) {
+        this.mostrarNotificacion('Producto agregado al carrito', 'success');
+      }
     }
     
     console.log('Carrito actualizado:', this.items);
-    
-    // Mostrar notificación
-    this.mostrarNotificacion();
   },
   
   async cambiarCantidad(index, cantidad, esAbsoluta = false) {
@@ -351,10 +429,20 @@ const Carrito = {
     this.actualizarContador();
     
     // Intentar actualizar en servidor
-    await this.actualizarCantidadEnServidor(index, nuevaCantidad);
+    const actualizadoEnServidor = await this.actualizarCantidadEnServidor(index, nuevaCantidad);
+    
+    // Si se actualizó en servidor, actualizar el carrito completo
+    if (actualizadoEnServidor) {
+      await this.actualizarCarritoCompleto();
+    }
     
     if (this.onCambiarCantidad) {
       this.onCambiarCantidad();
+    }
+    
+    // Renderizar de nuevo el carrito si estamos en la página de carrito
+    if (window.location.pathname.includes('carrito.html')) {
+      this.renderizarCarrito();
     }
   },
   
@@ -364,16 +452,32 @@ const Carrito = {
       return;
     }
     
+    // Guardar una copia del producto antes de eliminarlo para animación
+    const productoEliminado = { ...this.items[index] };
+    
     // Intentar eliminar en servidor primero
-    await this.eliminarProductoEnServidor(index);
+    const eliminadoEnServidor = await this.eliminarProductoEnServidor(index);
     
     // Eliminar localmente
     this.items.splice(index, 1);
     this.guardarCarrito();
     this.actualizarContador();
     
+    // Si se eliminó en servidor, actualizar el carrito completo
+    if (eliminadoEnServidor) {
+      await this.actualizarCarritoCompleto();
+    }
+    
+    // Animar el producto eliminado
+    this.animarEliminarProducto(productoEliminado);
+    
     if (this.onEliminarProducto) {
       this.onEliminarProducto();
+    }
+    
+    // Renderizar de nuevo el carrito
+    if (window.location.pathname.includes('carrito.html')) {
+      this.renderizarCarrito();
     }
   },
   
@@ -408,187 +512,225 @@ const Carrito = {
   },
   
   cargarCarritoDesdeLocalStorage() {
-    const carritoGuardado = localStorage.getItem('carrito');
-    console.log('Cargando carrito desde localStorage:', carritoGuardado);
-    
-    if (carritoGuardado) {
-      try {
-        this.items = JSON.parse(carritoGuardado);
-        console.log('Carrito cargado:', this.items);
-      } catch (error) {
-        console.error('Error al cargar carrito desde localStorage:', error);
+    try {
+      const carritoGuardado = localStorage.getItem('carrito');
+      console.log('Cargando carrito desde localStorage:', carritoGuardado);
+      
+      if (carritoGuardado) {
+        try {
+          const itemsParsed = JSON.parse(carritoGuardado);
+          
+          // Validar que sea un array
+          if (Array.isArray(itemsParsed)) {
+            this.items = itemsParsed;
+            console.log('Carrito cargado:', this.items);
+          } else {
+            console.warn('El carrito guardado no es un array, inicializando vacío');
+            this.items = [];
+            this.guardarCarrito(); // Sobrescribir el valor inválido
+          }
+        } catch (parseError) {
+          console.error('Error al parsear carrito desde localStorage:', parseError);
+          this.items = [];
+          // Limpiar localStorage corrupto
+          localStorage.removeItem('carrito');
+          localStorage.setItem('carrito', '[]');
+        }
+      } else {
+        console.log('No hay carrito guardado en localStorage');
         this.items = [];
+        this.guardarCarrito(); // Inicializar con array vacío
       }
-    } else {
-      console.log('No hay carrito guardado en localStorage');
-      this.items = [];
-    }
-    this.actualizarContador();
-  },
-  
-  inicializar() {
-    console.log('Inicializando carrito...');
-    
-    // Cargar carrito, intentando primero desde el servidor
-    this.cargarDesdeServidor().then(exito => {
-      console.log('Carrito cargado correctamente: ', exito);
       
-      // Crear botón flotante del carrito
-      this.crearBotonFlotante();
-      
-      // Si estamos en la página del carrito, renderizar los productos
-      const enPaginaCarrito = window.location.pathname.includes('carrito.html') || 
-                           document.getElementById('lista-productos-carrito') || 
-                           document.getElementById('cart-items');
-      
-      if (enPaginaCarrito) {
-        console.log('Estamos en la página del carrito, renderizando...');
-        this.renderizarCarrito();
-      }
+      // Verificar que todos los items tengan los campos necesarios
+      this.items = this.items.filter(item => {
+        return item && typeof item === 'object' && 
+               item.id && item.nombre && 
+               !isNaN(parseFloat(item.precio)) && 
+               !isNaN(parseInt(item.cantidad));
+      });
       
       this.actualizarContador();
-    });
+    } catch (error) {
+      console.error('Error general en cargarCarritoDesdeLocalStorage:', error);
+      this.items = [];
+      this.guardarCarrito();
+      this.actualizarContador();
+    }
+  },
+  
+  async inicializar() {
+    console.log('Inicializando carrito...');
+    
+    // Cargar carrito desde localStorage primero
+    this.cargarCarritoDesdeLocalStorage();
+    
+    // Verificar y corregir posibles inconsistencias en el carrito
+    this.verificarIntegridadCarrito();
+    
+    // Verificar si hay un usuario autenticado
+    const token = localStorage.getItem('token');
+    if (token) {
+      try {
+        // Intentar cargar desde el servidor
+        const cargadoDesdeServidor = await this.cargarDesdeServidor();
+        
+        if (!cargadoDesdeServidor) {
+          // Si falla la carga desde servidor, intentar sincronizar el carrito local
+          // Solo sincronizar si hay productos en el carrito local
+          if (this.items.length > 0) {
+            console.log('Intentando sincronizar carrito local con servidor...');
+            await this.sincronizarConServidor();
+          } else {
+            console.log('No hay productos en el carrito local para sincronizar');
+          }
+        }
+      } catch (error) {
+        console.error('Error al inicializar carrito:', error);
+        this.mostrarNotificacion('Error al cargar el carrito', 'error');
+      }
+    } else {
+      console.log('No hay sesión activa, usando carrito local');
+    }
+    
+    // Renderizar el carrito si estamos en la página de carrito
+    if (window.location.pathname.includes('carrito.html')) {
+      console.log('Estamos en la página de carrito, renderizando...');
+      this.renderizarCarrito();
+    }
+    
+    // Actualizar contador
+    this.actualizarContador();
+    
+    // Crear botón flotante si no existe y no estamos en la página de carrito
+    if (!document.getElementById('carrito-flotante') && !window.location.pathname.includes('carrito.html')) {
+      this.crearBotonFlotante();
+    }
+    
+    console.log('Inicialización del carrito completada');
   },
   
   renderizarCarrito() {
-    console.log('Renderizando carrito con items:', this.items);
-    // Buscar el contenedor en ambos posibles IDs
-    let contenedorCarrito = document.getElementById('lista-productos-carrito') || document.getElementById('cart-items');
-    
-    // Verificar si estamos en la página del carrito
-    if (!contenedorCarrito) {
-      console.log('No se encontró el contenedor del carrito, intentando recrearlo...');
+    try {
+      console.log('Renderizando carrito con items:', this.items);
       
-      // Intentar encontrar algún contenedor padre donde podamos recrear el carrito
-      const mainContainer = document.querySelector('.carrito-container') || document.querySelector('main');
-      if (mainContainer) {
-        console.log('Encontrado contenedor principal, recreando el carrito...');
-        // Intentar recrear el contenedor del carrito
-        const cartContainer = document.createElement('div');
-        cartContainer.className = 'cart-container';
-        
-        contenedorCarrito = document.createElement('div');
-        contenedorCarrito.className = 'cart-items';
-        contenedorCarrito.id = 'lista-productos-carrito';
-        contenedorCarrito.setAttribute('data-container', 'carrito');
-        
-        cartContainer.appendChild(contenedorCarrito);
-        
-        // Encontrar dónde insertar el contenedor recreado
-        const existingCartContainer = mainContainer.querySelector('.cart-container');
-        if (existingCartContainer) {
-          // Reemplazar el contenedor existente
-          mainContainer.replaceChild(cartContainer, existingCartContainer);
-        } else {
-          // O simplemente añadirlo
-          mainContainer.appendChild(cartContainer);
-        }
-        
-        console.log('Contenedor del carrito recreado:', contenedorCarrito);
-      } else {
-        console.log('No estamos en la página del carrito, no es necesario renderizar');
+      // Buscar el contenedor del carrito
+      const contenedorCarrito = document.querySelector('.carrito-container');
+      if (!contenedorCarrito) {
+        console.error('No se encontró el contenedor del carrito');
         return;
       }
-    }
-    
-    // Debug para verificar si hay items en el carrito
-    console.log(`Hay ${this.items.length} productos en el carrito`);
-    console.table(this.items);
-    
-    const subtotalElement = document.getElementById('subtotal');
-    const ivaElement = document.getElementById('iva');
-    const totalElement = document.getElementById('total');
-    
-    // Siempre vaciar el contenedor primero
-    contenedorCarrito.innerHTML = '';
-    
-    if (this.items.length === 0) {
-      // Mostrar carrito vacío
-      const emptyCartDiv = document.createElement('div');
-      emptyCartDiv.className = 'cart-empty';
-      emptyCartDiv.innerHTML = `
-        <i class="fas fa-shopping-cart"></i>
-        <h3>Tu carrito está vacío</h3>
-        <p>Parece que aún no has añadido productos a tu carrito</p>
-        <a href="index.html" class="btn-volver-compras">
-          <i class="fas fa-arrow-left"></i> Volver a la tienda
-        </a>
-      `;
+
+      // Limpiar el contenedor existente
+      contenedorCarrito.innerHTML = '<h1 class="section-title">Carrito de Compras</h1>';
+
+      // Crear la estructura del grid
+      const cartGrid = document.createElement('div');
+      cartGrid.className = 'cart-grid';
+      cartGrid.style.display = 'grid'; // Forzar display grid
+      cartGrid.style.opacity = '1'; // Forzar visibilidad
+      cartGrid.style.visibility = 'visible';
       
-      contenedorCarrito.appendChild(emptyCartDiv);
+      // Crear la sección de items
+      const itemsSection = document.createElement('div');
+      itemsSection.className = 'cart-items';
+      itemsSection.style.display = 'block'; // Forzar display
+      itemsSection.style.opacity = '1';
+      itemsSection.style.visibility = 'visible';
       
-      if (subtotalElement) subtotalElement.textContent = '$0';
-      if (ivaElement) ivaElement.textContent = '$0';
-      if (totalElement) totalElement.textContent = '$0';
-      
-      return;
-    }
-    
-    // Renderizar items del carrito uno por uno
-    this.items.forEach((item, index) => {
-      const cartItemDiv = document.createElement('div');
-      cartItemDiv.className = 'cart-item';
-      cartItemDiv.dataset.index = index;
-      
-      // Corregir la ruta de la imagen si es necesario
-      let imagenUrl = item.imagen || 'imagenes/productos/logo.png';
-      
-      // Si la ruta comienza con '/', quitarlo para que sea relativa al sitio
-      if (imagenUrl && imagenUrl.startsWith('/')) {
-        imagenUrl = imagenUrl.substring(1);
+      if (!this.items || !Array.isArray(this.items) || this.items.length === 0) {
+        // Mostrar mensaje de carrito vacío
+        itemsSection.innerHTML = `
+          <div class="cart-empty">
+            <i class="fas fa-shopping-cart"></i>
+            <h3>Tu carrito está vacío</h3>
+            <p>Parece que aún no has añadido productos a tu carrito</p>
+            <a href="index.html" class="btn-volver-compras">
+              <i class="fas fa-arrow-left"></i> Volver a la tienda
+            </a>
+          </div>
+        `;
+      } else {
+        // Renderizar cada item
+        this.items.forEach((item, index) => {
+          // Validar que el ítem sea válido
+          if (!item || typeof item !== 'object' || !item.id || !item.nombre) {
+            console.warn('Ítem inválido en carrito, saltando:', item);
+            return;
+          }
+          
+          const itemElement = document.createElement('div');
+          itemElement.className = 'cart-item';
+          itemElement.style.display = 'flex'; // Forzar display flex
+          itemElement.style.opacity = '1';
+          itemElement.style.visibility = 'visible';
+          
+          // Procesar URL de imagen
+          let imagenUrl = item.imagen || 'imagenes/productos/logo.png';
+          if (imagenUrl.startsWith('/')) {
+            imagenUrl = imagenUrl.substring(1);
+          }
+          
+          // Asegurar que precio es un número
+          const precio = parseFloat(item.precio) || 0;
+          const cantidad = parseInt(item.cantidad) || 1;
+          const subtotal = precio * cantidad;
+          
+          itemElement.innerHTML = `
+            <div class="cart-item-image">
+              <img src="${imagenUrl}" alt="${item.nombre}" class="cart-item-img" 
+                   onerror="this.src='imagenes/productos/logo.png'">
+            </div>
+            <div class="cart-item-details">
+              <h3 class="cart-item-name">${item.nombre}</h3>
+              <div class="cart-item-atributos">
+                <span class="cart-item-atributo">Talla: ${item.talla || 'N/A'}</span>
+                <span class="cart-item-atributo">Color: ${item.color || 'N/A'}</span>
+              </div>
+              <p class="cart-item-price">$${subtotal.toLocaleString('es-CO')}</p>
+              <p class="cart-item-unit-price">$${precio.toLocaleString('es-CO')} / unidad</p>
+              <div class="cart-item-actions">
+                <div class="quantity-control">
+                  <button class="quantity-btn decrease-btn" data-index="${index}">
+                    <i class="fas fa-minus"></i>
+                  </button>
+                  <input type="number" class="quantity-input" value="${cantidad}" min="1" max="10" readonly>
+                  <button class="quantity-btn increase-btn" data-index="${index}">
+                    <i class="fas fa-plus"></i>
+                  </button>
+                </div>
+                <button class="remove-btn" data-index="${index}">
+                  <i class="fas fa-trash-alt"></i> Eliminar
+                </button>
+              </div>
+            </div>
+          `;
+          
+          itemsSection.appendChild(itemElement);
+        });
       }
       
-      cartItemDiv.innerHTML = `
-        <div class="cart-item-image">
-          <img src="${imagenUrl}" alt="${item.nombre}" class="cart-item-img" 
-               onerror="this.src='imagenes/productos/logo.png'; this.onerror=null;">
-        </div>
-        <div class="cart-item-details">
-          <h3 class="cart-item-name">${item.nombre}</h3>
-          <div class="cart-item-atributos">
-            <span class="cart-item-atributo">Talla: ${item.talla}</span>
-            <span class="cart-item-atributo">Color: ${item.color}</span>
-          </div>
-          <p class="cart-item-price">$${(item.precio * item.cantidad).toLocaleString('es-CO')}</p>
-          <p class="cart-item-unit-price">$${parseFloat(item.precio).toLocaleString('es-CO')} / unidad</p>
-        </div>
-        <div class="cart-item-actions">
-          <div class="quantity-control">
-            <button class="quantity-btn decrease-btn" data-index="${index}">
-              <i class="fas fa-minus"></i>
-            </button>
-            <input type="number" class="quantity-input" value="${item.cantidad}" min="1" max="10" readonly>
-            <button class="quantity-btn increase-btn" data-index="${index}">
-              <i class="fas fa-plus"></i>
-            </button>
-          </div>
-          <button class="remove-btn" data-index="${index}">
-            <i class="fas fa-trash-alt"></i> Eliminar
-          </button>
-        </div>
-      `;
+      // Crear el resumen del carrito
+      const summarySection = document.createElement('div');
+      summarySection.className = 'cart-summary';
       
-      contenedorCarrito.appendChild(cartItemDiv);
-    });
-    
-    // Agregar un resumen del carrito si estamos en la página del carrito
-    const cartSummaryElement = document.querySelector('.cart-summary');
-    if (!cartSummaryElement && window.location.pathname.includes('carrito.html')) {
-      const summaryContainer = document.createElement('div');
-      summaryContainer.className = 'cart-summary';
-      summaryContainer.innerHTML = `
+      const subtotal = this.obtenerTotal();
+      const iva = subtotal * 0.19;
+      const total = subtotal + iva;
+      
+      summarySection.innerHTML = `
         <h3>Resumen del pedido</h3>
         <div class="summary-line">
           <span>Subtotal:</span>
-          <span id="subtotal">$${this.obtenerTotal().toLocaleString('es-CO')}</span>
+          <span id="subtotal">$${subtotal.toLocaleString('es-CO')}</span>
         </div>
         <div class="summary-line">
           <span>IVA (19%):</span>
-          <span id="iva">$${(this.obtenerTotal() * 0.19).toLocaleString('es-CO')}</span>
+          <span id="iva">$${iva.toLocaleString('es-CO')}</span>
         </div>
         <div class="summary-line total-line">
           <strong>Total:</strong>
-          <strong id="total">$${(this.obtenerTotal() * 1.19).toLocaleString('es-CO')}</strong>
+          <strong id="total">$${total.toLocaleString('es-CO')}</strong>
         </div>
         <div class="coupon-section">
           <input type="text" id="cupon-codigo" placeholder="Código de cupón">
@@ -598,30 +740,21 @@ const Carrito = {
           <i class="fas fa-shopping-bag"></i> Finalizar compra
         </button>
       `;
-
-      // Buscar dónde insertar el resumen
-      const cartGrid = document.querySelector('.cart-grid');
-      if (cartGrid) {
-        cartGrid.appendChild(summaryContainer);
-      } else {
-        const carritoContainer = document.querySelector('.carrito-container');
-        if (carritoContainer) {
-          carritoContainer.appendChild(summaryContainer);
-        }
-      }
-    } else {
-      // Calcular totales
-      const subtotal = this.obtenerTotal();
-      const iva = subtotal * 0.19;
-      const total = subtotal + iva;
-
-      if (subtotalElement) subtotalElement.textContent = `$${subtotal.toLocaleString('es-CO')}`;
-      if (ivaElement) ivaElement.textContent = `$${iva.toLocaleString('es-CO')}`;
-      if (totalElement) totalElement.textContent = `$${total.toLocaleString('es-CO')}`;
+      
+      // Agregar las secciones al grid
+      cartGrid.appendChild(itemsSection);
+      cartGrid.appendChild(summarySection);
+      
+      // Agregar el grid al contenedor
+      contenedorCarrito.appendChild(cartGrid);
+      
+      // Agregar event listeners
+      this.agregarEventListeners();
+      
+      console.log('Renderización completada');
+    } catch (error) {
+      console.error('Error al renderizar carrito:', error);
     }
-    
-    // Agregar event listeners
-    this.agregarEventListeners();
   },
   
   agregarEventListeners() {
@@ -650,7 +783,7 @@ const Carrito = {
     removeBtns.forEach(btn => {
       btn.addEventListener('click', () => {
         const index = parseInt(btn.dataset.index);
-        this.removerItem(index);
+        this.eliminarProducto(index);
       });
     });
     
@@ -682,6 +815,86 @@ const Carrito = {
     }
   },
   
+  // Utilidad para ejecutar operaciones con reintentos
+  async ejecutarConReintentos(operacion, descripcion, maxIntentos = 3, retrasoBase = 1000) {
+    for (let intento = 1; intento <= maxIntentos; intento++) {
+      try {
+        console.log(`${descripcion}: intento ${intento} de ${maxIntentos}`);
+        return await operacion();
+      } catch (error) {
+        if (intento < maxIntentos) {
+          const retraso = retrasoBase * Math.pow(2, intento - 1); // Retraso exponencial
+          console.warn(`Error en ${descripcion}. Reintentando en ${retraso}ms...`, error);
+          await new Promise(resolve => setTimeout(resolve, retraso));
+        } else {
+          console.error(`Error en ${descripcion} después de ${maxIntentos} intentos:`, error);
+          throw error;
+        }
+      }
+    }
+  },
+  
+  async actualizarCarritoCompleto() {
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        return false;
+      }
+      
+      // Usar reintentos para la operación de obtener carrito
+      return await this.ejecutarConReintentos(
+        async () => {
+          const response = await fetch('/api/carrito', {
+            method: 'GET',
+            headers: {
+              'Authorization': `Bearer ${token}`
+            },
+            // Establecer un timeout para la petición
+            signal: AbortSignal.timeout(5000)
+          });
+          
+          if (!response.ok) {
+            throw new Error(`Error ${response.status}: ${response.statusText}`);
+          }
+          
+          const result = await response.json();
+          
+          if (result.success) {
+            this.items = result.data;
+            this.guardarCarrito();
+            this.actualizarContador();
+            
+            // Si estamos en la página de carrito, volver a renderizar
+            if (window.location.pathname.includes('carrito.html')) {
+              this.renderizarCarrito();
+            }
+            
+            return true;
+          } else {
+            throw new Error(result.mensaje || 'Error al actualizar carrito');
+          }
+        },
+        'actualizar carrito completo',
+        2 // Máximo 2 intentos para no bloquear la interfaz
+      );
+    } catch (error) {
+      console.error('Error al actualizar carrito completo:', error);
+      return false;
+    }
+  },
+  
+  actualizarCantidad(index, nuevaCantidad) {
+    if (index < 0 || index >= this.items.length) {
+      console.error('Índice inválido para actualizar cantidad:', index);
+      return;
+    }
+    
+    console.log(`Actualizando cantidad de producto en índice ${index} a ${nuevaCantidad}`);
+    
+    // Llamar a cambiarCantidad con esAbsoluta = true para establecer la cantidad exacta
+    this.cambiarCantidad(index, nuevaCantidad, true);
+  },
+  
   obtenerTotal() {
     return this.items.reduce((total, item) => {
       return total + (parseFloat(item.precio) * item.cantidad);
@@ -689,52 +902,80 @@ const Carrito = {
   },
   
   guardarCarrito() {
-    localStorage.setItem('carrito', JSON.stringify(this.items));
-  },
-  
-  contarItems() {
-    return this.items.reduce((total, item) => total + item.cantidad, 0);
-  },
-  
-  actualizarContador() {
-    const contadores = document.querySelectorAll('.cart-count');
-    const cantidad = this.contarItems();
-    
-    contadores.forEach(contador => {
-      contador.textContent = cantidad;
-      
-      // Mostrar u ocultar contador según cantidad
-      if (cantidad > 0) {
-        contador.style.display = 'inline-block';
-      } else {
-        contador.style.display = 'none';
+    try {
+      localStorage.setItem('carrito', JSON.stringify(this.items));
+    } catch (error) {
+      console.error('Error al guardar carrito en localStorage:', error);
+      // Intentar limpiar el carrito si hay un error al guardar
+      try {
+        localStorage.removeItem('carrito');
+        localStorage.setItem('carrito', '[]');
+      } catch (e) {
+        console.error('Error al limpiar el carrito:', e);
       }
-    });
-
-    // Actualizar el contador flotante si existe
-    const floatingCount = document.querySelector('.floating-count');
-    if (floatingCount) {
-      floatingCount.textContent = cantidad;
-      floatingCount.style.display = cantidad > 0 ? 'flex' : 'none';
     }
   },
   
-  mostrarNotificacion() {
+  contarItems() {
+    try {
+      return this.items.reduce((total, item) => {
+        const cantidad = parseInt(item.cantidad) || 0;
+        return total + cantidad;
+      }, 0);
+    } catch (error) {
+      console.error('Error al contar items:', error);
+      return 0;
+    }
+  },
+  
+  actualizarContador() {
+    try {
+      const contadores = document.querySelectorAll('.cart-count');
+      const cantidad = this.contarItems();
+      
+      contadores.forEach(contador => {
+        if (contador) {
+          contador.textContent = cantidad;
+          
+          // Mostrar u ocultar contador según cantidad
+          if (cantidad > 0) {
+            contador.style.display = 'inline-block';
+          } else {
+            contador.style.display = 'none';
+          }
+        }
+      });
+
+      // Actualizar el contador flotante si existe
+      const floatingCount = document.querySelector('.floating-count');
+      if (floatingCount) {
+        floatingCount.textContent = cantidad;
+        floatingCount.style.display = cantidad > 0 ? 'flex' : 'none';
+      }
+    } catch (error) {
+      console.error('Error al actualizar contador:', error);
+    }
+  },
+  
+  mostrarNotificacion(mensaje, tipo = 'info') {
+    // Limpiar notificaciones existentes
+    const notificacionesExistentes = document.querySelectorAll('.notificacion');
+    notificacionesExistentes.forEach(notif => notif.remove());
+    
     // Crear elemento de notificación
     const notificacion = document.createElement('div');
-    notificacion.className = 'cart-notification';
-    notificacion.innerHTML = `
-      <i class="fas fa-check-circle"></i>
-      <span>¡Producto añadido al carrito!</span>
-    `;
+    notificacion.className = `notificacion ${tipo}`;
+    notificacion.textContent = mensaje;
     
     // Estilos para la notificación
     Object.assign(notificacion.style, {
       position: 'fixed',
       top: '20px',
       right: '20px',
-      backgroundColor: 'var(--primary-color)',
-      color: 'white',
+      backgroundColor: tipo === 'error' ? '#f8d7da' : 
+                     tipo === 'success' ? '#d4edda' : 'var(--primary-color)',
+      color: tipo === 'error' ? '#721c24' : 
+             tipo === 'success' ? '#155724' : 'white',
       padding: '10px 20px',
       borderRadius: '4px',
       boxShadow: '0 2px 10px rgba(0,0,0,0.2)',
@@ -765,7 +1006,7 @@ const Carrito = {
         if (document.body.contains(notificacion)) {
           document.body.removeChild(notificacion);
         }
-      }, 500);
+      }, 300);
     }, 3000);
   },
   
@@ -794,6 +1035,85 @@ const Carrito = {
     if (floatingCount) {
       floatingCount.style.display = this.contarItems() > 0 ? 'flex' : 'none';
     }
+  },
+  
+  animarAgregarProducto(producto) {
+    const botonCarrito = document.querySelector('.boton-carrito');
+    if (botonCarrito) {
+      botonCarrito.classList.add('animar-agregar');
+      setTimeout(() => {
+        botonCarrito.classList.remove('animar-agregar');
+      }, 1000);
+    }
+  },
+  
+  animarEliminarProducto(producto) {
+    const item = document.querySelector(`[data-producto-id="${producto.id}"]`);
+    if (item) {
+      item.classList.add('animar-eliminar');
+      setTimeout(() => {
+        item.remove();
+      }, 500);
+    }
+  },
+  
+  verificarIntegridadCarrito() {
+    // Verificar y corregir inconsistencias en el carrito
+    console.log('Verificando integridad del carrito...');
+    
+    // 1. Eliminar elementos inválidos (null, undefined)
+    this.items = this.items.filter(item => {
+      const esValido = item && typeof item === 'object' && item.id && item.nombre && 
+                      !isNaN(parseFloat(item.precio)) && !isNaN(parseInt(item.cantidad));
+      
+      if (!esValido) {
+        console.warn('Elemento inválido eliminado del carrito:', item);
+      }
+      
+      return esValido;
+    });
+    
+    // 2. Asegurar que cantidades sean números positivos
+    this.items.forEach(item => {
+      if (typeof item.cantidad !== 'number' || item.cantidad <= 0) {
+        console.warn(`Corrigiendo cantidad inválida en ${item.nombre}: ${item.cantidad}`);
+        item.cantidad = 1;
+      }
+      
+      if (typeof item.precio !== 'number') {
+        console.warn(`Corrigiendo precio inválido en ${item.nombre}: ${item.precio}`);
+        item.precio = parseFloat(item.precio) || 0;
+      }
+    });
+    
+    // 3. Combinar elementos duplicados (mismo producto, talla y color)
+    const itemsUnicos = [];
+    const indices = {};
+    
+    this.items.forEach(item => {
+      const clave = `${item.id}-${item.talla}-${item.color}`;
+      
+      if (indices[clave] !== undefined) {
+        // Si ya existe, sumar la cantidad
+        const indiceExistente = indices[clave];
+        itemsUnicos[indiceExistente].cantidad += item.cantidad;
+        console.log(`Combinando cantidades para ${item.nombre} (${item.talla}/${item.color})`);
+      } else {
+        // Si no existe, agregar y guardar índice
+        indices[clave] = itemsUnicos.length;
+        itemsUnicos.push({...item});
+      }
+    });
+    
+    if (this.items.length !== itemsUnicos.length) {
+      console.log(`Carrito optimizado: ${this.items.length} elementos combinados en ${itemsUnicos.length}`);
+      this.items = itemsUnicos;
+    }
+    
+    // Guardar el carrito corregido
+    this.guardarCarrito();
+    
+    return this.items.length;
   }
 };
 

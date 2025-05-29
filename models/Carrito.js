@@ -12,7 +12,11 @@ class Carrito {
       
       const carrito = await db.query(
         `SELECT c.id, c.producto_id, c.cantidad, c.talla, c.color, 
-                p.nombre, p.precio, p.imagen 
+                p.nombre, p.precio, p.imagen, p.stock,
+                (SELECT COUNT(*) FROM inventario i 
+                 WHERE i.producto_id = p.id 
+                 AND i.talla = c.talla 
+                 AND i.color = c.color) as stock_disponible
          FROM carrito c
          JOIN productos p ON c.producto_id = p.id
          WHERE c.usuario_id = ?
@@ -24,17 +28,43 @@ class Carrito {
       
       return carrito.map(item => ({
         id: item.producto_id,
+        carrito_id: item.id,
         nombre: item.nombre,
         precio: parseFloat(item.precio),
         imagen: item.imagen,
         cantidad: item.cantidad,
         talla: item.talla,
         color: item.color,
-        carrito_id: item.id
+        stock: item.stock,
+        stock_disponible: item.stock_disponible,
+        subtotal: parseFloat(item.precio) * item.cantidad
       }));
     } catch (error) {
       console.error('[Carrito.obtenerCarrito] Error:', error);
-      throw error;
+      throw new Error('Error al obtener el carrito');
+    }
+  }
+
+  /**
+   * Verifica el stock disponible de un producto
+   * @param {number} productoId - ID del producto
+   * @param {string} talla - Talla del producto
+   * @param {string} color - Color del producto
+   * @returns {Promise<number>} - Stock disponible
+   */
+  static async verificarStock(productoId, talla, color) {
+    try {
+      const [stock] = await db.query(
+        `SELECT COUNT(*) as stock
+         FROM inventario
+         WHERE producto_id = ? AND talla = ? AND color = ?`,
+        [productoId, talla, color]
+      );
+      
+      return stock.stock || 0;
+    } catch (error) {
+      console.error('[Carrito.verificarStock] Error:', error);
+      throw new Error('Error al verificar stock');
     }
   }
 
@@ -48,27 +78,33 @@ class Carrito {
     try {
       console.log(`[Carrito.agregarProducto] Agregando producto al carrito del usuario ${usuarioId}:`, producto);
       
-      const existente = await db.query(
-        `SELECT id, cantidad FROM carrito 
+      const { producto_id, cantidad, talla, color } = producto;
+
+      // Verificar si el producto ya está en el carrito
+      const [existente] = await db.query(
+        `SELECT id, cantidad 
+         FROM carrito 
          WHERE usuario_id = ? AND producto_id = ? AND talla = ? AND color = ?`,
-        [usuarioId, producto.id, producto.talla, producto.color]
+        [usuarioId, producto_id, talla, color]
       );
-      
-      if (existente.length > 0) {
-        const nuevaCantidad = existente[0].cantidad + producto.cantidad;
+
+      if (existente) {
+        // Actualizar cantidad si ya existe
+        const nuevaCantidad = existente.cantidad + cantidad;
         
         await db.query(
           'UPDATE carrito SET cantidad = ?, updated_at = NOW() WHERE id = ?',
-          [nuevaCantidad, existente[0].id]
+          [nuevaCantidad, existente.id]
         );
         
-        console.log(`[Carrito.agregarProducto] Producto existente actualizado, ID: ${existente[0].id}, nueva cantidad: ${nuevaCantidad}`);
-        return existente[0].id;
+        console.log(`[Carrito.agregarProducto] Producto existente actualizado, ID: ${existente.id}, nueva cantidad: ${nuevaCantidad}`);
+        return existente.id;
       } else {
+        // Insertar nuevo producto
         const result = await db.query(
           `INSERT INTO carrito (usuario_id, producto_id, cantidad, talla, color, created_at, updated_at) 
            VALUES (?, ?, ?, ?, ?, NOW(), NOW())`,
-          [usuarioId, producto.id, producto.cantidad, producto.talla, producto.color]
+          [usuarioId, producto_id, cantidad, talla, color]
         );
         
         console.log(`[Carrito.agregarProducto] Nuevo producto agregado al carrito, ID: ${result.insertId}`);
@@ -76,36 +112,57 @@ class Carrito {
       }
     } catch (error) {
       console.error('[Carrito.agregarProducto] Error:', error);
-      throw error;
+      throw new Error('Error al agregar producto al carrito');
     }
   }
 
   /**
    * Actualiza la cantidad de un producto en el carrito
    * @param {number} usuarioId - ID del usuario
-   * @param {number} productoId - ID del producto
-   * @param {string} talla - Talla del producto
-   * @param {string} color - Color del producto
+   * @param {number} carritoId - ID del item en el carrito
    * @param {number} cantidad - Nueva cantidad
-   * @returns {Promise<boolean>} - true si la actualización fue exitosa
+   * @returns {Promise<Object>} - Producto actualizado
    */
-  static async actualizarCantidad(usuarioId, productoId, talla, color, cantidad) {
+  static async actualizarCantidad(usuarioId, carritoId, cantidad) {
     try {
-      console.log(`[Carrito.actualizarCantidad] Actualizando cantidad para usuario ${usuarioId}, producto ${productoId}`);
-      
-      if (cantidad <= 0) {
-        return await this.eliminarProducto(usuarioId, productoId, talla, color);
+      // Verificar que el item pertenece al usuario
+      const [item] = await db.query(
+        `SELECT c.*, p.precio, p.nombre, p.imagen
+         FROM carrito c
+         JOIN productos p ON c.producto_id = p.id
+         WHERE c.id = ? AND c.usuario_id = ?`,
+        [carritoId, usuarioId]
+      );
+
+      if (!item) {
+        throw new Error('Item no encontrado en el carrito');
       }
-      
-      const result = await db.query(
+
+      // Verificar stock disponible
+      const stockDisponible = await this.verificarStock(item.producto_id, item.talla, item.color);
+      if (stockDisponible < cantidad) {
+        throw new Error('Stock insuficiente');
+      }
+
+      // Actualizar cantidad
+      await db.query(
         `UPDATE carrito 
          SET cantidad = ?, updated_at = NOW() 
-         WHERE usuario_id = ? AND producto_id = ? AND talla = ? AND color = ?`,
-        [cantidad, usuarioId, productoId, talla, color]
+         WHERE id = ? AND usuario_id = ?`,
+        [cantidad, carritoId, usuarioId]
       );
-      
-      console.log(`[Carrito.actualizarCantidad] Filas afectadas: ${result.affectedRows}`);
-      return result.affectedRows > 0;
+
+      return {
+        id: item.producto_id,
+        carrito_id: carritoId,
+        nombre: item.nombre,
+        precio: parseFloat(item.precio),
+        imagen: item.imagen,
+        cantidad: cantidad,
+        talla: item.talla,
+        color: item.color,
+        subtotal: parseFloat(item.precio) * cantidad
+      };
     } catch (error) {
       console.error('[Carrito.actualizarCantidad] Error:', error);
       throw error;
@@ -115,23 +172,23 @@ class Carrito {
   /**
    * Elimina un producto del carrito
    * @param {number} usuarioId - ID del usuario
-   * @param {number} productoId - ID del producto
-   * @param {string} talla - Talla del producto
-   * @param {string} color - Color del producto
-   * @returns {Promise<boolean>} - true si la eliminación fue exitosa
+   * @param {number} carritoId - ID del item en el carrito
+   * @returns {Promise<void>}
    */
-  static async eliminarProducto(usuarioId, productoId, talla, color) {
+  static async eliminarProducto(usuarioId, carritoId) {
     try {
-      console.log(`[Carrito.eliminarProducto] Eliminando producto del carrito para usuario ${usuarioId}, producto ${productoId}`);
+      console.log(`[Carrito.eliminarProducto] Eliminando producto del carrito para usuario ${usuarioId}, producto ${carritoId}`);
       
       const result = await db.query(
         `DELETE FROM carrito 
-         WHERE usuario_id = ? AND producto_id = ? AND talla = ? AND color = ?`,
-        [usuarioId, productoId, talla, color]
+         WHERE id = ? AND usuario_id = ?`,
+        [carritoId, usuarioId]
       );
       
       console.log(`[Carrito.eliminarProducto] Filas afectadas: ${result.affectedRows}`);
-      return result.affectedRows > 0;
+      if (result.affectedRows === 0) {
+        throw new Error('Item no encontrado en el carrito');
+      }
     } catch (error) {
       console.error('[Carrito.eliminarProducto] Error:', error);
       throw error;
@@ -139,9 +196,9 @@ class Carrito {
   }
 
   /**
-   * Vacía todo el carrito de un usuario
+   * Vacía el carrito de un usuario
    * @param {number} usuarioId - ID del usuario
-   * @returns {Promise<boolean>} - true si la operación fue exitosa
+   * @returns {Promise<void>}
    */
   static async vaciarCarrito(usuarioId) {
     try {
@@ -153,10 +210,9 @@ class Carrito {
       );
       
       console.log(`[Carrito.vaciarCarrito] Filas eliminadas: ${result.affectedRows}`);
-      return true;
     } catch (error) {
       console.error('[Carrito.vaciarCarrito] Error:', error);
-      throw error;
+      throw new Error('Error al vaciar el carrito');
     }
   }
 

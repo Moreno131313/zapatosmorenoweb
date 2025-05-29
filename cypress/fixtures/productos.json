@@ -1,0 +1,49 @@
+{
+  "productos": [
+    {
+      "id": "1",
+      "nombre": "Zapato casual hombre",
+      "precio": 79990,
+      "descripcion": "Zapato casual elegante para hombre, ideal para el día a día y ocasiones semi-formales.",
+      "imagen": "/imagenes/productos/hombres/oxford-negro.jpg",
+      "genero": "hombre",
+      "tipo": "casual",
+      "tallas": ["38", "39", "40", "41", "42"],
+      "colores": ["Negro", "Marrón", "Azul"]
+    },
+    {
+      "id": "2",
+      "nombre": "Zapato formal hombre",
+      "precio": 89990,
+      "descripcion": "Zapato formal para hombre, perfecto para eventos y ocasiones especiales.",
+      "imagen": "/imagenes/productos/hombres/formal-negro.jpg",
+      "genero": "hombre",
+      "tipo": "formal",
+      "tallas": ["39", "40", "41", "42", "43"],
+      "colores": ["Negro", "Marrón"]
+    },
+    {
+      "id": "3",
+      "nombre": "Sandalia mujer elegante",
+      "precio": 59990,
+      "descripcion": "Sandalia elegante para mujer, perfecta para eventos y ocasiones especiales.",
+      "imagen": "/imagenes/productos/mujeres/sandalia-elegante.jpg",
+      "genero": "mujer",
+      "tipo": "formal",
+      "tallas": ["35", "36", "37", "38", "39"],
+      "colores": ["Negro", "Plateado", "Dorado"]
+    },
+    {
+      "id": "4",
+      "nombre": "Deportivo niño",
+      "precio": 49990,
+      "descripcion": "Calzado deportivo para niño, cómodo y resistente para todas sus actividades.",
+      "imagen": "/imagenes/productos/ninos/deportivo-nino.jpg",
+      "genero": "nino",
+      "tipo": "deportivo",
+      "tallas": ["28", "29", "30", "31", "32", "33"],
+      "colores": ["Azul", "Rojo", "Negro"]
+    }
+  ],
+  "total": 4
+} 
